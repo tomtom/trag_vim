@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2010-06-20.
-" @Revision:    0.0.913
+" @Last Change: 2010-09-03.
+" @Revision:    0.0.914
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -798,7 +798,8 @@ function! trag#BrowseList(world_dict, list, ...) "{{{3
     "     " call tlib#signs#ClearAll(sign)
     "     " call tlib#signs#Mark(sign, getqflist())
     " endif
-    if !anyway && empty(filter(copy(a:list), 'v:val.nr != -1'))
+    " if !anyway && empty(filter(copy(a:list), 'v:val.nr != -1'))
+    if !anyway && empty(a:list)
         return
     endif
     let s:world = copy(g:trag_qfl_world)
