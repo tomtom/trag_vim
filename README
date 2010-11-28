@@ -1,5 +1,3 @@
-*trag.txt*          A slightly language-aware alternative to grep
-
 You can think of this plugin either as some kind of ad-hoc 
 tags/cescope-like solution or as a project-oriented and slightly 
 programming-language-aware alternative to grep that should support poor 
@@ -10,7 +8,7 @@ only, no external program required) than tags/cescope. Apart from the
 basic grep-like functionality, it can be used to find locations where a 
 variable is defined, where it is assigned to another variable, where a 
 method is called and stuff like that. At least that's the idea. The 
-plugin hasn't reached the point yet to be 100%% useful.
+plugin hasn't reached the point yet to be 100% useful.
 
 
 Usage~
