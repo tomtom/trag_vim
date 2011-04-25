@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2010-09-03.
-" @Revision:    0.0.914
+" @Last Change: 2011-04-25.
+" @Revision:    0.0.917
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -502,6 +502,7 @@ function! trag#Grep(args, ...) "{{{3
     endif
     " TLogVAR files
     " TAssertType files, 'list'
+    doautocmd QuickFixCmdPre trag
     call tlib#progressbar#Init(len(files), 'TRag: Grep %s', 20)
     if replace
         call setqflist([])
@@ -619,9 +620,11 @@ function! trag#Grep(args, ...) "{{{3
             let qfl1[qfl_top : -1] = map(qfl1[qfl_top : -1], 's:StripText(v:val)')
             call setqflist(qfl1, 'r')
         endif
+        doautocmd QuickFixCmdPost trag
 
         " TLogDBG 'qfl:'. string(getqflist())
-        return qfl1[qfl_top : -1]
+        let qfl2 = getqflist()
+        return qfl2[qfl_top : -1]
     finally
         " if search_mode == 2
         "     let &ei = ei
