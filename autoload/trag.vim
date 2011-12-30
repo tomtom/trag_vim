@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2011-04-25.
-" @Revision:    0.0.917
+" @Last Change: 2011-11-21.
+" @Revision:    0.0.921
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -825,7 +825,7 @@ function! trag#LocList(...) "{{{3
     "     " call tlib#signs#ClearAll(sign)
     "     " call tlib#signs#Mark(sign, getqflist())
     " endif
-    call trag#BrowseList({}, getqflist())
+    call trag#BrowseList({}, getloclist(0))
 endf
 
 
