@@ -1,0 +1,7 @@
+version: "0.09"
+  - Don't hide the window if all error numbers are -1
+  - .gitignore
+  - trag#Grep(): trigger QuickFixCmdPre & QuickFixCmdPost events for "trag"
+  - trag#LocList() used qfl
+  MD5 checksum: 255a58b855b4e21462b517826c88fd91
+
