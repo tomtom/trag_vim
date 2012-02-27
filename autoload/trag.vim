@@ -820,12 +820,14 @@ endf
 
 " Display the |location-list| with |tlib#input#ListW()|.
 function! trag#LocList(...) "{{{3
+    TVarArg ['world', {}], ['suspended', 0]
+    " TLogVAR world, suspended
     " TVarArg ['sign', 'TRag']
     " if !empty(sign) && !empty(g:trag_sign)
     "     " call tlib#signs#ClearAll(sign)
     "     " call tlib#signs#Mark(sign, getqflist())
     " endif
-    call trag#BrowseList({}, getloclist(0))
+    call trag#BrowseList(world, getloclist(0), 0, suspended)
 endf
 
 
