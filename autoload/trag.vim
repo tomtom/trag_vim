@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2011-11-21.
-" @Revision:    0.0.921
+" @Last Change: 2012-02-27.
+" @Revision:    0.0.957
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -521,12 +521,12 @@ function! trag#Grep(args, ...) "{{{3
         let qfl_top = len(getqflist())
         for f in files
             let ff = fnamemodify(f, ':p')
-            " TLogVAR f
+            " TLogVAR f, kindspos, kindsneg
             call tlib#progressbar#Display(fidx, ' '. pathshorten(f))
             let rxpos = s:GetRx(f, kindspos, rx, '.')
             " let rxneg = s:GetRx(f, kindsneg, rx, '')
             let rxneg = s:GetRx(f, kindsneg, '', '')
-            " TLogVAR kindspos, kindsneg, rx, rxpos, rxneg
+            " TLogVAR rx, rxpos, rxneg
             let fidx += 1
             if !filereadable(f) || empty(rxpos)
                 " TLogDBG f .': continue '. filereadable(f) .' '. empty(rxpos)
@@ -551,6 +551,7 @@ function! trag#Grep(args, ...) "{{{3
             " When we don't have to process every line, we slurp the file 
             " into a buffer and use search(), which should be faster than 
             " running match() on every line.
+            " TLogVAR prcacc
             if empty(prcacc)
                 " TLogVAR search_mode, rxneg
                 if search_mode == 0 || !empty(rxneg)
@@ -576,6 +577,9 @@ function! trag#Grep(args, ...) "{{{3
                         let lines = readfile(f)
                     endif
                     for line in lines
+                        " if f =~ 'Dropbox' " DBG
+                        " TLogVAR line =~ rxpos, line
+                        " endif " DBG
                         if line =~ rxpos && (empty(rxneg) || line !~ rxneg)
                             let qfl[lnum] = {"filename": f, "lnum": lnum, "text": tlib#string#Strip(line)}
                         endif
@@ -696,21 +700,29 @@ function! s:GetRx(filename, kinds, rx, default) "{{{3
         return a:default
     endif
     let rxacc = []
-    let ext   = fnamemodify(a:filename, ':e')
-    if empty(ext)
-        let ext = a:filename
-    endif
-    let filetype = get(g:trag_filenames, ext, '')
-    if empty(filetype) && !has('fname_case')
-        let filetype = get(g:trag_filenames, tolower(ext), '')
-    endif
+    let prototype = ''
+    for needle in [
+                \ fnamemodify(a:filename, ':p'),
+                \ fnamemodify(a:filename, ':t'),
+                \ fnamemodify(a:filename, ':e')
+                \ ]
+        let filetype = get(g:trag_filenames, needle, '')
+        " TLogVAR needle, filetype
+        if empty(filetype) && !has('fname_case')
+            let filetype = get(g:trag_filenames, tolower(needle), '')
+        endif
+        if !empty(filetype)
+            let prototype = needle
+            break
+        endif
+    endfor
     let id = filetype .'*'.string(a:kinds).'*'.a:rx
-    " TLogVAR ext, filetype, id
+    " TLogVAR prototype, filetype, id
     if has_key(s:rx_cache, id)
         let rv = s:rx_cache[id]
     else
         for kindand in a:kinds
-            let rx= a:rx
+            let rx = a:rx
             for kind in kindand
                 let rxf = tlib#var#Get('trag_rxf_'. kind, 'bg')
                 " TLogVAR rxf
@@ -721,9 +733,9 @@ function! s:GetRx(filename, kinds, rx, default) "{{{3
                 if empty(rxf)
                     if &verbose > 1
                         if empty(filetype)
-                            echom 'Unknown kind '. kind .' for unregistered filetype; skip files like '. ext
+                            echom 'Unknown kind '. kind .' for unregistered filetype; skip files like '. prototype
                         else
-                            echom 'Unknown kind '. kind .' for ft='. filetype .'; skip files like '. ext
+                            echom 'Unknown kind '. kind .' for ft='. filetype .'; skip files like '. prototype
                         endif
                     endif
                     return ''
@@ -796,6 +808,7 @@ endf
 
 function! trag#BrowseList(world_dict, list, ...) "{{{3
     TVarArg ['anyway', 0], ['suspended', 0]
+    " TLogVAR anyway, suspended
     " TVarArg ['sign', 'TRag']
     " if !empty(sign) && !empty(g:trag_sign)
     "     " call tlib#signs#ClearAll(sign)
