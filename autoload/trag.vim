@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-02-27.
-" @Revision:    0.0.957
+" @Last Change: 2012-03-02.
+" @Revision:    0.0.959
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -872,6 +872,7 @@ function! trag#AgentEditQFE(world, selected, ...) "{{{3
                 " TLogVAR cmd_edit, cmd_buffer, fn
                 call tlib#file#With(cmd_edit, cmd_buffer, [fn], a:world)
                 " TLogDBG bufname('%')
+                " TLogVAR &filetype
                 call tlib#buffer#ViewLine(qfe.lnum)
                 " call a:world.SetOrigin()
                 " exec back
