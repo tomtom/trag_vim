@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-03-02.
-" @Revision:    0.0.959
+" @Last Change: 2012-03-08.
+" @Revision:    0.0.965
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -42,6 +42,28 @@ TLet g:trag#use_buffer = 1
 "     " Clear all trag-related signs.
 "     command! TRagClearSigns call tlib#signs#ClearAll('TRag')
 " endif
+
+let s:trag_filenames = {}
+
+" Return true, if a filetype for "name" (an extension or a filename) is 
+" defined.
+function! trag#HasFiletype(name) "{{{3
+    let name = has('fname_case') ? a:name : tolower(a:name)
+    return has_key(s:trag_filenames, name)
+endf
+
+" Define that filenames ("name" can be either an extension or a 
+" filename) are of a certain filetype.
+function! trag#SetFiletype(filetype, name) "{{{3
+    let name = has('fname_case') ? a:name : tolower(a:name)
+    let s:trag_filenames[name] = a:filetype
+endf
+
+" Get the filetype for "name" (either an extension of a filename).
+function! trag#GetFiletype(name) "{{{3
+    let name = has('fname_case') ? a:name : tolower(a:name)
+    return get(s:trag_filenames, name, '')
+endf
 
 
 " :nodoc:
@@ -706,11 +728,8 @@ function! s:GetRx(filename, kinds, rx, default) "{{{3
                 \ fnamemodify(a:filename, ':t'),
                 \ fnamemodify(a:filename, ':e')
                 \ ]
-        let filetype = get(g:trag_filenames, needle, '')
+        let filetype = trag#GetFiletype(needle)
         " TLogVAR needle, filetype
-        if empty(filetype) && !has('fname_case')
-            let filetype = get(g:trag_filenames, tolower(needle), '')
-        endif
         if !empty(filetype)
             let prototype = needle
             break

@@ -189,6 +189,9 @@ Contents~
         g:trag_get_files_c ....... |g:trag_get_files_c|
         g:trag_get_files_cpp ..... |g:trag_get_files_cpp|
         g:trag#use_buffer ........ |g:trag#use_buffer|
+        trag#HasFiletype ......... |trag#HasFiletype()|
+        trag#SetFiletype ......... |trag#SetFiletype()|
+        trag#GetFiletype ......... |trag#GetFiletype()|
         g:trag_files ............. |g:trag_files|
         g:trag_glob .............. |g:trag_glob|
         g:trag_project_ruby ...... |g:trag_project_ruby|
@@ -381,6 +384,20 @@ g:trag#use_buffer              (default: 1)
     certain situations. This implies that if a buffer is dirty, the 
     non-saved version in memory will be preferred over the version on 
     disk.
+
+                                                    *trag#HasFiletype()*
+trag#HasFiletype(name)
+    Return true, if a filetype for "name" (an extension or a filename) is 
+    defined.
+
+                                                    *trag#SetFiletype()*
+trag#SetFiletype(filetype, name)
+    Define that filenames ("name" can be either an extension or a 
+    filename) are of a certain filetype.
+
+                                                    *trag#GetFiletype()*
+trag#GetFiletype(name)
+    Get the filetype for "name" (either an extension of a filename).
 
 
 The following variables provide alternatives to collecting 

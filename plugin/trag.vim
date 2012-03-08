@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-02-27.
-" @Revision:    613
+" @Last Change: 2012-03-08.
+" @Revision:    615
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -25,8 +25,6 @@ set cpo&vim
 
 " :nodoc:
 TLet g:trag_kinds = {}
-" :nodoc:
-TLet g:trag_filenames = {}
 " :nodoc:
 TLet g:trag_keyword_chars = {}
 
@@ -58,7 +56,7 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 " has('fname_case')), EXTENSION should be defined in lower case letters.
 " Examples: >
 "   TRagDefFiletype html html htm xhtml
-command! -nargs=+ TRagDefFiletype for e in [<f-args>][1:-1] | let g:trag_filenames[e] = [<f-args>][0] | endfor
+command! -nargs=+ TRagDefFiletype for e in [<f-args>][1:-1] | call trag#SetFiletype([<f-args>][0], e) | endfor
 
 
 " :display: :TRag[!] KIND [REGEXP]
