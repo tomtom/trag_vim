@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2012-03-08.
-" @Revision:    0.0.965
+" @Revision:    0.0.976
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -34,14 +34,9 @@ TLet g:trag_get_files_cpp = 'split(glob("**/*.[ch]"), "\n")'
 " disk.
 TLet g:trag#use_buffer = 1
 
-" " If non-empty, display signs at matching lines.
-" TLet g:trag_sign = has('signs') ? '>' : ''
-" if !empty(g:trag_sign)
-"     exec 'sign define TRag text='. g:trag_sign .' texthl=Special'
-" 
-"     " Clear all trag-related signs.
-"     command! TRagClearSigns call tlib#signs#ClearAll('TRag')
-" endif
+" If true, try to detect whether the current file is under an VCS and 
+" use that later on.
+TLet g:trag#check_vcs = 1
 
 let s:trag_filenames = {}
 
@@ -399,6 +394,8 @@ function! trag#SetFiles(...) "{{{3
                     endif
                     if !empty(git_repos)
                         let files = trag#GetGitFiles(git_repos)
+                    elseif g:trag#check_vcs
+                        let files = tlib#vcs#Ls()
                     end
                 endif
             endif
