@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-03-08.
-" @Revision:    0.0.976
+" @Last Change: 2012-03-22.
+" @Revision:    0.0.979
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -521,7 +521,7 @@ function! trag#Grep(args, ...) "{{{3
     endif
     " TLogVAR files
     " TAssertType files, 'list'
-    doautocmd QuickFixCmdPre trag
+    call s:DoAutoCmd('QuickFixCmdPre')
     call tlib#progressbar#Init(len(files), 'TRag: Grep %s', 20)
     if replace
         call setqflist([])
@@ -643,7 +643,7 @@ function! trag#Grep(args, ...) "{{{3
             let qfl1[qfl_top : -1] = map(qfl1[qfl_top : -1], 's:StripText(v:val)')
             call setqflist(qfl1, 'r')
         endif
-        doautocmd QuickFixCmdPost trag
+        call s:DoAutoCmd('QuickFixCmdPost')
 
         " TLogDBG 'qfl:'. string(getqflist())
         let qfl2 = getqflist()
@@ -658,6 +658,17 @@ function! trag#Grep(args, ...) "{{{3
         endif
         call tlib#progressbar#Restore()
     endtry
+endf
+
+
+function! s:DoAutoCmd(event) "{{{3
+    redir => aus
+    exec 'silent! autocmd' a:event 'trag'
+    redir END
+    let au = split(aus, '\n')
+    if len(au) > 1
+        exec 'doautocmd' a:event 'trag'
+    endif
 endf
 
 
@@ -824,6 +835,7 @@ endf
 
 function! trag#BrowseList(world_dict, list, ...) "{{{3
     TVarArg ['anyway', 0], ['suspended', 0]
+    " TLogVAR a:world_dict, a:list
     " TLogVAR anyway, suspended
     " TVarArg ['sign', 'TRag']
     " if !empty(sign) && !empty(g:trag_sign)
@@ -839,6 +851,7 @@ function! trag#BrowseList(world_dict, list, ...) "{{{3
         call extend(s:world, a:world_dict)
     endif
     let s:world = tlib#World#New(s:world)
+    " echom "DBG s:world" string(sort(keys(s:world)))
     let s:world.qfl  = copy(a:list)
     " TLogVAR s:world.qfl
     call s:FormatBase(s:world)
