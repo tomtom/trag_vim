@@ -922,8 +922,8 @@ function! trag#AgentGotoQFE(world, selected) "{{{3
 endf
 
 
-function! trag#AgentWithSelected(world, selected) "{{{3
-    let cmd = input('Ex command: ', '', 'command')
+function! trag#AgentWithSelected(world, selected, ...) "{{{3
+    let cmd = a:0 >= 1 ? a:1 : input('Ex command: ', '', 'command')
     if !empty(cmd)
         call trag#RunCmdOnSelected(a:world, a:selected, cmd)
     else
