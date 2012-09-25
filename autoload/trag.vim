@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-03-22.
-" @Revision:    0.0.979
+" @Last Change: 2012-09-25.
+" @Revision:    0.0.1022
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -233,7 +233,7 @@ TLet g:trag_qfl_world = {
             \ 'resize_vertical': 0,
             \ 'resize': 20,
             \ 'scratch': '__TRagQFL__',
-            \ 'tlib_UseInputListScratch': 'call trag#SetSyntax()',
+            \ 'tlib_UseInputListScratch': 'call trag#InitListBuffer()',
             \ 'key_handlers': [
                 \ {'key':  5, 'agent': 'trag#AgentWithSelected', 'key_name': '<c-e>', 'help': 'Run a command on selected lines'},
                 \ {'key':  6, 'agent': 'trag#AgentRefactor',     'key_name': '<c-f>', 'help': 'Run a refactor command'},
@@ -257,7 +257,7 @@ TLet g:trag_qfl_world = {
 let s:grep_rx = ''
 
 
-function! trag#SetSyntax() "{{{3
+function! trag#InitListBuffer() "{{{3
     let syntax = get(s:world, 'trag_list_syntax', '')
     let nextgroup = get(s:world, 'trag_list_syntax_nextgroup', '')
     if !empty(syntax)
@@ -271,6 +271,47 @@ function! trag#SetSyntax() "{{{3
     endif
     hi def link TTagedFilesFilename Directory
     hi def link TTagedFilesLNum LineNr
+    if has('balloon_eval')
+        setlocal ballooneval balloonexpr=trag#Balloon()
+    endif
+endf
+
+
+function! trag#Balloon() "{{{3
+    let world = getbufvar(v:beval_bufnr, 'tlibDisplayListWorld')
+    let current = max([1, world.offset]) + v:beval_lnum - 1
+    if current > len(world.table)
+        let current = len(world.table)
+    endif
+    let baseidx = world.GetBaseIdx0(current)
+    " TLogVAR world.offset, v:beval_lnum, current, baseidx
+    let item = world.qfl[baseidx]
+    " TLogVAR item
+    if item.bufnr == 0
+        return ''
+    else
+        let lines = [printf("%d#%d: %s", item.bufnr, item.lnum, bufname(item.bufnr))]
+        if has('balloon_multiline')
+            let desc = {'nr': 'Error number', 'type': 'Error type', 'text': ''}
+            for key in ['nr', 'type', 'text']
+                if has_key(item, key) && !empty(item[key])
+                    let keydesc = get(desc, key, key)
+                    if empty(keydesc)
+                        let text = item[key]
+                    else
+                        let text = printf("%s: %s", key, item[key])
+                    endif
+                    call add(lines, text)
+                endif
+            endfor
+        endif
+        return join(lines, "\n")
+    endif
+    " v:beval_bufnr	number of the buffer in which balloon is going to show
+    " v:beval_winnr	number of the window
+    " v:beval_lnum	line number
+    " v:beval_col	column number (byte index)
+    " v:beval_text	word under or after the mouse pointer
 endf
 
 
@@ -875,7 +916,6 @@ endf
 
 function! s:FormatBase(world) "{{{3
     let a:world.base = map(copy(a:world.qfl), 's:FormatQFLE(v:val)')
-    unlet! g:trag_short_filename
 endf
 
 function! trag#AgentEditQFE(world, selected, ...) "{{{3
