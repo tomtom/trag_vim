@@ -198,7 +198,8 @@ Contents~
         g:trag_project_ruby ...... |g:trag_project_ruby|
         g:trag_project ........... |g:trag_project|
         g:trag_git ............... |g:trag_git|
-        trag#SetSyntax ........... |trag#SetSyntax()|
+        trag#InitListBuffer ...... |trag#InitListBuffer()|
+        trag#Balloon ............. |trag#Balloon()|
         trag#ClearFiles .......... |trag#ClearFiles()|
         trag#AddFiles ............ |trag#AddFiles()|
         trag#GetProjectFiles ..... |trag#GetProjectFiles()|
@@ -441,8 +442,11 @@ g:trag_git                     (default: '')
     If the value is "finddir", use |finddir()| to find a .git directory.
     Can be buffer local.
 
-                                                    *trag#SetSyntax()*
-trag#SetSyntax()
+                                                    *trag#InitListBuffer()*
+trag#InitListBuffer()
+
+                                                    *trag#Balloon()*
+trag#Balloon()
 
                                                     *trag#ClearFiles()*
 trag#ClearFiles()
@@ -523,7 +527,7 @@ trag#AgentGotoQFE(world, selected)
 trag#AgentWithSelected(world, selected, ...)
 
                                                     *trag#RunCmdOnSelected()*
-trag#RunCmdOnSelected(world, selected, cmd)
+trag#RunCmdOnSelected(world, selected, cmd, ...)
 
                                                     *trag#AgentSplitBuffer()*
 trag#AgentSplitBuffer(world, selected)
