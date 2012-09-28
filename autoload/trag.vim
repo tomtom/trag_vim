@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-09-25.
-" @Revision:    0.0.1022
+" @Last Change: 2012-09-27.
+" @Revision:    0.0.1023
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -986,8 +986,11 @@ function! trag#AgentWithSelected(world, selected, ...) "{{{3
 endf
 
 
-function! trag#RunCmdOnSelected(world, selected, cmd) "{{{3
-    call a:world.CloseScratch()
+function! trag#RunCmdOnSelected(world, selected, cmd, ...) "{{{3
+    let close_scratch = a:0 >= 1 ? a:1 : 1
+    if close_scratch
+        call a:world.CloseScratch()
+    endif
     " TLogVAR a:cmd
     for entry in a:selected
         " TLogVAR entry, a:world.GetBaseItem(entry)
