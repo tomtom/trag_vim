@@ -86,3 +86,14 @@ version: "0.09"
   - trag#LocList() used qfl
   MD5 checksum: 255a58b855b4e21462b517826c88fd91
 
+version: "0.11"
+  - trag#LocList(): Take world & suspended as arguments (like #BrowseList())
+  - Be more clever at guessing the filetype (allow filenames as patterns)
+  - No direct external access to trag_filenames
+  - g:trag#check_vcs: If the file is under a VCS, scan through all files in the VCS (requires tlib 0.44)
+  - trag#AgentWithSelected(): cmd as optional argument
+  - s:DoAutoCmd(): call event only if one is defined
+  - Show item in balloon (if available)
+  - trag#RunCmdOnSelected(): Optional argument: Don't close scratch
+  MD5 checksum: e4bc34f9c3ef3ce134f2c41918d0922d
+
