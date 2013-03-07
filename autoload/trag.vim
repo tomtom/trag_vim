@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-09-27.
-" @Revision:    0.0.1023
+" @Last Change: 2013-03-07.
+" @Revision:    0.0.1035
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -242,6 +242,7 @@ TLet g:trag_qfl_world = {
                 \ {'key': 19, 'agent': 'trag#AgentSplitBuffer',  'key_name': '<c-s>', 'help': 'Show in split buffer'},
                 \ {'key': 20, 'agent': 'trag#AgentTabBuffer',    'key_name': '<c-t>', 'help': 'Show in tab'},
                 \ {'key': 22, 'agent': 'trag#AgentVSplitBuffer', 'key_name': '<c-v>', 'help': 'Show in vsplit buffer'},
+                \ {'key': 12, 'agent': 'trag#AgentEditLine',     'key_name': '<c-l>', 'help': 'Edit selected line(s)'},
                 \ {'key': "\<c-insert>", 'agent': 'trag#SetFollowCursor', 'key_name': '<c-ins>', 'help': 'Toggle trace cursor'},
             \ ],
             \ 'return_agent': 'trag#AgentEditQFE',
@@ -1030,6 +1031,25 @@ endf
 
 " function! trag#AgentOpenBuffer(world, selected) "{{{3
 " endf
+
+
+function! trag#AgentEditLine(world, selected) "{{{3
+    call a:world.CloseScratch()
+    let cmd = 'call trag#EditLine(".")'
+    return trag#RunCmdOnSelected(a:world, a:selected, cmd)
+    let a:world.state = 'reset'
+    return a:world
+endf
+
+
+function! trag#EditLine(lnum) "{{{3
+    call inputsave()
+    let line = input('', getline(a:lnum))
+    call inputrestore()
+    if !empty(line)
+        call setline(line(a:lnum), line)
+    endif
+endf
 
 
 " Invoke an refactor command.
