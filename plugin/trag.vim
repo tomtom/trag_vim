@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2012-09-27.
-" @Revision:    617
+" @Revision:    619
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -17,7 +17,7 @@ if !exists('g:loaded_tlib') || g:loaded_tlib < 100
         finish
     endif
 endif
-let loaded_trag = 11
+let loaded_trag = 12
 
 let s:save_cpo = &cpo
 set cpo&vim

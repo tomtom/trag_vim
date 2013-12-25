@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2013-03-07.
-" @Revision:    0.0.1035
+" @Revision:    0.0.1037
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -1002,7 +1002,12 @@ function! trag#RunCmdOnSelected(world, selected, cmd, ...) "{{{3
         " <+TODO+>
         let item = a:world.qfl[entry - 1]
         " TLogVAR entry, item, getline('.')
-        let item['text'] = tlib#string#Strip(getline('.'))
+        if has_key(a:world, 'GetBufferLines')
+            let lines = a:world.GetBufferLines('.', '.')
+        else
+            let lines = getline('.', '.')
+        endif
+        let item['text'] = tlib#string#Strip(lines[0])
     endfor
     call s:FormatBase(a:world)
     call a:world.RestoreOrigin()
