@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2013-03-07.
-" @Revision:    0.0.1037
+" @Revision:    0.0.1039
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -1009,6 +1009,13 @@ function! trag#RunCmdOnSelected(world, selected, cmd, ...) "{{{3
         endif
         let item['text'] = tlib#string#Strip(lines[0])
     endfor
+    if has_key(a:world, 'AfterRunCmd')
+        if bufnr('%') == a:world.bufnr
+            call a:world.AfterRunCmd()
+        else
+            " <+TODO+> Run in other buffer
+        endif
+    endif
     call s:FormatBase(a:world)
     call a:world.RestoreOrigin()
     let a:world.state = 'reset'
