@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2013-03-07.
-" @Revision:    0.0.1039
+" @Revision:    0.0.1049
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -545,7 +545,7 @@ endf
 "   call foo(bar)
 "   if foo == 1
 function! trag#Grep(args, ...) "{{{3
-    TVarArg ['replace', 1], ['files', []]
+    TVarArg ['replace', 1], ['files', []], ['filetype', '']
     " TLogVAR a:args, replace, files
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
     " TLogVAR kindspos, kindsneg, rx, a:args
@@ -584,9 +584,9 @@ function! trag#Grep(args, ...) "{{{3
             let ff = fnamemodify(f, ':p')
             " TLogVAR f, kindspos, kindsneg
             call tlib#progressbar#Display(fidx, ' '. pathshorten(f))
-            let rxpos = s:GetRx(f, kindspos, rx, '.')
+            let rxpos = s:GetRx(f, kindspos, rx, '.', filetype)
             " let rxneg = s:GetRx(f, kindsneg, rx, '')
-            let rxneg = s:GetRx(f, kindsneg, '', '')
+            let rxneg = s:GetRx(f, kindsneg, '', '', filetype)
             " TLogVAR rx, rxpos, rxneg
             let fidx += 1
             if !filereadable(f) || empty(rxpos)
@@ -766,25 +766,30 @@ endf
 call trag#ClearCachedRx()
 
 
-function! s:GetRx(filename, kinds, rx, default) "{{{3
+function! s:GetRx(filename, kinds, rx, default, filetype) "{{{3
     " TLogVAR a:filename, a:kinds, a:rx, a:default
     if empty(a:kinds)
         return a:default
     endif
     let rxacc = []
-    let prototype = ''
-    for needle in [
-                \ fnamemodify(a:filename, ':p'),
-                \ fnamemodify(a:filename, ':t'),
-                \ fnamemodify(a:filename, ':e')
-                \ ]
-        let filetype = trag#GetFiletype(needle)
-        " TLogVAR needle, filetype
-        if !empty(filetype)
-            let prototype = needle
-            break
-        endif
-    endfor
+    if empty(a:filetype)
+        let prototype = ''
+        for needle in [
+                    \ fnamemodify(a:filename, ':p'),
+                    \ fnamemodify(a:filename, ':t'),
+                    \ fnamemodify(a:filename, ':e')
+                    \ ]
+            let filetype = trag#GetFiletype(needle)
+            " TLogVAR needle, filetype
+            if !empty(filetype)
+                let prototype = needle
+                break
+            endif
+        endfor
+    else
+        let prototype = a:filename
+        let filetype = a:filetype
+    endif
     let id = filetype .'*'.string(a:kinds).'*'.a:rx
     " TLogVAR prototype, filetype, id
     if has_key(s:rx_cache, id)
