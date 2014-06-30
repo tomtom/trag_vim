@@ -1,25 +1,18 @@
-" trag.vim
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-09-29.
-" @Last Change: 2013-03-07.
-" @Revision:    0.0.1049
+" @Last Change: 2014-06-30.
+" @Revision:    1189
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
-
 """ Known Types {{{1
 
-" 0 ... use the built-in search.
-" 1 ... use vimgrep.
-" 2 ... use vimgrep but set 'ei' to all; this means special file 
-"       encodings won't be detected
-" Please not, this is only in effect with simple searches (as for 0.3 
-" all searches are simple). For more complex multi-line patterns, the 
-" built-in search will be used (some day in the future).
-TLet g:trag_search_mode = 0
-" TLet g:trag_search_mode = 2
+" Possible values:
+"   - trag
+"   - vimgrep
+"   - external,CMD (CMD defaults to grep; use vimgrep as fallback)
+TLet g:trag#grep_type = 'trag'
 
 " If no project files are defined, evaluate this expression as 
 " fallback-strategy.
