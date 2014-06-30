@@ -391,6 +391,19 @@ function! trag#GetGitFiles(repos) "{{{3
 endf
 
 
+" Set the files list to the files in the current VCS repository.
+function! trag#SetRepoFiles() "{{{3
+    let [type, dir] = tlib#vcs#FindVCS(expand('%'))
+    if empty(type)
+        echom 'No supported VCS repository found.'
+    else
+        let files = tlib#vcs#Ls('', [type, dir])
+        let b:trag_files_ = files
+        echom len(files) 'files from the' type 'repository.'
+    endif
+endf
+
+
 " Set the files list from the files included in a given git repository.
 function! trag#SetGitFiles(repos) "{{{3
     let files = trag#GetGitFiles(a:repos)
