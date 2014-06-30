@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2012-09-27.
-" @Revision:    619
+" @Last Change: 2014-06-30.
+" @Revision:    651
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -27,6 +27,9 @@ set cpo&vim
 TLet g:trag_kinds = {}
 " :nodoc:
 TLet g:trag_keyword_chars = {}
+
+" Trag map leader. See also |TragInstallMap|.
+TLet g:trag_map_leader = '<Leader>r'
 
 
 " :display: :TRagDefKind KIND FILETYPE /REGEXP_FORMAT/
@@ -150,6 +153,40 @@ command! TRagclearfiles call trag#ClearFiles()
 
 " :display: :TRagGitFiles GIT_REPOS
 command! -nargs=1 -bar -complete=dir TRagGitFiles call trag#SetGitFiles(<q-args>)
+" Install the following maps:
+"
+"   <trag_map_leader># ........ Search word under cursor
+"   <trag_map_leader>. ........ :Trag * <Input>
+"   <trag_map_leader>- ........ :Tragfile
+"
+" The following maps might be defined only after the first invocation:
+"
+"   <trag_map_leader><KIND> ... Search word under cursor of KIND
+"                               See |g:trag_kinds|
+"
+" E.g. <trag_map_leader>d searches for the definition of the word under 
+" cursor.
+function! TragInstallMap(leader) "{{{3
+    " TLogVAR a:leader
+    exec 'noremap' a:leader .'. :Trag * '
+    exec 'noremap' a:leader .'- :Tragfile<cr>'
+    exec 'noremap <silent>' a:leader .'# :Trag #w <c-r>=trag#CWord()<cr><cr>'
+    for kind in keys(g:trag_kinds)
+        call TragInstallKindMap(leader, kind)
+    endfor
+endf
+
+function! TragInstallKindMap(leader, kind) "{{{3
+    " TLogVAR a:leader, a:kind
+    if len(a:kind) == 1
+        exec 'nnoremap' a:leader . a:kind ':Trag #'. a:kind '<c-r>=trag#CWord()<cr><cr>'
+        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag #'. a:kind '<c-r>"<cr>'
+    endif
+endf
+
+if !empty(g:trag_map_leader)
+    call TragInstallMap(g:trag_map_leader)
+endif
 
 
 let &cpo = s:save_cpo

@@ -69,9 +69,11 @@ function! trag#TRagDefKind(args) "{{{3
         call add(g:trag_kinds[kind], filetype)
     else
         let g:trag_kinds[kind] = [filetype]
+        if !empty(g:trag_map_leader)
+            call TragInstallKindMap(g:trag_map_leader, kind)
+        endif
     endif
 endf
-
 
 
 
