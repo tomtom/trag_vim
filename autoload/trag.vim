@@ -533,7 +533,7 @@ endf
 " quickfix list.
 " If such a function is defined, it will be called for every line.
 
-" :def: function! trag#Grep(args, ?replace=1, ?files=[])
+" :def: function! trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 " args: A string with the format:
 "   KIND REGEXP
 "   KIND1,KIND2 REGEXP
@@ -576,122 +576,61 @@ function! trag#Grep(args, ...) "{{{3
     if replace
         call setqflist([])
     endif
-    let search_mode = g:trag_search_mode
-    " TLogVAR search_mode
     let scratch = {}
     try
-        " if search_mode == 2
-        "     let ei = &ei
-        "     set ei=all
-        " endif
-        let fidx  = 0
-        let strip = 0
-        " TLogVAR files
+        let strip = g:trag#grep_type == 'vimgrep'
         let qfl_top = len(getqflist())
-        for f in files
-            let ff = fnamemodify(f, ':p')
-            " TLogVAR f, kindspos, kindsneg
-            call tlib#progressbar#Display(fidx, ' '. pathshorten(f))
-            let rxpos = s:GetRx(f, kindspos, rx, '.', filetype)
-            " let rxneg = s:GetRx(f, kindsneg, rx, '')
-            let rxneg = s:GetRx(f, kindsneg, '', '', filetype)
-            " TLogVAR rx, rxpos, rxneg
-            let fidx += 1
-            if !filereadable(f) || empty(rxpos)
-                " TLogDBG f .': continue '. filereadable(f) .' '. empty(rxpos)
-                continue
-            endif
-            let prcacc = []
-            " let fext = fnamemodify(f, ':e')
-            " TODO: This currently doesn't work.
-            " for kindand in kinds
-            "     for kind in kindand
-            "         let prc = 'trag#Process_'. kind .'_'. fext
-            "         if exists('*'. prc)
-            "             call add(prcacc, prc)
-            "         else
-            "             let prc = 'trag#Process_'. kind
-            "             if exists('*'. prc)
-            "                 call add(prcacc, prc)
-            "             endif
-            "         endif
-            "     endfor
-            " endfor
-            " When we don't have to process every line, we slurp the file 
-            " into a buffer and use search(), which should be faster than 
-            " running match() on every line.
-            " TLogVAR prcacc
-            if empty(prcacc)
-                " TLogVAR search_mode, rxneg
-                if search_mode == 0 || !empty(rxneg)
-                    let qfl = {}
-                    " if empty(scratch)
-                    "     let scratch = {'scratch': '__TRagFileScratch__'}
-                    "     call tlib#scratch#UseScratch(scratch)
-                    "     resize 1
-                    "     let lazyredraw = &lazyredraw
-                    "     set lazyredraw
-                    " endif
-                    " norm! ggdG
-                    " exec 'silent 0read '. tlib#arg#Ex(f)
-                    " silent exec 'g/'. escape(rxpos, '/') .'/ call s:AddCurrentLine(f, qfl, rxneg)'
-                    " norm! ggdG
-                    " TLogVAR qfl
-                    let lnum = 1
-                    let bnum = bufnr(ff)
-                    if g:trag#use_buffer && bnum != -1 && bufloaded(bnum)
-                        " TLogVAR bnum, f, bufname(bnum)
-                        let lines = getbufline(bnum, 1, '$')
-                    else
-                        let lines = readfile(f)
-                    endif
-                    for line in lines
-                        " if f =~ 'Dropbox' " DBG
-                        " TLogVAR line =~ rxpos, line
-                        " endif " DBG
-                        if line =~ rxpos && (empty(rxneg) || line !~ rxneg)
-                            let qfl[lnum] = {"filename": f, "lnum": lnum, "text": tlib#string#Strip(line)}
-                        endif
-                        let lnum += 1
-                    endfor
-                    " TLogVAR qfl
-                    if !empty(qfl)
-                        call setqflist(values(qfl), 'a')
-                    endif
-                else
-                    " TLogDBG 'vimgrepadd /'. escape(rxpos, '/') .'/j '. tlib#arg#Ex(f)
-                    " TLogVAR len(getqflist())
-                    " silent! exec 'vimgrepadd /'. escape(rxpos, '/') .'/gj '. tlib#arg#Ex(f)
-                    " silent! exec 'noautocmd vimgrepadd /'. escape(rxpos, '/') .'/j '. tlib#arg#Ex(f)
-                    silent! exec 'noautocmd vimgrepadd /'. escape(rxpos, '/') .'/j '. tlib#arg#Ex(f)
-                    let strip = 1
-                endif
-            else
-                let qfl = []
-                let lnum = 0
-                for line in readfile(f)
-                    let lnum += 1
-                    let m = match(line, rxpos)
-                    for prc in prcacc
-                        let [m, line] = call(prc, [m, line, qfl, f, lnum])
-                    endfor
-                    if m != -1
-                        call add(qfl, {
-                                    \ 'filename': f,
-                                    \ 'lnum': lnum,
-                                    \ 'text': tlib#string#Strip(line),
-                                    \ })
-                    endif
-                endfor
-                call setqflist(qfl, 'a')
-            endif
-        endfor
+        let grep_defs = map(copy(files), 's:GetGrepDef(v:val, kindspos, kindsneg, rx, filetype)')
+        let [grep_type; grep_opts] = split(g:trag#grep_type, ',')
+        call s:GrepWith_{grep_type}(grep_defs, grep_opts)
 
-        let qfl1 = getqflist()
-        " TLogVAR qfl1
+        " let prcacc = []
+        " " let fext = fnamemodify(f, ':e')
+        " " TODO: This currently doesn't work.
+        " " for kindand in kinds
+        " "     for kind in kindand
+        " "         let prc = 'trag#Process_'. kind .'_'. fext
+        " "         if exists('*'. prc)
+        " "             call add(prcacc, prc)
+        " "         else
+        " "             let prc = 'trag#Process_'. kind
+        " "             if exists('*'. prc)
+        " "                 call add(prcacc, prc)
+        " "             endif
+        " "         endif
+        " "     endfor
+        " " endfor
+        " " When we don't have to process every line, we slurp the file 
+        " " into a buffer and use search(), which should be faster than 
+        " " running match() on every line.
+        " " TLogVAR prcacc
+        " if !empty(prcacc)
+        "     let qfl = []
+        "     let lnum = 0
+        "     for line in readfile(f)
+        "         let lnum += 1
+        "         let m = match(line, rxpos)
+        "         for prc in prcacc
+        "             let [m, line] = call(prc, [m, line, qfl, f, lnum])
+        "         endfor
+        "         if m != -1
+        "             call add(qfl, {
+        "                         \ 'filename': f,
+        "                         \ 'lnum': lnum,
+        "                         \ 'text': tlib#string#Strip(line),
+        "                         \ })
+        "         endif
+        "     endfor
+        "     call setqflist(qfl, 'a')
+        " endif
+
         if strip
-            let qfl1[qfl_top : -1] = map(qfl1[qfl_top : -1], 's:StripText(v:val)')
-            call setqflist(qfl1, 'r')
+            let qfl1 = getqflist()
+            if !empty(qfl1)
+                " TLogVAR qfl_top, qfl1
+                let qfl1[qfl_top : -1] = map(qfl1[qfl_top : -1], 's:StripText(v:val)')
+                call setqflist(qfl1, 'r')
+            endif
         endif
         call s:DoAutoCmd('QuickFixCmdPost')
 
@@ -699,15 +638,126 @@ function! trag#Grep(args, ...) "{{{3
         let qfl2 = getqflist()
         return qfl2[qfl_top : -1]
     finally
-        " if search_mode == 2
-        "     let &ei = ei
-        " endif
         if !empty(scratch)
             call tlib#scratch#CloseScratch(scratch)
             let &lazyredraw = lazyredraw
         endif
         call tlib#progressbar#Restore()
     endtry
+endf
+
+
+function! s:GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
+    let ff = fnamemodify(a:filename, ':p')
+    if filereadable(ff)
+        " TLogVAR f, kindspos, kindsneg
+        let [rxpos, filetype0] = s:GetRx(ff, a:kindspos, a:rx, '.', a:filetype)
+        " TLogVAR rx, rxpos
+        if !empty(rxpos)
+            let [rxneg, filetype1] = s:GetRx(ff, a:kindsneg, '', '', filetype0)
+            let ft = empty(filetype0) ? '*' : filetype0
+            return {'f': a:filename, 'ff': ff, 'rxpos': rxpos, 'rxneg': rxneg, 'filetype': ft}
+        endif
+    endif
+    return {}
+endf
+
+
+function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
+    let fidx  = 0
+    for grep_def in a:grep_defs
+        let fidx += 1
+        call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
+        " TLogVAR a:filename, a:rxpos, a:rxneg
+        let qfl = {}
+        let lnum = 1
+        let bnum = bufnr(grep_def.ff)
+        if g:trag#use_buffer && bnum != -1 && bufloaded(bnum)
+            " TLogVAR bnum, a:filename, bufname(bnum)
+            let lines = getbufline(bnum, 1, '$')
+        else
+            let lines = readfile(grep_def.ff)
+        endif
+        for line in lines
+            if line =~ grep_def.rxpos && (empty(grep_def.rxneg) || line !~ grep_def.rxneg)
+                let qfl[lnum] = {"filename": grep_def.ff, "lnum": lnum, "text": tlib#string#Strip(line)}
+            endif
+            let lnum += 1
+        endfor
+        " TLogVAR qfl
+        if !empty(qfl)
+            call setqflist(values(qfl), 'a')
+        endif
+    endfor
+endf
+
+
+function! s:GrepWith_vimgrep(grep_defs, grep_opts) "{{{3
+    let rxnegs = {}
+    let fidx  = 0
+    for grep_def in a:grep_defs
+        let fidx += 1
+        call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
+        let qfll = len(getqflist())
+        silent! exec 'noautocmd vimgrepadd' '/'. escape(grep_def.rxpos, '/') .'/j' tlib#arg#Ex(grep_def.ff)
+        " TLogVAR qfll, len(getqflist())
+        if qfll != len(getqflist())
+            let bufnr = bufnr(grep_def.ff)
+            " TLogVAR bufnr, grep_def.rxneg
+            if !empty(grep_def.rxneg) && !has_key(rxnegs, bufnr)
+                let rxnegs[bufnr] = grep_def.rxneg
+            endif
+        endif
+    endfor
+    call s:FilterRxNegs(rxnegs)
+endf
+
+
+function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
+    let grep_cmd = get(a:grep_opts, 0, 'grep')
+    let group_defs = {}
+    for grep_def in a:grep_defs
+        let ft = grep_def.filetype
+        if !has_key(group_defs, ft)
+            let group_defs[ft] = {'rxpos': grep_def.rxpos,
+                        \ 'files': []}
+        endif
+        call add(group_defs[ft].files, grep_def.ff)
+    endfor
+    let use_external = 1
+    for group_def in values(group_defs)
+        if use_external
+            let use_external = trag#external#{grep_cmd}#Run(group_def.rxpos, group_def.files)
+            if !use_external
+                echohl WarningMsg
+                echom 'Trag: Error when using external grep:' grep_cmd
+                echom v:exception
+                echohl NONE
+            endif
+        endif
+        if !use_external
+            let files = join(map(copy(group_def.files), 'tlib#arg#Ex(v:val)'))
+            silent! exec 'noautocmd vimgrepadd' '/'. escape(group_def.rxpos, '/') .'/j' files
+        endif
+    endfor
+    let rxnegs = {}
+    for grep_def in a:grep_defs
+        let bufnr = bufnr(grep_def.ff)
+        if bufnr > 0 && !has_key(rxnegs, bufnr)
+            let rxnegs[bufnr] = grep_def.rxneg
+        endif
+    endfor
+    call s:FilterRxNegs(rxnegs)
+endf
+
+
+function! s:FilterRxNegs(rxnegs) "{{{3
+    " TLogVAR a:rxnegs
+    if !empty(a:rxnegs)
+        let qfl = getqflist()
+        let qfl = filter(qfl, '!has_key(a:rxnegs, v:val.bufnr) || v:val.text !~ a:rxnegs[v:val.bufnr]')
+        call setqflist(qfl)
+    endif
 endf
 
 
