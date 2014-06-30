@@ -382,7 +382,7 @@ function! trag#GetGitFiles(repos) "{{{3
     try
         let files = split(system('git ls-files'), '\n')
         " TLogVAR files
-        call map(files, 'basedir . g:tlib_filename_sep . v:val')
+        call map(files, 'basedir . g:tlib#dir#sep . v:val')
         return files
     finally
         call tlib#dir#Pop()
