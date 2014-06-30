@@ -44,18 +44,6 @@ please make sure, you have the current version of vimball (vimscript
 
 This script requires tlib (vimscript #1863) to be installed.
 
-Suggested maps (best set in ~/vimfiles/after/plugin/trag.vim): >
-
-    noremap <Leader>r. :TRag * 
-    noremap <Leader>r- :TRagfile<cr>
-    noremap <silent> <Leader>r# :TRag #w <c-r>=trag#CWord()<cr><cr>
-    for c in keys(g:trag_kinds)
-        if len(c) == 1
-            exec "nnoremap <Leader>r". c .' :TRag #'. c .' <c-r>=trag#CWord()<cr><cr>'
-            exec "vnoremap <Leader>r". c .' y<esc>:TRag #'. c .' <c-r>"<cr>'
-        endif
-    endfor
-
 
 -----------------------------------------------------------------------
                                                     *trag-kinds*

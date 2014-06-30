@@ -44,18 +44,6 @@ please make sure, you have the current version of vimball (vimscript
 
 This script requires tlib (vimscript #1863) to be installed.
 
-Suggested maps (best set in ~/vimfiles/after/plugin/trag.vim): >
-
-    noremap <Leader>r. :TRag * 
-    noremap <Leader>r- :TRagfile<cr>
-    noremap <silent> <Leader>r# :TRag #w <c-r>=trag#CWord()<cr><cr>
-    for c in keys(g:trag_kinds)
-        if len(c) == 1
-            exec "nnoremap <Leader>r". c .' :TRag #'. c .' <c-r>=trag#CWord()<cr><cr>'
-            exec "vnoremap <Leader>r". c .' y<esc>:TRag #'. c .' <c-r>"<cr>'
-        endif
-    endfor
-
 
 -----------------------------------------------------------------------
                                                     *trag-kinds*
@@ -165,206 +153,112 @@ See |trag#Grep()| for details of how to use this.
 ========================================================================
 Contents~
 
-        :TRagDefKind ............. |:TRagDefKind|
-        :TRagKeyword ............. |:TRagKeyword|
-        :TRagDefFiletype ......... |:TRagDefFiletype|
-        :TRag .................... |:TRag|
-        :Trag .................... |:Trag|
-        :TRagfile ................ |:TRagfile|
-        :Tragfile ................ |:Tragfile|
-        :TRagcw .................. |:TRagcw|
-        :Tragcw .................. |:Tragcw|
-        :Traglw .................. |:Traglw|
-        :TRagsearch .............. |:TRagsearch|
-        :Tragsearch .............. |:Tragsearch|
-        :TRaggrep ................ |:TRaggrep|
-        :Traggrep ................ |:Traggrep|
-        :TRagsetfiles ............ |:TRagsetfiles|
-        :TRagaddfiles ............ |:TRagaddfiles|
-        :TRagclearfiles .......... |:TRagclearfiles|
-        :TRagGitFiles ............ |:TRagGitFiles|
-        g:trag_search_mode ....... |g:trag_search_mode|
-        g:trag_get_files ......... |g:trag_get_files|
-        g:trag_get_files_java .... |g:trag_get_files_java|
-        g:trag_get_files_c ....... |g:trag_get_files_c|
-        g:trag_get_files_cpp ..... |g:trag_get_files_cpp|
-        g:trag#use_buffer ........ |g:trag#use_buffer|
-        g:trag#check_vcs ......... |g:trag#check_vcs|
-        trag#HasFiletype ......... |trag#HasFiletype()|
-        trag#SetFiletype ......... |trag#SetFiletype()|
-        trag#GetFiletype ......... |trag#GetFiletype()|
-        g:trag_files ............. |g:trag_files|
-        g:trag_glob .............. |g:trag_glob|
-        g:trag_project_ruby ...... |g:trag_project_ruby|
-        g:trag_project ........... |g:trag_project|
-        g:trag_git ............... |g:trag_git|
-        trag#InitListBuffer ...... |trag#InitListBuffer()|
-        trag#Balloon ............. |trag#Balloon()|
-        trag#ClearFiles .......... |trag#ClearFiles()|
-        trag#AddFiles ............ |trag#AddFiles()|
-        trag#GetProjectFiles ..... |trag#GetProjectFiles()|
-        trag#GetGitFiles ......... |trag#GetGitFiles()|
-        trag#SetGitFiles ......... |trag#SetGitFiles()|
-        trag#SetFiles ............ |trag#SetFiles()|
-        trag#FindGitRepos ........ |trag#FindGitRepos()|
-        trag#Edit ................ |trag#Edit()|
-        trag#Grep ................ |trag#Grep()|
-        trag#ClearCachedRx ....... |trag#ClearCachedRx()|
-        trag#QuickList ........... |trag#QuickList()|
-        trag#QuickListMaybe ...... |trag#QuickListMaybe()|
-        trag#BrowseList .......... |trag#BrowseList()|
-        trag#LocList ............. |trag#LocList()|
-        trag#AgentEditQFE ........ |trag#AgentEditQFE()|
-        trag#AgentPreviewQFE ..... |trag#AgentPreviewQFE()|
-        trag#AgentGotoQFE ........ |trag#AgentGotoQFE()|
-        trag#AgentWithSelected ... |trag#AgentWithSelected()|
-        trag#RunCmdOnSelected .... |trag#RunCmdOnSelected()|
-        trag#AgentSplitBuffer .... |trag#AgentSplitBuffer()|
-        trag#AgentTabBuffer ...... |trag#AgentTabBuffer()|
-        trag#AgentVSplitBuffer ... |trag#AgentVSplitBuffer()|
-        trag#AgentRefactor ....... |trag#AgentRefactor()|
-        trag#CWord ............... |trag#CWord()|
-        trag#RefactorRename ...... |trag#RefactorRename()|
-        trag#SetFollowCursor ..... |trag#SetFollowCursor()|
+        trag#general#Rename ......... |trag#general#Rename()|
+        trag#java#Rename ............ |trag#java#Rename()|
+        trag#rename#Rename .......... |trag#rename#Rename()|
+        trag#viki#Rename ............ |trag#viki#Rename()|
+        g:trag#grep_type ............ |g:trag#grep_type|
+        g:trag_get_files ............ |g:trag_get_files|
+        g:trag_get_files_java ....... |g:trag_get_files_java|
+        g:trag_get_files_c .......... |g:trag_get_files_c|
+        g:trag_get_files_cpp ........ |g:trag_get_files_cpp|
+        g:trag#use_buffer ........... |g:trag#use_buffer|
+        g:trag#check_vcs ............ |g:trag#check_vcs|
+        trag#HasFiletype ............ |trag#HasFiletype()|
+        trag#SetFiletype ............ |trag#SetFiletype()|
+        trag#GetFiletype ............ |trag#GetFiletype()|
+        g:trag_files ................ |g:trag_files|
+        g:trag_glob ................. |g:trag_glob|
+        g:trag_project_ruby ......... |g:trag_project_ruby|
+        g:trag_project .............. |g:trag_project|
+        g:trag_git .................. |g:trag_git|
+        trag#InitListBuffer ......... |trag#InitListBuffer()|
+        trag#Balloon ................ |trag#Balloon()|
+        trag#ClearFiles ............. |trag#ClearFiles()|
+        trag#AddFiles ............... |trag#AddFiles()|
+        trag#GetProjectFiles ........ |trag#GetProjectFiles()|
+        trag#GetGitFiles ............ |trag#GetGitFiles()|
+        trag#SetRepoFiles ........... |trag#SetRepoFiles()|
+        trag#SetGitFiles ............ |trag#SetGitFiles()|
+        trag#SetFiles ............... |trag#SetFiles()|
+        trag#FindGitRepos ........... |trag#FindGitRepos()|
+        trag#Edit ................... |trag#Edit()|
+        trag#Grep ................... |trag#Grep()|
+        trag#ClearCachedRx .......... |trag#ClearCachedRx()|
+        trag#QuickList .............. |trag#QuickList()|
+        trag#QuickListMaybe ......... |trag#QuickListMaybe()|
+        trag#BrowseList ............. |trag#BrowseList()|
+        trag#LocList ................ |trag#LocList()|
+        trag#AgentEditQFE ........... |trag#AgentEditQFE()|
+        trag#AgentPreviewQFE ........ |trag#AgentPreviewQFE()|
+        trag#AgentGotoQFE ........... |trag#AgentGotoQFE()|
+        trag#AgentWithSelected ...... |trag#AgentWithSelected()|
+        trag#RunCmdOnSelected ....... |trag#RunCmdOnSelected()|
+        trag#AgentSplitBuffer ....... |trag#AgentSplitBuffer()|
+        trag#AgentTabBuffer ......... |trag#AgentTabBuffer()|
+        trag#AgentVSplitBuffer ...... |trag#AgentVSplitBuffer()|
+        trag#AgentEditLine .......... |trag#AgentEditLine()|
+        trag#EditLine ............... |trag#EditLine()|
+        trag#AgentRefactor .......... |trag#AgentRefactor()|
+        trag#CWord .................. |trag#CWord()|
+        trag#RefactorRename ......... |trag#RefactorRename()|
+        trag#SetFollowCursor ........ |trag#SetFollowCursor()|
+        g:trag_map_leader ........... |g:trag_map_leader|
+        :TRagDefKind ................ |:TRagDefKind|
+        :TRagKeyword ................ |:TRagKeyword|
+        :TRagDefFiletype ............ |:TRagDefFiletype|
+        :Trag ....................... |:Trag|
+        :Tragfile ................... |:Tragfile|
+        :Tragcw ..................... |:Tragcw|
+        :Traglw ..................... |:Traglw|
+        :Tragsearch ................. |:Tragsearch|
+        :Traggrep ................... |:Traggrep|
+        :Tragsetfiles ............... |:Tragsetfiles|
+        :Tragaddfiles ............... |:Tragaddfiles|
+        :Tragclearfiles ............. |:Tragclearfiles|
+        :TragGitFiles ............... |:TragGitFiles|
+        :TragRepoFiles .............. |:TragRepoFiles|
+        TragInstallMap .............. |TragInstallMap()|
+        TragInstallKindMap .......... |TragInstallKindMap()|
 
 
 ========================================================================
-plugin/trag.vim~
+autoload/trag/general.vim~
 
-                                                    *:TRagDefKind*
-:TRagDefKind KIND FILETYPE /REGEXP_FORMAT/
-    The regexp argument is no real regexp but a format string. % thus have 
-    to be escaped with % (see |printf()| for details). The REGEXP_FORMAT 
-    should contain at least one %s.
-    Examples: >
-      TRagDefKind v * /\C\<%s\>\s*=[^=~<>]/
-      TRagDefKind v ruby /\C\<%s\>\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
-<
+                                                    *trag#general#Rename()*
+trag#general#Rename(world, selected, rx, subst)
 
-                                                    *:TRagKeyword*
-TRagKeyword FILETYPE KEYWORD_CHARS
-    Override 'iskeyword' for a certain filetype. See also |trag#CWord()|.
 
-                                                    *:TRagDefFiletype*
-TRagDefFiletype FILETYPE EXTENSION ... FILENAME ...
-    In order to recognize files based on their extension, you have to 
-    declare filetypes first.
-    If a file has no extension, the whole filename is used.
-    On systems where the case of the filename doesn't matter (check :echo 
-    has('fname_case')), EXTENSION should be defined in lower case letters.
-    Examples: >
-      TRagDefFiletype html html htm xhtml
-<
+========================================================================
+autoload/trag/java.vim~
 
-                                                    *:TRag*
-:TRag[!] KIND [REGEXP]
-    Run |:TRagsearch| and instantly display the result with |:TRagcw|.
-    See |trag#Grep()| for help on the arguments.
-    If the kind rx doesn't contain %s (e.g. todo), you can skip the 
-    regexp.
+                                                    *trag#java#Rename()*
+trag#java#Rename(world, selected, from, to)
 
-    Examples: >
-        " Find any matches
-        TRag . foo
 
-        " Find variable definitions (word on the left-hand): foo = 1
-        TRag l foo
+========================================================================
+autoload/trag/rename.vim~
 
-        " Find variable __or__ function/method definitions
-        TRag d,l foo
+                                                    *trag#rename#Rename()*
+trag#rename#Rename(world, selected, from, to, suffix)
 
-        " Find function calls like: foo(a, b)
-        TRag f foo
 
-        " Find TODO markers
-        TRag todo
-<
+========================================================================
+autoload/trag/viki.vim~
 
-                                                    *:Trag*
-:Trag
-
-                                                    *:TRagfile*
-:TRagfile
-    Edit a file registered in your tag files.
-
-                                                    *:Tragfile*
-:Tragfile
-
-                                                    *:TRagcw*
-:TRagcw
-    Display a quick fix list using |tlib#input#ListD()|.
-
-                                                    *:Tragcw*
-:Tragcw
-
-                                                    *:Traglw*
-:Traglw
-    Display a |location-list| using |tlib#input#ListD()|.
-
-                                                    *:TRagsearch*
-:TRagsearch[!] KIND REGEXP
-    Scan the files registered in your tag files for REGEXP. Generate a 
-    quickfix list. With [!], append to the given list. The quickfix list 
-    can be viewed with commands like |:cw| or |:TRagcw|.
-
-    The REGEXP has to match a single line. This uses |readfile()| and the 
-    scans the lines. This is an alternative to |:vimgrep|.
-    If you choose your identifiers wisely, this should guide you well 
-    through your sources.
-    See |trag#Grep()| for help on the arguments.
-
-                                                    *:Tragsearch*
-:Tragsearch
-
-                                                    *:TRaggrep*
-:TRaggrep REGEXP [GLOBPATTERN]
-    A 99%-replacement for grep. The glob pattern is optional.
-
-    Example: >
-      :TRaggrep foo *.vim
-      :TRaggrep bar
-<
-
-                                                    *:Traggrep*
-:Traggrep
-
-                                                    *:TRagsetfiles*
-:TRagsetfiles [FILELIST]
-    The file list is set only once per buffer. If the list of the project 
-    files has changed, you have to run this command on order to reset the 
-    per-buffer list.
-
-    If no filelist is given, collect the files in your tags files.
-
-    Examples: >
-      :TRagsetfiles
-      :TRagsetfiles split(glob('foo*.txt'), '\n')
-<
-
-                                                    *:TRagaddfiles*
-:TRagaddfiles FILELIST
-    Add more files to the project list.
-
-                                                    *:TRagclearfiles*
-:TRagclearfiles
-    Remove any files from the project list.
-
-                                                    *:TRagGitFiles*
-:TRagGitFiles GIT_REPOS
+                                                    *trag#viki#Rename()*
+trag#viki#Rename(world, selected, from, to)
 
 
 ========================================================================
 autoload/trag.vim~
 
-                                                    *g:trag_search_mode*
-g:trag_search_mode             (default: 0)
-    0 ... use the built-in search.
-    1 ... use vimgrep.
-    2 ... use vimgrep but set 'ei' to all; this means special file 
-          encodings won't be detected
-    Please not, this is only in effect with simple searches (as for 0.3 
-    all searches are simple). For more complex multi-line patterns, the 
-    built-in search will be used (some day in the future).
+                                                    *g:trag#grep_type*
+g:trag#grep_type               (default: 'trag')
+    Possible values:
+      - trag
+      - vimgrep
+      - external,CMD (CMD defaults to grep; use vimgrep as fallback)
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -460,6 +354,10 @@ trag#GetProjectFiles(manifest)
                                                     *trag#GetGitFiles()*
 trag#GetGitFiles(repos)
 
+                                                    *trag#SetRepoFiles()*
+trag#SetRepoFiles()
+    Set the files list to the files in the current VCS repository.
+
                                                     *trag#SetGitFiles()*
 trag#SetGitFiles(repos)
     Set the files list from the files included in a given git repository.
@@ -476,7 +374,7 @@ trag#Edit()
     |:TRagfile|.
 
                                                     *trag#Grep()*
-trag#Grep(args, ?replace=1, ?files=[])
+trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
     args: A string with the format:
       KIND REGEXP
       KIND1,KIND2 REGEXP
@@ -538,6 +436,12 @@ trag#AgentTabBuffer(world, selected)
                                                     *trag#AgentVSplitBuffer()*
 trag#AgentVSplitBuffer(world, selected)
 
+                                                    *trag#AgentEditLine()*
+trag#AgentEditLine(world, selected)
+
+                                                    *trag#EditLine()*
+trag#EditLine(lnum)
+
                                                     *trag#AgentRefactor()*
 trag#AgentRefactor(world, selected)
     Invoke an refactor command.
@@ -553,5 +457,141 @@ trag#RefactorRename(world, selected)
 trag#SetFollowCursor(world, selected)
 
 
+========================================================================
+plugin/trag.vim~
 
-vim:tw=78:fo=tcq2:isk=!-~,^*,^|,^":ts=8:ft=help:norl:
+                                                    *g:trag_map_leader*
+g:trag_map_leader              (default: '<Leader>r')
+    Trag map leader. See also |TragInstallMap|.
+
+                                                    *:TRagDefKind*
+:TRagDefKind KIND FILETYPE /REGEXP_FORMAT/
+    The regexp argument is no real regexp but a format string. % thus have 
+    to be escaped with % (see |printf()| for details). The REGEXP_FORMAT 
+    should contain at least one %s.
+    Examples: >
+      TRagDefKind v * /\C\<%s\>\s*=[^=~<>]/
+      TRagDefKind v ruby /\C\<%s\>\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
+<
+
+                                                    *:TRagKeyword*
+TRagKeyword FILETYPE KEYWORD_CHARS
+    Override 'iskeyword' for a certain filetype. See also |trag#CWord()|.
+
+                                                    *:TRagDefFiletype*
+TRagDefFiletype FILETYPE EXTENSION ... FILENAME ...
+    In order to recognize files based on their extension, you have to 
+    declare filetypes first.
+    If a file has no extension, the whole filename is used.
+    On systems where the case of the filename doesn't matter (check :echo 
+    has('fname_case')), EXTENSION should be defined in lower case letters.
+    Examples: >
+      TRagDefFiletype html html htm xhtml
+<
+
+                                                    *:Trag*
+:Trag[!] KIND [REGEXP]
+    Run |:Tragsearch| and instantly display the result with |:Tragcw|.
+    See |trag#Grep()| for help on the arguments.
+    If the kind rx doesn't contain %s (e.g. todo), you can skip the 
+    regexp.
+
+    Examples: >
+        " Find any matches
+        Trag . foo
+
+        " Find variable definitions (word on the left-hand): foo = 1
+        Trag l foo
+
+        " Find variable __or__ function/method definitions
+        Trag d,l foo
+
+        " Find function calls like: foo(a, b)
+        Trag f foo
+
+        " Find TODO markers
+        Trag todo
+<
+
+                                                    *:Tragfile*
+:Tragfile
+    Edit a file registered in your tag files.
+
+                                                    *:Tragcw*
+:Tragcw
+    Display a quick fix list using |tlib#input#ListD()|.
+
+                                                    *:Traglw*
+:Traglw
+    Display a |location-list| using |tlib#input#ListD()|.
+
+                                                    *:Tragsearch*
+:Tragsearch[!] KIND REGEXP
+    Scan the files registered in your tag files for REGEXP. Generate a 
+    quickfix list. With [!], append to the given list. The quickfix list 
+    can be viewed with commands like |:cw| or |:Tragcw|.
+
+    The REGEXP has to match a single line. This uses |readfile()| and the 
+    scans the lines. This is an alternative to |:vimgrep|.
+    If you choose your identifiers wisely, this should guide you well 
+    through your sources.
+    See |trag#Grep()| for help on the arguments.
+
+                                                    *:Traggrep*
+:Traggrep REGEXP [GLOBPATTERN]
+    A 99%-replacement for grep. The glob pattern is optional.
+
+    Example: >
+      :Traggrep foo *.vim
+      :Traggrep bar
+<
+
+                                                    *:Tragsetfiles*
+:Tragsetfiles [GLOB PATTERN]
+    The file list is set only once per buffer. If the list of the project 
+    files has changed, you have to run this command on order to reset the 
+    per-buffer list.
+
+    If no filelist is given, collect the files in your tags files.
+
+    Examples: >
+      :Tragsetfiles
+      :Tragsetfiles foo*.txt
+<
+
+                                                    *:Tragaddfiles*
+:Tragaddfiles FILELIST
+    Add more files to the project list.
+
+                                                    *:Tragclearfiles*
+:Tragclearfiles
+    Remove any files from the project list.
+
+                                                    *:TragGitFiles*
+:TragGitFiles GIT_REPOS
+
+                                                    *:TragRepoFiles*
+:TragRepoFiles
+
+                                                    *TragInstallMap()*
+TragInstallMap(leader)
+    Install the following maps:
+
+      <trag_map_leader># ........ Search word under cursor
+      <trag_map_leader>. ........ :Trag * <Input>
+      <trag_map_leader>- ........ :Tragfile
+
+    The following maps might be defined only after the first invocation:
+
+      <trag_map_leader><KIND> ... Search word under cursor of KIND
+                                  See |g:trag_kinds|
+
+    E.g. <trag_map_leader>d searches for the definition of the word under 
+    cursor.
+
+                                                    *TragInstallKindMap()*
+TragInstallKindMap(leader, kind)
+
+
+
+vim:tw=78:fo=w2croql:isk=!-~,^*,^|,^":ts=8:ft=help:norl:
