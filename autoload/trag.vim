@@ -824,73 +824,83 @@ endf
 call trag#ClearCachedRx()
 
 
+let s:fnameftypes = {}
+
 function! s:GetRx(filename, kinds, rx, default, filetype) "{{{3
     " TLogVAR a:filename, a:kinds, a:rx, a:default
-    if empty(a:kinds)
-        return a:default
-    endif
-    let rxacc = []
     if empty(a:filetype)
-        let prototype = ''
-        for needle in [
-                    \ fnamemodify(a:filename, ':p'),
-                    \ fnamemodify(a:filename, ':t'),
-                    \ fnamemodify(a:filename, ':e')
-                    \ ]
-            let filetype = trag#GetFiletype(needle)
-            " TLogVAR needle, filetype
-            if !empty(filetype)
-                let prototype = needle
-                break
-            endif
-        endfor
+        if has_key(s:fnameftypes, a:filename)
+            let ftdef = s:fnameftypes[a:filename]
+            let prototype = ftdef.proto
+            let filetype = ftdef.ft
+        else
+            let prototype = ''
+            for needle in [
+                        \ fnamemodify(a:filename, ':p'),
+                        \ fnamemodify(a:filename, ':t'),
+                        \ fnamemodify(a:filename, ':e')
+                        \ ]
+                let filetype = trag#GetFiletype(needle)
+                " TLogVAR needle, filetype
+                if !empty(filetype)
+                    let prototype = needle
+                    break
+                endif
+            endfor
+            let s:fnameftypes[a:filename] = {'ft': filetype, 'proto': prototype}
+        endif
     else
         let prototype = a:filename
         let filetype = a:filetype
     endif
-    let id = filetype .'*'.string(a:kinds).'*'.a:rx
-    " TLogVAR prototype, filetype, id
-    if has_key(s:rx_cache, id)
-        let rv = s:rx_cache[id]
+    if empty(a:kinds)
+        let rv = a:default
     else
-        for kindand in a:kinds
-            let rx = a:rx
-            for kind in kindand
-                let rxf = tlib#var#Get('trag_rxf_'. kind, 'bg')
-                " TLogVAR rxf
-                if !empty(filetype)
-                    let rxf = tlib#var#Get('trag_rxf_'. kind .'_'. filetype, 'bg', rxf)
-                endif
-                " TLogVAR rxf
-                if empty(rxf)
-                    if &verbose > 1
-                        if empty(filetype)
-                            echom 'Unknown kind '. kind .' for unregistered filetype; skip files like '. prototype
-                        else
-                            echom 'Unknown kind '. kind .' for ft='. filetype .'; skip files like '. prototype
-                        endif
-                    endif
-                    return ''
-                else
+        let rxacc = []
+        let id = filetype .'*'.string(a:kinds).'*'.a:rx
+        " TLogVAR prototype, filetype, id
+        if has_key(s:rx_cache, id)
+            let rv = s:rx_cache[id]
+        else
+            for kindand in a:kinds
+                let rx = a:rx
+                for kind in kindand
+                    let rxf = tlib#var#Get('trag_rxf_'. kind, 'bg')
                     " TLogVAR rxf
-                    " If the expression is no word, ignore word boundaries.
-                    if rx =~ '\W$' && rxf =~ '%\@<!%s\\>'
-                        let rxf = substitute(rxf, '%\@<!%s\\>', '%s', 'g')
+                    if !empty(filetype)
+                        let rxf = tlib#var#Get('trag_rxf_'. kind .'_'. filetype, 'bg', rxf)
                     endif
-                    if rx =~ '^\W' && rxf =~ '\\<%s'
-                        let rxf = substitute(rxf, '\\<%s', '%s', 'g')
+                    " TLogVAR rxf
+                    if empty(rxf)
+                        if &verbose > 1
+                            if empty(filetype)
+                                echom 'Unknown kind '. kind .' for unregistered filetype; skip files like '. prototype
+                            else
+                                echom 'Unknown kind '. kind .' for ft='. filetype .'; skip files like '. prototype
+                            endif
+                        endif
+                        return ''
+                    else
+                        " TLogVAR rxf
+                        " If the expression is no word, ignore word boundaries.
+                        if rx =~ '\W$' && rxf =~ '%\@<!%s\\>'
+                            let rxf = substitute(rxf, '%\@<!%s\\>', '%s', 'g')
+                        endif
+                        if rx =~ '^\W' && rxf =~ '\\<%s'
+                            let rxf = substitute(rxf, '\\<%s', '%s', 'g')
+                        endif
+                        " TLogVAR rxf, rx
+                        let rx = tlib#string#Printf1(rxf, rx)
                     endif
-                    " TLogVAR rxf, rx
-                    let rx = tlib#string#Printf1(rxf, rx)
-                endif
+                endfor
+                call add(rxacc, rx)
             endfor
-            call add(rxacc, rx)
-        endfor
-        let rv = s:Rx(rxacc, a:default)
-        let s:rx_cache[id] = rv
+            let rv = s:Rx(rxacc, a:default)
+            let s:rx_cache[id] = rv
+        endif
     endif
     " TLogVAR rv
-    return rv
+    return [rv, filetype]
 endf
 
 
@@ -1193,5 +1203,4 @@ function! trag#SetFollowCursor(world, selected) "{{{3
     let a:world.state = 'redisplay'
     return a:world
 endf
-
 
