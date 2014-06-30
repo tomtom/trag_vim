@@ -62,40 +62,37 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 command! -nargs=+ TRagDefFiletype for e in [<f-args>][1:-1] | call trag#SetFiletype([<f-args>][0], e) | endfor
 
 
-" :display: :TRag[!] KIND [REGEXP]
-" Run |:TRagsearch| and instantly display the result with |:TRagcw|.
+" :display: :Trag[!] KIND [REGEXP]
+" Run |:Tragsearch| and instantly display the result with |:Tragcw|.
 " See |trag#Grep()| for help on the arguments.
 " If the kind rx doesn't contain %s (e.g. todo), you can skip the 
 " regexp.
 "
 " Examples: >
 "     " Find any matches
-"     TRag . foo
+"     Trag . foo
 " 
 "     " Find variable definitions (word on the left-hand): foo = 1
-"     TRag l foo
+"     Trag l foo
 " 
 "     " Find variable __or__ function/method definitions
-"     TRag d,l foo
+"     Trag d,l foo
 " 
 "     " Find function calls like: foo(a, b)
-"     TRag f foo
+"     Trag f foo
 "
 "     " Find TODO markers
-"     TRag todo
-command! -nargs=1 -bang -bar TRag TRagsearch<bang> <args> | TRagcw
-command! -nargs=1 -bang -bar Trag TRag<bang> <args>
+"     Trag todo
+command! -nargs=1 -bang -bar Trag Tragsearch<bang> <args> | Tragcw
 
 
-" :display: :TRagfile
+" :display: :Tragfile
 " Edit a file registered in your tag files.
-command! TRagfile call trag#Edit()
 command! Tragfile call trag#Edit()
 
 
-" :display: :TRagcw
+" :display: :Tragcw
 " Display a quick fix list using |tlib#input#ListD()|.
-command! -bang -nargs=? TRagcw call trag#QuickListMaybe(!empty("<bang>"))
 command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
 
 " :display: :Traglw
@@ -103,35 +100,33 @@ command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
 command! -nargs=? Traglw call trag#LocList()
 
 
-" :display: :TRagsearch[!] KIND REGEXP
+" :display: :Tragsearch[!] KIND REGEXP
 " Scan the files registered in your tag files for REGEXP. Generate a 
 " quickfix list. With [!], append to the given list. The quickfix list 
-" can be viewed with commands like |:cw| or |:TRagcw|.
+" can be viewed with commands like |:cw| or |:Tragcw|.
 "
 " The REGEXP has to match a single line. This uses |readfile()| and the 
 " scans the lines. This is an alternative to |:vimgrep|.
 " If you choose your identifiers wisely, this should guide you well 
 " through your sources.
 " See |trag#Grep()| for help on the arguments.
-command! -nargs=1 -bang -bar TRagsearch call trag#Grep(<q-args>, empty("<bang>"))
-command! -nargs=1 -bang -bar Tragsearch TRagsearch<bang> <args>
+command! -nargs=1 -bang -bar Tragsearch call trag#Grep(<q-args>, empty("<bang>"))
 
 
-" :display: :TRaggrep REGEXP [GLOBPATTERN]
+" :display: :Traggrep REGEXP [GLOBPATTERN]
 " A 99%-replacement for grep. The glob pattern is optional.
 "
 " Example: >
-"   :TRaggrep foo *.vim
-"   :TRaggrep bar
-command! -nargs=+ -bang -bar -complete=file TRaggrep
+"   :Traggrep foo *.vim
+"   :Traggrep bar
+command! -nargs=+ -bang -bar -complete=file Traggrep
             \ let g:trag_grepargs = ['.', <f-args>]
             \ | call trag#Grep(g:trag_grepargs[0] .' '. g:trag_grepargs[1], empty("<bang>"), g:trag_grepargs[2:-1])
             \ | unlet g:trag_grepargs
-            \ | TRagcw
-command! -nargs=+ -bang -bar -complete=file Traggrep TRaggrep<bang> <args>
+            \ | Tragcw
 
 
-" :display: :TRagsetfiles [FILELIST]
+" :display: :Tragsetfiles [GLOB PATTERN]
 " The file list is set only once per buffer. If the list of the project 
 " files has changed, you have to run this command on order to reset the 
 " per-buffer list.
@@ -139,20 +134,24 @@ command! -nargs=+ -bang -bar -complete=file Traggrep TRaggrep<bang> <args>
 " If no filelist is given, collect the files in your tags files.
 "
 " Examples: >
-"   :TRagsetfiles
-"   :TRagsetfiles split(glob('foo*.txt'), '\n')
-command! -nargs=? -bar -complete=file TRagsetfiles call trag#SetFiles(<args>)
+"   :Tragsetfiles
+"   :Tragsetfiles foo*.txt
+command! -nargs=? -bar -complete=file Tragsetfiles call trag#SetFiles(<q-args>)
 
-" :display: :TRagaddfiles FILELIST
+" :display: :Tragaddfiles FILELIST
 " Add more files to the project list.
-command! -nargs=1 -bar -complete=file TRagaddfiles call trag#AddFiles(<args>)
+command! -nargs=1 -bar -complete=file Tragaddfiles call trag#AddFiles(<args>)
 
-" :display: :TRagclearfiles
+" :display: :Tragclearfiles
 " Remove any files from the project list.
-command! TRagclearfiles call trag#ClearFiles()
+command! Tragclearfiles call trag#ClearFiles()
 
-" :display: :TRagGitFiles GIT_REPOS
-command! -nargs=1 -bar -complete=dir TRagGitFiles call trag#SetGitFiles(<q-args>)
+" :display: :TragGitFiles GIT_REPOS
+command! -nargs=1 -bar -complete=dir TragGitFiles call trag#SetGitFiles(<q-args>)
+
+command! -bar TragRepoFiles call trag#SetRepoFiles()
+
+
 " Install the following maps:
 "
 "   <trag_map_leader># ........ Search word under cursor
