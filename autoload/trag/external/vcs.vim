@@ -1,11 +1,11 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-01.
-" @Revision:    141
+" @Revision:    147
 
 
 if !exists('g:trag#external#vcs#options_git')
-    let g:trag#external#vcs#options_git = {'args': 'grep -Hn -G %s'}  "{{{2
+    let g:trag#external#vcs#options_git = {'args': 'grep -Hn -G %s --'}  "{{{2
 endif
 
 
@@ -60,7 +60,7 @@ function! trag#external#vcs#Run(rx, files) "{{{3
         if exists('*'. convert_filename)
             let files = map(files, 'call(convert_filename, [type, v:val])')
         endif
-        " let files = map(files, 'fnameescape(v:val)')
+        let files = map(files, 'fnameescape(v:val)')
         " TLogVAR files
         exec 'cd!' fnameescape(ddir)
         " TLogVAR getcwd()
