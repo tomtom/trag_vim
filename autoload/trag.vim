@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-01.
-" @Revision:    1288
+" @Revision:    1295
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -28,6 +28,16 @@ TLet g:trag_get_files = 'split(glob("*"), "\n")'
 TLet g:trag_get_files_java = 'split(glob("**/*.java"), "\n")'
 TLet g:trag_get_files_c = 'split(glob("**/*.[ch]"), "\n")'
 TLet g:trag_get_files_cpp = 'split(glob("**/*.[ch]"), "\n")'
+
+" A list of sources.
+" Possible values:
+"   vcs ....... Use g:trag#check_vcs
+"   git ....... Use b:trag_git or g:trag_git
+"   files ..... Use b:trag_files or g:trag_files
+"   glob ...... Use b:trag_glob or g:trag_glob
+"   project ... Use b:trag_project_{'filetype'} or 
+"               g:trag_project_{'filetype'}
+TLet g:trag#file_sources = ['vcs', 'project', 'files', 'glob']
 
 " If true, use an already loaded buffer instead of the file on disk in 
 " certain situations. This implies that if a buffer is dirty, the 
@@ -430,36 +440,42 @@ function! trag#SetFiles(...) "{{{3
     TVarArg ['files', []]
     call trag#ClearFiles()
     if empty(files)
-        unlet! files
-        let files = tlib#var#Get('trag_files', 'bg', [])
-        " TLogVAR files, empty(files)
-        if empty(files)
-            let glob = tlib#var#Get('trag_glob', 'bg', '')
-            if !empty(glob)
-                " TLogVAR glob
-                let files = split(glob(glob), '\n')
-            else
+        for source in g:trag#file_sources
+            if source == 'files'
+                let files = tlib#var#Get('trag_files', 'bg', [])
+            elseif source == 'glob'
+                let glob = tlib#var#Get('trag_glob', 'bg', '')
+                if !empty(glob)
+                    " TLogVAR glob
+                    let files = split(glob(glob), '\n')
+                endif
+            elseif source == 'project'
                 let proj = tlib#var#Get('trag_project_'. &filetype, 'bg', tlib#var#Get('trag_project', 'bg', ''))
                 " TLogVAR proj
                 if !empty(proj)
                     " let proj = fnamemodify(proj, ':p')
                     let proj = findfile(proj, '.;')
                     let files = trag#GetProjectFiles(proj)
-                else
-                    let git_repos = tlib#var#Get('trag_git', 'bg', '')
-                    if git_repos == '*'
-                        let git_repos = trag#FindGitRepos()
-                    elseif git_repos == "finddir"
-                        let git_repos = finddir('.git')
-                    endif
-                    if !empty(git_repos)
-                        let files = trag#GetGitFiles(git_repos)
-                    elseif g:trag#check_vcs
-                        let files = tlib#vcs#Ls()
-                    end
                 endif
+            elseif source == 'git'
+                let git_repos = tlib#var#Get('trag_git', 'bg', '')
+                if git_repos == '*'
+                    let git_repos = trag#FindGitRepos()
+                elseif git_repos == "finddir"
+                    let git_repos = finddir('.git')
+                endif
+                if !empty(git_repos)
+                    let files = trag#GetGitFiles(git_repos)
+                endif
+            elseif source == 'vcs'
+                if g:trag#check_vcs
+                    let files = tlib#vcs#Ls()
+                end
             endif
-        endif
+            if !empty(files)
+                break
+            endif
+        endfor
     endif
     " TLogVAR files
     if !empty(files)
