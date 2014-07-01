@@ -1,17 +1,25 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-06-30.
-" @Revision:    1189
+" @Last Change: 2014-07-01.
+" @Revision:    1288
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
-""" Known Types {{{1
-
-" Possible values:
+" A comma-separated list of preferred grep programs:
+"
 "   - trag
 "   - vimgrep
-"   - external,CMD (CMD defaults to grep; use vimgrep as fallback)
+"   - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
+"     this option always searches all files in the VCS)
+"   - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+"
+" The first valid option is used. E.g. if the value is "vcs,trag" and if 
+" the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
+" the VCS's grep function is used. Otherwise trag's own version of grep 
+" is used.
+"
+" trag & vimgrep should work everywhere.
 TLet g:trag#grep_type = 'trag'
 
 " If no project files are defined, evaluate this expression as 
@@ -76,6 +84,8 @@ function! trag#TRagDefKind(args) "{{{3
 endf
 
 
+
+""" Known Types {{{1
 
 TRagDefKind identity * /\C%s/
 
@@ -578,11 +588,30 @@ function! trag#Grep(args, ...) "{{{3
     endif
     let scratch = {}
     try
-        let strip = g:trag#grep_type == 'vimgrep'
         let qfl_top = len(getqflist())
         let grep_defs = map(copy(files), 's:GetGrepDef(v:val, kindspos, kindsneg, rx, filetype)')
-        let [grep_type; grep_opts] = split(g:trag#grep_type, ',')
-        call s:GrepWith_{grep_type}(grep_defs, grep_opts)
+        let grep_defs = filter(grep_defs, '!empty(v:val)')
+        let done = 0
+        for grep_name in split(g:trag#grep_type, ',\s*')
+            " TLogVAR grep_name
+            let ml = matchlist(grep_name, '^\(\w\+\):\s*\(.\{-}\)\s*$')
+            if empty(ml)
+                let grep_type = grep_name
+                let grep_opts = ''
+            else
+                let grep_type = ml[1]
+                let grep_opts = ml[2]
+            endif
+            let strip = grep_type == 'vimgrep'
+            if s:GrepWith_{grep_type}(grep_defs, grep_opts)
+                let done = 1
+                break
+            endif
+        endfor
+        " TLogVAR len(getqflist())
+        if !done
+            throw 'TRag: Unsupported value for g:trag#grep_type: '. g:trag#grep_type
+        endif
 
         " let prcacc = []
         " " let fext = fnamemodify(f, ':e')
@@ -656,7 +685,15 @@ function! s:GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
         if !empty(rxpos)
             let [rxneg, filetype1] = s:GetRx(ff, a:kindsneg, '', '', filetype0)
             let ft = empty(filetype0) ? '*' : filetype0
-            return {'f': a:filename, 'ff': ff, 'rxpos': rxpos, 'rxneg': rxneg, 'filetype': ft}
+            return {
+                        \ 'f': a:filename,
+                        \ 'ff': ff,
+                        \ 'kindspos': a:kindspos,
+                        \ 'rx': a:rx,
+                        \ 'rxpos': rxpos,
+                        \ 'rxneg': rxneg,
+                        \ 'filetype': ft
+                        \ }
         endif
     endif
     return {}
@@ -689,6 +726,7 @@ function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
             call setqflist(values(qfl), 'a')
         endif
     endfor
+    return 1
 endf
 
 
@@ -710,44 +748,74 @@ function! s:GrepWith_vimgrep(grep_defs, grep_opts) "{{{3
         endif
     endfor
     call s:FilterRxNegs(rxnegs)
+    return 1
+endf
+
+
+function! s:GrepWith_vcs(grep_defs, grep_opts) "{{{3
+    return s:GrepWith_external(a:grep_defs, 'vcs '. a:grep_opts)
 endf
 
 
 function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
-    let grep_cmd = get(a:grep_opts, 0, 'grep')
+    let opts = tlib#arg#StringAsKeyArgsEqual(a:grep_opts)
+    let grep_cmd = get(opts, 0, 'grep')
+    " TLogVAR grep_cmd
     let group_defs = {}
+    let must_filter = {}
     for grep_def in a:grep_defs
         let ft = grep_def.filetype
         if !has_key(group_defs, ft)
+            " TLogVAR grep_def.kindspos, trag#external#{grep_cmd}#IsSupported(grep_def.kindspos)
             let group_defs[ft] = {'rxpos': grep_def.rxpos,
+                        \ 'must_filter': 0,
+                        \ 'kindspos': grep_def.kindspos,
                         \ 'files': []}
+            if !trag#external#{grep_cmd}#IsSupported(grep_def.kindspos)
+                let must_filter[ft] = grep_def.rxpos
+                let group_defs[ft].use_rx = grep_def.rx
+            endif
         endif
         call add(group_defs[ft].files, grep_def.ff)
     endfor
-    let use_external = 1
     for group_def in values(group_defs)
-        if use_external
-            let use_external = trag#external#{grep_cmd}#Run(group_def.rxpos, group_def.files)
-            if !use_external
-                echohl WarningMsg
-                echom 'Trag: Error when using external grep:' grep_cmd
-                echom v:exception
-                echohl NONE
-            endif
-        endif
-        if !use_external
-            let files = join(map(copy(group_def.files), 'tlib#arg#Ex(v:val)'))
-            silent! exec 'noautocmd vimgrepadd' '/'. escape(group_def.rxpos, '/') .'/j' files
+        let rx = get(group_def, 'use_rx', group_def.rxpos)
+        let ok = trag#external#{grep_cmd}#Run(rx, group_def.files)
+        " TLogVAR len(getqflist())
+        if !ok
+            echohl WarningMsg
+            echom 'Trag: Error when using external grep:' grep_cmd
+            echom v:exception
+            echohl NONE
+            return 0
         endif
     endfor
+    if !empty(must_filter)
+        let qfl = getqflist()
+        " TLogVAR qfl
+        for [ft, rxpos] in items(must_filter)
+            " TLogVAR ft, rxpos
+            let bufnrs = map(copy(group_defs[ft].files), 'bufnr(v:val)')
+            let bufnrs = filter(bufnrs, 'v:val > 0')
+            let bufnrs = sort(bufnrs)
+            " TLogVAR bufnrs
+            " TLogVAR map(copy(qfl), 'v:val.bufnr')
+            let qfl = filter(qfl, 'index(bufnrs, v:val.bufnr) == -1 || v:val.text =~ rxpos')
+            " TLogVAR qfl
+        endfor
+        call setqflist(qfl)
+    endif
     let rxnegs = {}
     for grep_def in a:grep_defs
-        let bufnr = bufnr(grep_def.ff)
-        if bufnr > 0 && !has_key(rxnegs, bufnr)
-            let rxnegs[bufnr] = grep_def.rxneg
+        if !empty(grep_def.rxneg)
+            let bufnr = bufnr(grep_def.ff)
+            if bufnr > 0 && !has_key(rxnegs, bufnr)
+                let rxnegs[bufnr] = grep_def.rxneg
+            endif
         endif
     endfor
     call s:FilterRxNegs(rxnegs)
+    return 1
 endf
 
 
@@ -879,7 +947,7 @@ function! s:GetRx(filename, kinds, rx, default, filetype) "{{{3
                                 echom 'Unknown kind '. kind .' for ft='. filetype .'; skip files like '. prototype
                             endif
                         endif
-                        return ''
+                        return ['', filetype]
                     else
                         " TLogVAR rxf
                         " If the expression is no word, ignore word boundaries.
@@ -1203,4 +1271,13 @@ function! trag#SetFollowCursor(world, selected) "{{{3
     let a:world.state = 'redisplay'
     return a:world
 endf
+
+
+function! trag#IsSupported(supported_kinds, kinds) "{{{3
+    let kinds = tlib#list#Flatten(a:kinds)
+    let not_supported = filter(kinds, 'index(a:supported_kinds, v:val) == -1')
+    " TLogVAR a:supported_kinds, a:kinds, not_supported
+    return empty(not_supported)
+endf
+
 
