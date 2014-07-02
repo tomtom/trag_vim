@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-01.
-" @Revision:    1295
+" @Last Change: 2014-07-02.
+" @Revision:    1315
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -103,25 +103,17 @@ TRagDefKind identity * /\C%s/
 " Examples:
 " l foo =~ foo = 1
 TRagDefKind l * /\C%s\s*[^=]*=[^=~<>]/
-" TRagDefKind l * /\C\<%s\>\s*=[^=~<>]/
-" L foo =~ fufoo0 = 1
-" TRagDefKind L * /\C%s[^=]*=[^=~<>]/
 
 " Right hand side value in an assignment.
 " Examples:
 " r foo =~ bar = foo
 TRagDefKind r * /\C[^!=~<>]=.\{-}%s/
-" L foo =~ bar = fufoo0
-" TRagDefKind r * /\C[^!=~<>]=.\{-}\<%s\>/
-" TRagDefKind R * /\C[^!=~<>]=.\{-}%s/
 
 " Markers: TODO, TBD, FIXME, OPTIMIZE
 TRagDefKind todo * /\C\(TBD\|TODO\|FIXME\|OPTIMIZE\)/
 
 " A mostly general rx format string for function calls.
-TRagDefKind f * /\C%s\S*\s*(/
-" TRagDefKind f * /\C\<%s\>\s*(/
-" TRagDefKind F * /\C%s\S*\s*(/
+TRagDefKind f * /\C%s\s*(/
 
 " A mostly general rx format string for words.
 TRagDefKind w * /\C\<%s\>/
@@ -141,23 +133,14 @@ TRagDefKind x java /\C^.\{-}\<\(interface\|class\)\s\+.\{-}\s\+\(extends\|implem
 unlet s:java_mod s:java_type
 
 
-
 TRagDefFiletype ruby rb
 TRagDefKind w ruby /\C[:@]\?\<%s\>/
 TRagDefKind W ruby /\C[^;()]\{-}%s[^;()]\{-}/
 TRagDefKind c ruby /\C\<class\s\+\(\u\w*::\)*%s\>/
-" TRagDefKind d ruby /\C\<\(def\s\+\(\u\w*\.\)*\|attr\(_\w\+\)\?\s\+\(:\w\+,\s\+\)*:\)%s\>/
-" TRagDefKind D ruby /\C\<\(def\s\+\(\u\w*\.\)*\|attr\(_\w\+\)\?\s\+\(:\w\+,\s\+\)*:\).\{-}%s/
 TRagDefKind d ruby /\C\<\(def\s\+\(\u\w*\.\)*\|attr\(_\w\+\)\?\s\+\(:\w\+,\s\+\)*:\)%s/
-" TRagDefKind f ruby /\C\(\<def\s\+\(\u\w*\.\)*\|:\)\@<!\<%s\>\s*\([(;]\|$\)/
-" TRagDefKind f ruby /\(;\|^\)\s*\<%s\>\s*\([(;]\|$\)/
-" TRagDefKind f ruby /\(;\|^\)\s*[^();]\{-}%s\s*\([(;]\|$\)/
-" TRagDefKind f ruby /\(;\|^\)\s*%s\s*\([(;]\|$\)/
-TRagDefKind f ruby /\(\<def\s\+\)\@<!%s\s*\([(;]\|$\)/
-" TRagDefKind i ruby /\C^\s*#.\{-}%s/
+TRagDefKind f ruby /\<%s\>/
 TRagDefKind i ruby /\C^\s*#%s/
 TRagDefKind m ruby /\C\<module\s\+\(\u\w*::\)*%s/
-" TRagDefKind l ruby /\C\<%s\>\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
 TRagDefKind l ruby /\C%s\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
 TRagDefKind x ruby /\C\s\*class\>.\{-}<\s*%s/
 
@@ -165,31 +148,30 @@ TRagDefKind x ruby /\C\s\*class\>.\{-}<\s*%s/
 TRagDefFiletype vim vim .vimrc _vimrc
 TRagKeyword vim [:alnum:]_:#
 TRagDefKind W vim /\C[^|]\{-}%s[^|]\{-}/
-" TRagDefKind d vim /\C\<\(fu\%%[nction]!\?\|com\%%[mand]!\?\(\s\+-\S\+\)*\)\s\+\<%s\>/
-" TRagDefKind D vim /\C\<\(fu\%%[nction]!\?\|com\%%[mand]!\?\(\s\+-\S\+\)*\)\.+%s/
-" TRagDefKind d vim /\C\<\(fu\%%[nction]!\?\|com\%%[mand]!\?\(\s\+-\S\+\)*\)[^|]\{-}%s/
 TRagDefKind d vim /\C\<\(fu\%%[nction]!\?\s\+\|com\%%[mand]!\?\s\+\(-\S\+\s\+\)*\)%s/
-" TRagDefKind f vim /\C\(\(^\s*\<fu\%%[nction]!\?\s\+\(s:\)\?\|com\%%[mand]!\?\(\s\+-\S\+\)*\s\+\)\@<!\<%s\>\s*(\|\(^\||\)\s*\<%s\>\)/
-" TRagDefKind F vim /\C\(\(^\s*\<fu\%%[nction]!\?\s\+\(s:\)\?\|com\%%[mand]\(\s\+-\S\+\)*\s\+\)\@<!\S\{-}%s\S\{-}(\|\(^\||\)\s*%s\)/
-TRagDefKind f vim /\C\(\(^\s*\<fu\%%[nction]!\?\s\+\(s:\)\?\|com\%%[mand]\(\s\+-\S\+\)*\s\+\)\@<!\S\{-}%s\S\{-}(\|\(^\||\)\s*%s\)/
-" TRagDefKind i vim /\C^\s*".\{-}%s/
-" This isn't correct. It doesn't find in-line comments.
+TRagDefKind f vim /\C\<%s\>\s*(/
 TRagDefKind i vim /\C^\s*"%s/
-" TRagDefKind r vim /\C^\s*let\s\+\S\+\s*=.\{-}\<%s\>/
-" TRagDefKind R vim /\C^\s*let\s\+\S\+\s*=.\{-}%s/
 TRagDefKind r vim /\C^\s*let\s\+\S\+\s*=[^|]\{-}%s/
-" TRagDefKind l vim /\C^\s*let\s\+\<%s\>/
-" TRagDefKind L vim /\C^\s*let\s.\{-}%s/
 TRagDefKind l vim /\C^\s*let\s\+[^=|]\{-}%s/
 
 
 TRagDefFiletype viki txt viki dpl
-TRagDefKind i viki /\C^\s\+%%%s/
+TRagDefKind i viki /\C^\s*%%%s/
 TRagDefKind d viki /\C^\s*#\u\w*\s\+.\{-}\(id=%s\|%s=\)/
 TRagDefKind h viki /\C^\*\+\s\+%s/
 TRagDefKind l viki /\C^\s\+%s\s\+::/
 TRagDefKind r viki /\C^\s\+\(.\{-}\s::\|[-+*#]\|[@?].\)\s\+%s/
 TRagDefKind todo viki /\C\(TODO:\?\|FIXME:\?\|+++\|!!!\|###\|???\)\s\+%s/
+
+
+TRagDefFiletype r r
+TRagDefKind i r /\C^\s*#%s/
+TRagDefKind d r /\C^\s*\%(%s\s*<-\s*function\>\|setMethod\s*("%s"\)/
+TRagDefKind c r /\C\%(\<%s\s*<-\s*set\%(Ref\)\?Class\>\|\s*<-\s*set\%(Ref\)\?Class\s*(\s*"%s"\)/
+TRagDefKind l r /\C\(^\s*%s\s*<<\?-\s*\|\<%s\s*=[^=]\)/
+TRagDefKind r r /\C\s*<<\?-\s*%s/
+TRagDefKind f r /\C\<%s\s*(/
+
 
 
 
