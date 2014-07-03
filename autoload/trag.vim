@@ -53,6 +53,14 @@ TLet g:trag#use_buffer = 1
 TLet g:trag#check_vcs = 1
 
 
+" :nodoc:
+function! trag#DefFiletype(args) "{{{3
+    let ft = a:args[0]
+    for name in a:args[1:-1]
+        call trag#SetFiletype(ft, name)
+    endfor
+endf
+
 " Return true, if a filetype for "name" (an extension or a filename) is 
 " defined.
 function! trag#HasFiletype(name) "{{{3

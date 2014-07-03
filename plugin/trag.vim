@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    663
+" @Revision:    667
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -67,7 +67,7 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 " has('fname_case')), EXTENSION should be defined in lower case letters.
 " Examples: >
 "   TRagDefFiletype html html htm xhtml
-command! -nargs=+ TRagDefFiletype for e in [<f-args>][1:-1] | call trag#SetFiletype([<f-args>][0], e) | endfor
+command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 
 
 " :display: :Trag[!] KIND [REGEXP]
