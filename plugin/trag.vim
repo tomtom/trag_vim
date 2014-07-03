@@ -31,6 +31,10 @@ TLet g:trag_keyword_chars = {}
 " Trag map leader. See also |TragInstallMap|.
 TLet g:trag_map_leader = '<Leader>r'
 
+" A dictionary FILENAME_EXTENSION => FILETYPE
+" On systems without has('fname_case') (see |feature-list|), 
+" FILENAME_EXTENSION should be a lower-case string.
+TLet g:trag_extension_filetype = {}
 
 " :display: :TRagDefKind KIND FILETYPE /REGEXP_FORMAT/
 " The regexp argument is no real regexp but a format string. % thus have 

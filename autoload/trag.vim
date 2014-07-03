@@ -49,26 +49,25 @@ TLet g:trag#use_buffer = 1
 " use that later on.
 TLet g:trag#check_vcs = 1
 
-let s:trag_filenames = {}
 
 " Return true, if a filetype for "name" (an extension or a filename) is 
 " defined.
 function! trag#HasFiletype(name) "{{{3
     let name = has('fname_case') ? a:name : tolower(a:name)
-    return has_key(s:trag_filenames, name)
+    return has_key(g:trag_extension_filetype, name)
 endf
 
 " Define that filenames ("name" can be either an extension or a 
 " filename) are of a certain filetype.
 function! trag#SetFiletype(filetype, name) "{{{3
     let name = has('fname_case') ? a:name : tolower(a:name)
-    let s:trag_filenames[name] = a:filetype
+    let g:trag_extension_filetype[name] = a:filetype
 endf
 
 " Get the filetype for "name" (either an extension of a filename).
 function! trag#GetFiletype(name) "{{{3
     let name = has('fname_case') ? a:name : tolower(a:name)
-    return get(s:trag_filenames, name, '')
+    return get(g:trag_extension_filetype, name, '')
 endf
 
 
