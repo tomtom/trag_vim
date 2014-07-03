@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-01.
-" @Revision:    63
+" @Last Change: 2014-07-03.
+" @Revision:    64
 
 
 if !exists('g:trag#external#grep#supported_kinds')
@@ -15,9 +15,7 @@ endf
 
 
 function! trag#external#grep#Run(rx, files) "{{{3
-    let files = copy(a:files)
     let files = map(copy(files), 'fnameescape(v:val)')
-    " let files = map(copy(files), 'shellescape(v:val)')
     exec 'grepadd!' join(files)
     return 1
 endf
