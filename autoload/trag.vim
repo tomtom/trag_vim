@@ -388,7 +388,7 @@ endf
 
 function! trag#GetGitFiles(repos) "{{{3
     let repos   = tlib#dir#PlainName(a:repos)
-    let basedir = substitute(repos, '[\/]\.git\([\/]\)\?$', '', '')
+    let basedir = substitute(repos, '[\/]\.git\%([\/]\)\?$', '', '')
     " TLogVAR repos, basedir
     " TLogVAR getcwd()
     call tlib#dir#Push(basedir)
