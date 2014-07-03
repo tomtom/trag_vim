@@ -545,14 +545,6 @@ endf
 " Test j trag
 " Test n tragfoo
 
-" TODO: If the use of regular expressions alone doesn't meet your 
-" demands, you can define the functions trag#Process_{kind}_{filesuffix} 
-" or trag#Process_{kind}, which will be run on every line with the 
-" arguments: match, line, quicklist, filename, lineno. This function 
-" returns [match, line]. If match != -1, the line will be added to the 
-" quickfix list.
-" If such a function is defined, it will be called for every line.
-
 " :def: function! trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 " args: A string with the format:
 "   KIND REGEXP
@@ -613,6 +605,7 @@ function! trag#Grep(args, ...) "{{{3
                 let grep_opts = ml[2]
             endif
             let strip = grep_type == 'vimgrep'
+            " TLogVAR grep_type, grep_opts, grep_defs
             if s:GrepWith_{grep_type}(grep_defs, grep_opts)
                 let done = 1
                 break
@@ -622,46 +615,6 @@ function! trag#Grep(args, ...) "{{{3
         if !done
             throw 'TRag: Unsupported value for g:trag#grep_type: '. g:trag#grep_type
         endif
-
-        " let prcacc = []
-        " " let fext = fnamemodify(f, ':e')
-        " " TODO: This currently doesn't work.
-        " " for kindand in kinds
-        " "     for kind in kindand
-        " "         let prc = 'trag#Process_'. kind .'_'. fext
-        " "         if exists('*'. prc)
-        " "             call add(prcacc, prc)
-        " "         else
-        " "             let prc = 'trag#Process_'. kind
-        " "             if exists('*'. prc)
-        " "                 call add(prcacc, prc)
-        " "             endif
-        " "         endif
-        " "     endfor
-        " " endfor
-        " " When we don't have to process every line, we slurp the file 
-        " " into a buffer and use search(), which should be faster than 
-        " " running match() on every line.
-        " " TLogVAR prcacc
-        " if !empty(prcacc)
-        "     let qfl = []
-        "     let lnum = 0
-        "     for line in readfile(f)
-        "         let lnum += 1
-        "         let m = match(line, rxpos)
-        "         for prc in prcacc
-        "             let [m, line] = call(prc, [m, line, qfl, f, lnum])
-        "         endfor
-        "         if m != -1
-        "             call add(qfl, {
-        "                         \ 'filename': f,
-        "                         \ 'lnum': lnum,
-        "                         \ 'text': tlib#string#Strip(line),
-        "                         \ })
-        "         endif
-        "     endfor
-        "     call setqflist(qfl, 'a')
-        " endif
 
         if strip
             let qfl1 = getqflist()
