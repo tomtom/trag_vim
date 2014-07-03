@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1355
+" @Revision:    1370
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -72,12 +72,14 @@ endf
 " filename) are of a certain filetype.
 function! trag#SetFiletype(filetype, name) "{{{3
     let name = has('fname_case') ? a:name : tolower(a:name)
+    " TLogVAR name, a:filetype
     let g:trag_extension_filetype[name] = a:filetype
 endf
 
 " Get the filetype for "name" (either an extension of a filename).
 function! trag#GetFiletype(name) "{{{3
     let name = has('fname_case') ? a:name : tolower(a:name)
+    " TLogVAR name, get(g:trag_extension_filetype,name,"")
     return get(g:trag_extension_filetype, name, '')
 endf
 
@@ -92,6 +94,7 @@ function! trag#TRagDefKind(args, ...) "{{{3
         throw 'TRagDefKind: Malformed arguments: '. a:args
     else
         let [match, kind, filetype, regexp; rest] = ml
+        " TLogVAR kind, filetype, regexp
         let var = ['g:trag_rxf', kind]
         if filetype != '*' && filetype != '.'
             call add(var, filetype)
@@ -130,7 +133,7 @@ TRagDefKind l * /\C%s\s*[^=]*=[^=~<>]/
 TRagDefKind r * /\C[^!=~<>]=.\{-}%s/
 
 " Markers: TODO, TBD, FIXME, OPTIMIZE
-TRagDefKind todo * /\C\(TBD\|TODO\|FIXME\|OPTIMIZE\)/
+TRagDefKind todo * /\C\%(TBD\|TODO\|FIXME\|OPTIMIZE\)/
 
 " A mostly general rx format string for function calls.
 TRagDefKind f * /\C%s\s*(/
@@ -141,57 +144,7 @@ TRagDefKind W * /\C.\{-}%s.\{-}/
 
 TRagDefKind fuzzy * /\c%{fuzzyrx}/
 
-
-TRagDefFiletype java java
-let s:java_mod = '\(\<\(final\|public\|protected\|private\|synchronized\|volatile\|abstract\)\s\+\)*'
-let s:java_type = '\(boolean\|byte\|short\|int\|long\|float\|double\|char\|void\|\u[[:alnum:]_.]*\)\s\+'
-exec 'TRagDefKind c java /\C^\s*'. s:java_mod .'class\s\+%s/'
-exec 'TRagDefKind d java /\C^\s*'. s:java_mod .'\(\w\+\(\[\]\)*\)\s\+%s\s*(/'
-exec 'TRagDefKind f java /\(\(;\|{\|^\)\s*'. s:java_mod . s:java_type .'\)\@<!%s\s*\([(;]\|$\)/'
-TRagDefKind i java /\C^\s*\(\/\/\|\/\*\).\{-}%s/
-TRagDefKind x java /\C^.\{-}\<\(interface\|class\)\s\+.\{-}\s\+\(extends\|implements\)\s\+%s/
-unlet s:java_mod s:java_type
-
-
-TRagDefFiletype ruby rb
-TRagDefKind w ruby /\C[:@]\?\<%s\>/
-TRagDefKind W ruby /\C[^;()]\{-}%s[^;()]\{-}/
-TRagDefKind c ruby /\C\<class\s\+\(\u\w*::\)*%s\>/
-TRagDefKind d ruby /\C\<\(def\s\+\(\u\w*\.\)*\|attr\(_\w\+\)\?\s\+\(:\w\+,\s\+\)*:\)%s/
-TRagDefKind f ruby /\<%s\>/
-TRagDefKind i ruby /\C^\s*#%s/
-TRagDefKind m ruby /\C\<module\s\+\(\u\w*::\)*%s/
-TRagDefKind l ruby /\C%s\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
-TRagDefKind x ruby /\C\s\*class\>.\{-}<\s*%s/
-
-
-TRagDefFiletype vim vim .vimrc _vimrc
-TRagKeyword vim [:alnum:]_:#
-TRagDefKind W vim /\C[^|]\{-}%s[^|]\{-}/
-TRagDefKind d vim /\C\<\(fu\%%[nction]!\?\s\+\|com\%%[mand]!\?\s\+\(-\S\+\s\+\)*\)%s/
-TRagDefKind f vim /\C\<%s\>\s*(/
-TRagDefKind i vim /\C^\s*"%s/
-TRagDefKind r vim /\C^\s*let\s\+\S\+\s*=[^|]\{-}%s/
-TRagDefKind l vim /\C^\s*let\s\+[^=|]\{-}%s/
-
-
-TRagDefFiletype viki txt viki dpl
-TRagDefKind i viki /\C^\s*%%%s/
-TRagDefKind d viki /\C^\s*#\u\w*\s\+.\{-}\(id=%s\|%s=\)/
-TRagDefKind h viki /\C^\*\+\s\+%s/
-TRagDefKind l viki /\C^\s\+%s\s\+::/
-TRagDefKind r viki /\C^\s\+\(.\{-}\s::\|[-+*#]\|[@?].\)\s\+%s/
-TRagDefKind todo viki /\C\(TODO:\?\|FIXME:\?\|+++\|!!!\|###\|???\)\s\+%s/
-
-
-TRagDefFiletype r r
-TRagDefKind i r /\C^\s*#%s/
-TRagDefKind d r /\C^\s*\%(%s\s*<-\s*function\>\|setMethod\s*("%s"\)/
-TRagDefKind c r /\C\%(\<%s\s*<-\s*set\%(Ref\)\?Class\>\|\s*<-\s*set\%(Ref\)\?Class\s*(\s*"%s"\)/
-TRagDefKind l r /\C\(^\s*%s\s*<<\?-\s*\|\<%s\s*=[^=]\)/
-TRagDefKind r r /\C\s*<<\?-\s*%s/
-TRagDefKind f r /\C\<%s\s*(/
-
+runtime! ftplugin/*/trag.vim
 
 
 
@@ -583,7 +536,6 @@ function! trag#Grep(args, ...) "{{{3
     endif
     " TAssertType rx, 'string'
     let s:grep_rx = rx
-    " TLogVAR kindspos, kindsneg, rx
     if empty(files)
         let files = s:GetFiles()
     else
@@ -737,6 +689,7 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     let must_filter = {}
     for grep_def in a:grep_defs
         let ft = grep_def.filetype
+        " TLogVAR ft
         if !has_key(group_defs, ft)
             " TLogVAR grep_def.kindspos, trag#external#{grep_cmd}#IsSupported(grep_def.kindspos)
             let group_defs[ft] = {'rxpos': grep_def.rxpos,
