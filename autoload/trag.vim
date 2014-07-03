@@ -37,6 +37,9 @@ TLet g:trag_get_files_cpp = 'split(glob("**/*.[ch]"), "\n")'
 "   glob ...... Use b:trag_glob or g:trag_glob
 "   project ... Use b:trag_project_{'filetype'} or 
 "               g:trag_project_{'filetype'}
+" 
+"                                                     *b:trag_file_sources*
+" b:trag_file_sources overrides this global variable.
 TLet g:trag#file_sources = ['vcs', 'project', 'files', 'glob']
 
 " If true, use an already loaded buffer instead of the file on disk in 
@@ -431,7 +434,7 @@ function! trag#SetFiles(...) "{{{3
     TVarArg ['files', []]
     call trag#ClearFiles()
     if empty(files)
-        for source in g:trag#file_sources
+        for source in tlib#var#Get('trag#file_sources', 'bg', [])
             if source == 'files'
                 let files = tlib#var#Get('trag_files', 'bg', [])
             elseif source == 'glob'
