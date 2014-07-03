@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    152
+" @Revision:    163
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -45,7 +45,9 @@ function! trag#external#vcs#Run(rx, files) "{{{3
             return 0
         endif
         let b:trag_support_vcs = [type, dir, bin]
+        " TLogVAR b:trag_support_vcs
     endif
+    " TLogVAR type, dir, bin
     let ddir = fnamemodify(dir, ':p:h:h')
     let cd = getcwd()
     " TLogVAR type, dir, ddir, cd
@@ -63,7 +65,7 @@ function! trag#external#vcs#Run(rx, files) "{{{3
         endif
         " TLogVAR a:rx, rx
         let cmd = bin .' '. printf(get(opts, 'args', '%s'),
-                    \ shellescape(rx))
+                    \ shellescape(rx, 1))
         let &grepprg = cmd
         " let &gfm = get(opts, 'gfm', '%m')
         let &gfm = get(opts, 'gfm', '%f:%l:%m')
