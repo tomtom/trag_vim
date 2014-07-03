@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-01.
-" @Revision:    147
+" @Last Change: 2014-07-03.
+" @Revision:    152
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -22,25 +22,38 @@ endf
 " Currently only git is supported.
 function! trag#external#vcs#Run(rx, files) "{{{3
     " TLogVAR a:rx
-    let [type, dir] = tlib#vcs#FindVCS(expand('%'))
-    let ddir = fnamemodify(dir, ':p:h:h')
-    let cd = getcwd()
-    " TLogVAR type, dir, ddir, cd
-    let gfm = &gfm
-    let grepprg = &grepprg
-    try
+    if exists('b:trag_support_vcs')
+        if empty(b:trag_support_vcs)
+            return 0
+        else
+            let [type, dir, bin] = b:trag_support_vcs
+        endif
+    else
+        let b:trag_support_vcs = []
+        let [type, dir] = tlib#vcs#FindVCS(expand('%'))
+        if empty(type)
+            return 0
+        endif
         if !exists('g:trag#external#vcs#options_'. type)
             " echom 'Trag: Unsupported VCS type:' type
             return 0
         endif
-        let opts = g:trag#external#vcs#options_{type}
-        " TLogVAR opts
         let bin = tlib#vcs#Executable(type)
         " TLogVAR bin
         if empty(bin)
             " echom 'Trag: Unsupported VCS type:' type
             return 0
         endif
+        let b:trag_support_vcs = [type, dir, bin]
+    endif
+    let ddir = fnamemodify(dir, ':p:h:h')
+    let cd = getcwd()
+    " TLogVAR type, dir, ddir, cd
+    let gfm = &gfm
+    let grepprg = &grepprg
+    try
+        let opts = g:trag#external#vcs#options_{type}
+        " TLogVAR opts
         " TLogVAR exists('*trag#external#vcs#ConvertRx_'. type)
         let convert_rx = get(opts, 'convert_rx', 'trag#external#vcs#ConvertRx_'. type)
         if exists('*'. convert_rx)
