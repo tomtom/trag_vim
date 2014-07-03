@@ -72,22 +72,32 @@ endf
 
 
 " :nodoc:
-function! trag#TRagDefKind(args) "{{{3
+function! trag#TRagDefKind(args, ...) "{{{3
+    TVarArg ['replace', 0]
     " TLogVAR a:args
     " TLogDBG string(matchlist(a:args, '^\(\S\+\)\s\+\(\S\+\)\s\+/\(.\{-}\)/$'))
-    let [match, kind, filetype, regexp; rest] = matchlist(a:args, '^\(\S\+\)\s\+\(\S\+\)\s\+/\(.\{-}\)/$')
-    let var = ['g:trag_rxf', kind]
-    if filetype != '*' && filetype != '.'
-        call add(var, filetype)
-    endif
-    let varname = join(var, '_')
-    let {varname} = substitute(regexp, '\\/', '/', 'g')
-    if has_key(g:trag_kinds, kind)
-        call add(g:trag_kinds[kind], filetype)
+    let ml = matchlist(a:args, '^\(\S\+\)\s\+\(\S\+\)\s\+/\(.\{-}\)/$')
+    if empty(ml)
+        throw 'TRagDefKind: Malformed arguments: '. a:args
     else
-        let g:trag_kinds[kind] = [filetype]
-        if !empty(g:trag_map_leader)
-            call TragInstallKindMap(g:trag_map_leader, kind)
+        let [match, kind, filetype, regexp; rest] = ml
+        let var = ['g:trag_rxf', kind]
+        if filetype != '*' && filetype != '.'
+            call add(var, filetype)
+        endif
+        let varname = join(var, '_')
+        if !exists(varname) || replace
+            let {varname} = substitute(regexp, '\\/', '/', 'g')
+        else
+            let {varname} = '\%('. {varname} .'\|'. substitute(regexp, '\\/', '/', 'g') .'\)'
+        endif
+        if has_key(g:trag_kinds, kind)
+            call add(g:trag_kinds[kind], filetype)
+        else
+            let g:trag_kinds[kind] = [filetype]
+            if !empty(g:trag_map_leader)
+                call TragInstallKindMap(g:trag_map_leader, kind)
+            endif
         endif
     endif
 endf

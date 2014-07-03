@@ -36,14 +36,18 @@ TLet g:trag_map_leader = '<Leader>r'
 " FILENAME_EXTENSION should be a lower-case string.
 TLet g:trag_extension_filetype = {}
 
-" :display: :TRagDefKind KIND FILETYPE /REGEXP_FORMAT/
+
+" :display: :TRagDefKind[!] KIND FILETYPE /REGEXP_FORMAT/
 " The regexp argument is no real regexp but a format string. % thus have 
 " to be escaped with % (see |printf()| for details). The REGEXP_FORMAT 
 " should contain at least one %s.
+"
+" With the [!], reset the regexp definitions.
+"
 " Examples: >
 "   TRagDefKind v * /\C\<%s\>\s*=[^=~<>]/
 "   TRagDefKind v ruby /\C\<%s\>\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
-command! -nargs=1 TRagDefKind call trag#TRagDefKind(<q-args>)
+command! -bang -nargs=1 TRagDefKind call trag#TRagDefKind(<q-args>, !empty("<bang>"))
 
 
 " :display: TRagKeyword FILETYPE KEYWORD_CHARS
