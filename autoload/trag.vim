@@ -566,7 +566,7 @@ endf
 "   if foo == 1
 function! trag#Grep(args, ...) "{{{3
     TVarArg ['replace', 1], ['files', []], ['filetype', '']
-    " TLogVAR a:args, replace, files
+    " TLogVAR a:args, replace, files, filetype
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
     " TLogVAR kindspos, kindsneg, rx, a:args
     if empty(rx)
@@ -575,7 +575,7 @@ function! trag#Grep(args, ...) "{{{3
     endif
     " TAssertType rx, 'string'
     let s:grep_rx = rx
-    " TLogVAR kindspos, kindsneg, rx, files
+    " TLogVAR kindspos, kindsneg, rx
     if empty(files)
         let files = s:GetFiles()
     else
@@ -644,9 +644,10 @@ function! s:GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
     if filereadable(ff)
         " TLogVAR f, kindspos, kindsneg
         let [rxpos, filetype0] = s:GetRx(ff, a:kindspos, a:rx, '.', a:filetype)
-        " TLogVAR rx, rxpos
+        " TLogVAR a:rx, rxpos
         if !empty(rxpos)
             let [rxneg, filetype1] = s:GetRx(ff, a:kindsneg, '', '', filetype0)
+            " TLogVAR rxneg
             let ft = empty(filetype0) ? '*' : filetype0
             return {
                         \ 'f': a:filename,
@@ -668,7 +669,6 @@ function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
     for grep_def in a:grep_defs
         let fidx += 1
         call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
-        " TLogVAR a:filename, a:rxpos, a:rxneg
         let qfl = {}
         let lnum = 1
         let bnum = bufnr(grep_def.ff)
@@ -678,6 +678,7 @@ function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
         else
             let lines = readfile(grep_def.ff)
         endif
+        " TLogVAR grep_def.rxpos, grep_def.rxneg
         for line in lines
             if line =~ grep_def.rxpos && (empty(grep_def.rxneg) || line !~ grep_def.rxneg)
                 let qfl[lnum] = {"filename": grep_def.ff, "lnum": lnum, "text": tlib#string#Strip(line)}
