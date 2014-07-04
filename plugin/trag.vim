@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    667
+" @Revision:    668
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -28,7 +28,7 @@ TLet g:trag_kinds = {}
 " :nodoc:
 TLet g:trag_keyword_chars = {}
 
-" Trag map leader. See also |TragInstallMap|.
+" Trag map leader. See also |TragInstallMap()|.
 TLet g:trag_map_leader = '<Leader>r'
 
 " A dictionary FILENAME_EXTENSION => FILETYPE
