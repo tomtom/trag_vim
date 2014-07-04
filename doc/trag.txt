@@ -222,15 +222,24 @@ Contents~
         trag#general#Rename ..................... |trag#general#Rename()|
         trag#viki#Rename ........................ |trag#viki#Rename()|
         trag#rename#Rename ...................... |trag#rename#Rename()|
+        g:trag#external#ack#ack_params .......... |g:trag#external#ack#ack_params|
+        g:trag#external#ack#supported_kinds ..... |g:trag#external#ack#supported_kinds|
+        trag#external#ack#IsSupported ........... |trag#external#ack#IsSupported()|
+        trag#external#ack#Run ................... |trag#external#ack#Run()|
         g:trag#external#vcs#options_git ......... |g:trag#external#vcs#options_git|
         g:trag#external#vcs#supported_kinds ..... |g:trag#external#vcs#supported_kinds|
         trag#external#vcs#IsSupported ........... |trag#external#vcs#IsSupported()|
         trag#external#vcs#Run ................... |trag#external#vcs#Run()|
-        trag#external#vcs#ConvertRx_git ......... |trag#external#vcs#ConvertRx_git()|
         trag#external#vcs#ConvertFilename_git ... |trag#external#vcs#ConvertFilename_git()|
+        g:trag#external#grep#args ............... |g:trag#external#grep#args|
         g:trag#external#grep#supported_kinds .... |g:trag#external#grep#supported_kinds|
         trag#external#grep#IsSupported .......... |trag#external#grep#IsSupported()|
         trag#external#grep#Run .................. |trag#external#grep#Run()|
+        trag#rx#ConvertRx ....................... |trag#rx#ConvertRx()|
+        trag#rx#ConvertRx_git ................... |trag#rx#ConvertRx_git()|
+        trag#rx#ConvertRx_perl .................. |trag#rx#ConvertRx_perl()|
+        g:trag#utils#cmdline_max ................ |g:trag#utils#cmdline_max|
+        trag#utils#GrepaddFiles ................. |trag#utils#GrepaddFiles()|
         trag#java#Rename ........................ |trag#java#Rename()|
         g:trag#grep_type ........................ |g:trag#grep_type|
         g:trag_get_files ........................ |g:trag_get_files|
@@ -439,6 +448,8 @@ g:trag#grep_type               (default: 'trag')
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+      - ack
+      - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
     the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
@@ -446,6 +457,8 @@ g:trag#grep_type               (default: 'trag')
     is used.
 
     trag & vimgrep should work everywhere.
+                                                        *b:trag_grep_type*
+    b:trag_grep_type overrides this global variable.
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -471,7 +484,6 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob'])
       glob ...... Use b:trag_glob or g:trag_glob
       project ... Use b:trag_project_{'filetype'} or 
                   g:trag_project_{'filetype'}
-
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
@@ -669,6 +681,8 @@ g:trag#grep_type               (default: 'trag')
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+      - ack
+      - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
     the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
@@ -676,6 +690,8 @@ g:trag#grep_type               (default: 'trag')
     is used.
 
     trag & vimgrep should work everywhere.
+                                                        *b:trag_grep_type*
+    b:trag_grep_type overrides this global variable.
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -701,7 +717,6 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob'])
       glob ...... Use b:trag_glob or g:trag_glob
       project ... Use b:trag_project_{'filetype'} or 
                   g:trag_project_{'filetype'}
-
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
@@ -913,6 +928,22 @@ trag#rename#Rename(world, selected, from, to, suffix)
 
 
 ========================================================================
+autoload/trag/external/ack.vim~
+
+                                                    *g:trag#external#ack#ack_params*
+g:trag#external#ack#ack_params (default: {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'})
+
+                                                    *g:trag#external#ack#supported_kinds*
+g:trag#external#ack#supported_kinds (default: ['identity', 'w', 'todo'])
+
+                                                    *trag#external#ack#IsSupported()*
+trag#external#ack#IsSupported(kinds)
+
+                                                    *trag#external#ack#Run()*
+trag#external#ack#Run(rx, files)
+
+
+========================================================================
 autoload/trag/external/vcs.vim~
 
                                                     *g:trag#external#vcs#options_git*
@@ -928,9 +959,6 @@ trag#external#vcs#IsSupported(kinds)
 trag#external#vcs#Run(rx, files)
     Currently only git is supported.
 
-                                                    *trag#external#vcs#ConvertRx_git()*
-trag#external#vcs#ConvertRx_git(type, rx)
-
                                                     *trag#external#vcs#ConvertFilename_git()*
 trag#external#vcs#ConvertFilename_git(type, filename)
 
@@ -938,14 +966,40 @@ trag#external#vcs#ConvertFilename_git(type, filename)
 ========================================================================
 autoload/trag/external/grep.vim~
 
+                                                    *g:trag#external#grep#args*
+g:trag#external#grep#args      (default: '-Hn -E %s --')
+
                                                     *g:trag#external#grep#supported_kinds*
-g:trag#external#grep#supported_kinds (default: ['identity'])
+g:trag#external#grep#supported_kinds (default: ['identity', 'w', 'todo'])
 
                                                     *trag#external#grep#IsSupported()*
 trag#external#grep#IsSupported(kinds)
 
                                                     *trag#external#grep#Run()*
-trag#external#grep#Run(rx, files)
+trag#external#grep#Run(rx, files, ...)
+
+
+========================================================================
+autoload/trag/rx.vim~
+
+                                                    *trag#rx#ConvertRx()*
+trag#rx#ConvertRx(rx, type, ...)
+
+                                                    *trag#rx#ConvertRx_git()*
+trag#rx#ConvertRx_git(type, rx)
+
+                                                    *trag#rx#ConvertRx_perl()*
+trag#rx#ConvertRx_perl(type, rx)
+
+
+========================================================================
+autoload/trag/utils.vim~
+
+                                                    *g:trag#utils#cmdline_max*
+g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 1000000)
+
+                                                    *trag#utils#GrepaddFiles()*
+trag#utils#GrepaddFiles(args, files)
 
 
 ========================================================================
@@ -967,6 +1021,8 @@ g:trag#grep_type               (default: 'trag')
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+      - ack
+      - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
     the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
@@ -974,6 +1030,8 @@ g:trag#grep_type               (default: 'trag')
     is used.
 
     trag & vimgrep should work everywhere.
+                                                        *b:trag_grep_type*
+    b:trag_grep_type overrides this global variable.
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -999,7 +1057,6 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob'])
       glob ...... Use b:trag_glob or g:trag_glob
       project ... Use b:trag_project_{'filetype'} or 
                   g:trag_project_{'filetype'}
-
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
@@ -1197,6 +1254,8 @@ g:trag#grep_type               (default: 'trag')
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+      - ack
+      - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
     the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
@@ -1204,6 +1263,8 @@ g:trag#grep_type               (default: 'trag')
     is used.
 
     trag & vimgrep should work everywhere.
+                                                        *b:trag_grep_type*
+    b:trag_grep_type overrides this global variable.
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -1229,7 +1290,6 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob'])
       glob ...... Use b:trag_glob or g:trag_glob
       project ... Use b:trag_project_{'filetype'} or 
                   g:trag_project_{'filetype'}
-
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
