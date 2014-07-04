@@ -1,9 +1,9 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    12
+" @Revision:    13
 
-if !exists('g:trag#external#ack#ack_params')
-    let g:trag#external#ack#ack_params = {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'}   "{{{2
+if !exists('g:trag#external#ack#opts')
+    let g:trag#external#ack#opts = {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'}   "{{{2
 endif
 
 
@@ -18,6 +18,6 @@ endf
 
 
 function! trag#external#ack#Run(rx, files) "{{{3
-    return trag#external#grep#Run(a:rx, a:files, g:trag#external#ack#ack_params)
+    return trag#external#grep#Run(a:rx, a:files, g:trag#external#ack#opts)
 endf
 
