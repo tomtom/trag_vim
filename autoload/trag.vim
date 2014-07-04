@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1370
+" @Revision:    1376
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -13,6 +13,8 @@
 "   - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
 "     this option always searches all files in the VCS)
 "   - external:CMD (CMD defaults to grep; use vimgrep as fallback)
+"   - ack
+"   - grep (uses 'grepprg')
 "
 " The first valid option is used. E.g. if the value is "vcs,trag" and if 
 " the buffer belongs to a supported VCS (see |trag#external#vcs#Run()|, 
@@ -20,6 +22,8 @@
 " is used.
 "
 " trag & vimgrep should work everywhere.
+"                                                     *b:trag_grep_type*
+" b:trag_grep_type overrides this global variable.
 TLet g:trag#grep_type = 'trag'
 
 " If no project files are defined, evaluate this expression as 
@@ -554,7 +558,8 @@ function! trag#Grep(args, ...) "{{{3
         let grep_defs = map(copy(files), 's:GetGrepDef(v:val, kindspos, kindsneg, rx, filetype)')
         let grep_defs = filter(grep_defs, '!empty(v:val)')
         let done = 0
-        for grep_name in split(g:trag#grep_type, ',\s*')
+        let trag_type = tlib#var#Get('trag#grep_type', 'bg')
+        for grep_name in split(trag_type, ',\s*')
             " TLogVAR grep_name
             let ml = matchlist(grep_name, '^\(\w\+\):\s*\(.\{-}\)\s*$')
             if empty(ml)
@@ -573,7 +578,7 @@ function! trag#Grep(args, ...) "{{{3
         endfor
         " TLogVAR len(getqflist())
         if !done
-            throw 'TRag: Unsupported value for g:trag#grep_type: '. g:trag#grep_type
+            throw 'TRag: Unsupported value for g:trag#grep_type: '. trag_type
         endif
 
         if strip
