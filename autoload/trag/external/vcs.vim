@@ -1,12 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    196
-
-
-if !exists('g:trag#external#vcs#cmdline_max')
-    let g:trag#external#vcs#cmdline_max = g:tlib#sys#windows ? 7000 : 30000   "{{{2
-endif
+" @Revision:    202
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -16,7 +11,7 @@ endif
 
 " if !exists('g:trag#external#vcs#options_hg')
 "     let g:trag#external#vcs#options_hg = {'args': 'grep -n %s --',
-"                 \ 'convert_rx': 'trag#external#vcs#ConvertRx_perl',
+"                 \ 'convert_rx': 'trag#rx#ConvertRx_perl',
 "                 \ 'gfm': '%f:%*[^:]:%l:%m'}  "{{{2
 " endif
 
@@ -68,13 +63,7 @@ function! trag#external#vcs#Run(rx, files) "{{{3
     try
         let opts = g:trag#external#vcs#options_{type}
         " TLogVAR opts
-        " TLogVAR exists('*trag#external#vcs#ConvertRx_'. type)
-        let convert_rx = get(opts, 'convert_rx', 'trag#external#vcs#ConvertRx_'. type)
-        if exists('*'. convert_rx)
-            let rx = call(convert_rx, [type, a:rx])
-        else
-            let rx = a:rx
-        endif
+        let rx = trag#rx#ConvertRx(a:rx, type, opts)
         " TLogVAR a:rx, rx
         let cmd = bin .' '. printf(get(opts, 'args', '%s'),
                     \ shellescape(rx, 1))
@@ -83,34 +72,13 @@ function! trag#external#vcs#Run(rx, files) "{{{3
         let &gfm = get(opts, 'gfm', '%f:%l:%m')
         " TLogVAR &grepprg, &gfm
         let files = copy(a:files)
-        let convert_filename = get(opts, 'convert_rx', 'trag#external#vcs#ConvertFilename_'. type)
+        let convert_filename = get(opts, 'convert_filename', 'trag#external#vcs#ConvertFilename_'. type)
         if exists('*'. convert_filename)
             let files = map(files, 'call(convert_filename, [type, v:val])')
         endif
-        let files = map(files, 'fnameescape(v:val)')
-        " TLogVAR files
-        " TLogVAR len(files)
-        let flen = len(files)
-        let fidx = 0
         exec 'cd!' fnameescape(ddir)
         " TLogVAR getcwd()
-        while fidx < flen
-            let use_files = []
-            let ulen = 0
-            while fidx < flen
-                let file = files[fidx]
-                if ulen + len(file) < g:trag#external#vcs#cmdline_max
-                    call add(use_files, file)
-                    let fidx += 1
-                    let ulen += len(file)
-                else
-                    break
-                endif
-            endwh
-            let filess = join(use_files)
-            " TLogVAR len(filess)
-            exec 'silent grepadd!' filess
-        endwh
+        call trag#utils#GrepaddFiles('', files)
         return 1
     finally
         if getcwd() != cd
@@ -123,32 +91,8 @@ function! trag#external#vcs#Run(rx, files) "{{{3
 endf
 
 
-function! trag#external#vcs#ConvertRx_git(type, rx) "{{{3
-    let rx = substitute(a:rx, '\\C', '', 'g')
-    " let rx = substitute(a:rx, '\\{-}', '\\+\\?', 'g')
-    return rx
-endf
-
-
 function! trag#external#vcs#ConvertFilename_git(type, filename) "{{{3
     return substitute(a:filename, '\\', '/', 'g')
-endf
-
-
-function! trag#external#vcs#ConvertRx_perl(type, rx) "{{{3
-    let rx = substitute(a:rx, '\\C', '', 'g')
-    let rx = substitute(rx, '\\[<>]', '\\b', 'g')
-    let rxl = []
-    for part in split(rx, '[()|]\zs')
-        if part =~ '\\\@<!\\[()|]$'
-            let part = substitute(part, '\\\ze.$', '', '')
-        elseif part =~ '[()|]$'
-            let part = substitute(part, '.$', '\\\0', '')
-        endif
-        call add(rxl, part)
-    endfor
-    let rx = join(rxl, '')
-    return rx
 endf
 
 
