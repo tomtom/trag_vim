@@ -323,7 +323,7 @@ g:trag_extension_filetype      (default: {})
     FILENAME_EXTENSION should be a lower-case string.
 
                                                     *g:trag_kinds_ignored_comments*
-g:trag_kinds_ignored_comments  (default: ['c', 'd', 'f', 'l', 'r'])
+g:trag_kinds_ignored_comments  (default: ['c', 'd', 'f', 'l', 'r', 'u'])
     A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
 
                                                     *:TRagDefKind*

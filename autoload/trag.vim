@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1385
+" @Revision:    1387
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -142,6 +142,9 @@ TRagDefKind todo * /\C\%(TBD\|TODO\|FIXME\|OPTIMIZE\)/
 
 " A mostly general rx format string for function calls.
 TRagDefKind f * /\C%s\s*(/
+
+" The same as w, but is listed in |g:trag_kinds_ignored_comments|.
+TRagDefKind u * /\C\<%s\>/
 
 " A mostly general rx format string for words.
 TRagDefKind w * /\C\<%s\>/

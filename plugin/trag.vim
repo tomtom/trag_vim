@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    672
+" @Revision:    673
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -37,7 +37,7 @@ TLet g:trag_map_leader = '<Leader>r'
 TLet g:trag_extension_filetype = {}
 
 " A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
-TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r']
+TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r', 'u']
 
 
 " :display: :TRagDefKind[!] KIND FILETYPE /REGEXP_FORMAT/

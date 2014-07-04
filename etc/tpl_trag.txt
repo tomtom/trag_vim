@@ -76,6 +76,7 @@ common base:
     l ... variable definition
     m ... module definitions
     r ... variable assignment (e.g. "= WORD")
+    u ... uses of word (ignore comments)
     w ... find as word
     x ... subclasses
 
