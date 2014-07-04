@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1376
+" @Revision:    1379
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -37,13 +37,14 @@ TLet g:trag_get_files_cpp = 'split(glob("**/*.[ch]"), "\n")'
 " Possible values:
 "   vcs ....... Use g:trag#check_vcs
 "   git ....... Use b:trag_git or g:trag_git
+"   tags ...... Use files listed in 'tags'
 "   files ..... Use b:trag_files or g:trag_files
 "   glob ...... Use b:trag_glob or g:trag_glob
 "   project ... Use b:trag_project_{'filetype'} or 
 "               g:trag_project_{'filetype'}
 "                                                     *b:trag_file_sources*
 " b:trag_file_sources overrides this global variable.
-TLet g:trag#file_sources = ['vcs', 'project', 'files', 'glob']
+TLet g:trag#file_sources = ['vcs', 'project', 'files', 'glob', 'tags']
 
 " If true, use an already loaded buffer instead of the file on disk in 
 " certain situations. This implies that if a buffer is dirty, the 
@@ -415,6 +416,12 @@ function! trag#SetFiles(...) "{{{3
                     let proj = findfile(proj, '.;')
                     let files = trag#GetProjectFiles(proj)
                 endif
+            elseif source == 'tags'
+                let filenames = {}
+                for tag in taglist('.')
+                    let filenames[tag.filename] = 1
+                endfor
+                let files = keys(filenames)
             elseif source == 'git'
                 let git_repos = tlib#var#Get('trag_git', 'bg', '')
                 if git_repos == '*'
