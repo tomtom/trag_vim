@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1379
+" @Revision:    1383
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -14,6 +14,7 @@
 "     this option always searches all files in the VCS)
 "   - external:CMD (CMD defaults to grep; use vimgrep as fallback)
 "   - ack
+"   - ag
 "   - grep (uses 'grepprg')
 "
 " The first valid option is used. E.g. if the value is "vcs,trag" and if 
@@ -576,7 +577,8 @@ function! trag#Grep(args, ...) "{{{3
                 let grep_opts = ml[2]
             endif
             let strip = grep_type == 'vimgrep'
-            " TLogVAR grep_type, grep_opts, grep_defs
+            " TLogVAR grep_type, grep_opts
+            " TLogVAR grep_defs
             if s:GrepWith_{grep_type}(grep_defs, grep_opts)
                 let done = 1
                 break
@@ -689,6 +691,11 @@ endf
 
 function! s:GrepWith_ack(grep_defs, grep_opts) "{{{3
     return s:GrepWith_external(a:grep_defs, 'ack '. a:grep_opts)
+endf
+
+
+function! s:GrepWith_ag(grep_defs, grep_opts) "{{{3
+    return s:GrepWith_external(a:grep_defs, 'ag '. a:grep_opts)
 endf
 
 
