@@ -41,7 +41,6 @@ TLet g:trag_get_files_cpp = 'split(glob("**/*.[ch]"), "\n")'
 "   glob ...... Use b:trag_glob or g:trag_glob
 "   project ... Use b:trag_project_{'filetype'} or 
 "               g:trag_project_{'filetype'}
-" 
 "                                                     *b:trag_file_sources*
 " b:trag_file_sources overrides this global variable.
 TLet g:trag#file_sources = ['vcs', 'project', 'files', 'glob']
@@ -678,6 +677,16 @@ function! s:GrepWith_vimgrep(grep_defs, grep_opts) "{{{3
     endfor
     call s:FilterRxNegs(rxnegs)
     return 1
+endf
+
+
+function! s:GrepWith_ack(grep_defs, grep_opts) "{{{3
+    return s:GrepWith_external(a:grep_defs, 'ack '. a:grep_opts)
+endf
+
+
+function! s:GrepWith_grep(grep_defs, grep_opts) "{{{3
+    return s:GrepWith_external(a:grep_defs, 'grep '. a:grep_opts)
 endf
 
 
