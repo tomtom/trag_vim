@@ -168,6 +168,7 @@ Contents~
 
         g:trag_map_leader ....................... |g:trag_map_leader|
         g:trag_extension_filetype ............... |g:trag_extension_filetype|
+        g:trag_kinds_ignored_comments ........... |g:trag_kinds_ignored_comments|
         :TRagDefKind ............................ |:TRagDefKind|
         :TRagKeyword ............................ |:TRagKeyword|
         :TRagDefFiletype ........................ |:TRagDefFiletype|
@@ -320,6 +321,10 @@ g:trag_extension_filetype      (default: {})
     A dictionary FILENAME_EXTENSION => FILETYPE
     On systems without has('fname_case') (see |feature-list|), 
     FILENAME_EXTENSION should be a lower-case string.
+
+                                                    *g:trag_kinds_ignored_comments*
+g:trag_kinds_ignored_comments  (default: ['c', 'd', 'f', 'l', 'r'])
+    A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
 
                                                     *:TRagDefKind*
 :TRagDefKind[!] KIND FILETYPE /REGEXP_FORMAT/
