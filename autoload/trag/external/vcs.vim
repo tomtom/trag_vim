@@ -1,12 +1,24 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    163
+" @Revision:    196
+
+
+if !exists('g:trag#external#vcs#cmdline_max')
+    let g:trag#external#vcs#cmdline_max = g:tlib#sys#windows ? 7000 : 30000   "{{{2
+endif
 
 
 if !exists('g:trag#external#vcs#options_git')
     let g:trag#external#vcs#options_git = {'args': 'grep -Hn -G %s --'}  "{{{2
 endif
+
+
+" if !exists('g:trag#external#vcs#options_hg')
+"     let g:trag#external#vcs#options_hg = {'args': 'grep -n %s --',
+"                 \ 'convert_rx': 'trag#external#vcs#ConvertRx_perl',
+"                 \ 'gfm': '%f:%*[^:]:%l:%m'}  "{{{2
+" endif
 
 
 if !exists('g:trag#external#vcs#supported_kinds')
@@ -77,9 +89,28 @@ function! trag#external#vcs#Run(rx, files) "{{{3
         endif
         let files = map(files, 'fnameescape(v:val)')
         " TLogVAR files
+        " TLogVAR len(files)
+        let flen = len(files)
+        let fidx = 0
         exec 'cd!' fnameescape(ddir)
         " TLogVAR getcwd()
-        exec 'silent grepadd!' join(files)
+        while fidx < flen
+            let use_files = []
+            let ulen = 0
+            while fidx < flen
+                let file = files[fidx]
+                if ulen + len(file) < g:trag#external#vcs#cmdline_max
+                    call add(use_files, file)
+                    let fidx += 1
+                    let ulen += len(file)
+                else
+                    break
+                endif
+            endwh
+            let filess = join(use_files)
+            " TLogVAR len(filess)
+            exec 'silent grepadd!' filess
+        endwh
         return 1
     finally
         if getcwd() != cd
@@ -102,4 +133,22 @@ endf
 function! trag#external#vcs#ConvertFilename_git(type, filename) "{{{3
     return substitute(a:filename, '\\', '/', 'g')
 endf
+
+
+function! trag#external#vcs#ConvertRx_perl(type, rx) "{{{3
+    let rx = substitute(a:rx, '\\C', '', 'g')
+    let rx = substitute(rx, '\\[<>]', '\\b', 'g')
+    let rxl = []
+    for part in split(rx, '[()|]\zs')
+        if part =~ '\\\@<!\\[()|]$'
+            let part = substitute(part, '\\\ze.$', '', '')
+        elseif part =~ '[()|]$'
+            let part = substitute(part, '.$', '\\\0', '')
+        endif
+        call add(rxl, part)
+    endfor
+    let rx = join(rxl, '')
+    return rx
+endf
+
 
