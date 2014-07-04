@@ -235,7 +235,7 @@ Contents~
         trag#general#Rename ..................... |trag#general#Rename()|
         trag#viki#Rename ........................ |trag#viki#Rename()|
         trag#rename#Rename ...................... |trag#rename#Rename()|
-        g:trag#external#ack#ack_params .......... |g:trag#external#ack#ack_params|
+        g:trag#external#ack#opts ................ |g:trag#external#ack#opts|
         g:trag#external#ack#supported_kinds ..... |g:trag#external#ack#supported_kinds|
         trag#external#ack#IsSupported ........... |trag#external#ack#IsSupported()|
         trag#external#ack#Run ................... |trag#external#ack#Run()|
@@ -244,6 +244,10 @@ Contents~
         trag#external#vcs#IsSupported ........... |trag#external#vcs#IsSupported()|
         trag#external#vcs#Run ................... |trag#external#vcs#Run()|
         trag#external#vcs#ConvertFilename_git ... |trag#external#vcs#ConvertFilename_git()|
+        g:trag#external#ag#opts ................. |g:trag#external#ag#opts|
+        g:trag#external#ag#supported_kinds ...... |g:trag#external#ag#supported_kinds|
+        trag#external#ag#IsSupported ............ |trag#external#ag#IsSupported()|
+        trag#external#ag#Run .................... |trag#external#ag#Run()|
         g:trag#external#grep#args ............... |g:trag#external#grep#args|
         g:trag#external#grep#supported_kinds .... |g:trag#external#grep#supported_kinds|
         trag#external#grep#IsSupported .......... |trag#external#grep#IsSupported()|
@@ -462,6 +466,7 @@ g:trag#grep_type               (default: 'trag')
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
+      - ag
       - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
@@ -696,6 +701,7 @@ g:trag#grep_type               (default: 'trag')
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
+      - ag
       - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
@@ -945,8 +951,8 @@ trag#rename#Rename(world, selected, from, to, suffix)
 ========================================================================
 autoload/trag/external/ack.vim~
 
-                                                    *g:trag#external#ack#ack_params*
-g:trag#external#ack#ack_params (default: {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'})
+                                                    *g:trag#external#ack#opts*
+g:trag#external#ack#opts       (default: {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'})
 
                                                     *g:trag#external#ack#supported_kinds*
 g:trag#external#ack#supported_kinds (default: ['identity', 'w', 'todo'])
@@ -976,6 +982,22 @@ trag#external#vcs#Run(rx, files)
 
                                                     *trag#external#vcs#ConvertFilename_git()*
 trag#external#vcs#ConvertFilename_git(type, filename)
+
+
+========================================================================
+autoload/trag/external/ag.vim~
+
+                                                    *g:trag#external#ag#opts*
+g:trag#external#ag#opts        (default: {'grepprg': 'ag', 'args': '-U -f --line-numbers --nogroup --nocolor -- %s'})
+
+                                                    *g:trag#external#ag#supported_kinds*
+g:trag#external#ag#supported_kinds (default: ['identity', 'w', 'todo'])
+
+                                                    *trag#external#ag#IsSupported()*
+trag#external#ag#IsSupported(kinds)
+
+                                                    *trag#external#ag#Run()*
+trag#external#ag#Run(rx, files)
 
 
 ========================================================================
@@ -1037,6 +1059,7 @@ g:trag#grep_type               (default: 'trag')
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
+      - ag
       - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
@@ -1271,6 +1294,7 @@ g:trag#grep_type               (default: 'trag')
         this option always searches all files in the VCS)
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
+      - ag
       - grep (uses 'grepprg')
 
     The first valid option is used. E.g. if the value is "vcs,trag" and if 
