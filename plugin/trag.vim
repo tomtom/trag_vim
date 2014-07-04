@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    668
+" @Revision:    672
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -35,6 +35,9 @@ TLet g:trag_map_leader = '<Leader>r'
 " On systems without has('fname_case') (see |feature-list|), 
 " FILENAME_EXTENSION should be a lower-case string.
 TLet g:trag_extension_filetype = {}
+
+" A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
+TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r']
 
 
 " :display: :TRagDefKind[!] KIND FILETYPE /REGEXP_FORMAT/
@@ -186,8 +189,12 @@ endf
 function! TragInstallKindMap(leader, kind) "{{{3
     " TLogVAR a:leader, a:kind
     if len(a:kind) == 1
-        exec 'nnoremap' a:leader . a:kind ':Trag #'. a:kind '<c-r>=trag#CWord()<cr><cr>'
-        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag #'. a:kind '<c-r>"<cr>'
+        let kind = a:kind
+        if index(g:trag_kinds_ignored_comments, kind) != -1
+            let kind .= ',-i'
+        endif
+        exec 'nnoremap' a:leader . a:kind ':Trag #'. kind '<c-r>=trag#CWord()<cr><cr>'
+        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag #'. kind '<c-r>"<cr>'
     endif
 endf
 
