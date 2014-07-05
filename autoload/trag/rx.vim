@@ -1,6 +1,6 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    11
+" @Revision:    13
 
 
 function! trag#rx#ConvertRx(rx, type, ...) "{{{3
@@ -28,9 +28,10 @@ endf
 function! trag#rx#ConvertRx_perl(type, rx) "{{{3
     let rx = substitute(a:rx, '\\C', '', 'g')
     let rx = substitute(rx, '\\[<>]', '\\b', 'g')
+    let rx = substitute(rx, '\\{-}', '*?', 'g')
     let rxl = []
     " TLogVAR rx
-    for part in split(rx, '[()|]\zs')
+    for part in split(rx, '[()|+?]\zs')
         " TLogVAR 1, part
         if part =~ '\\\@<!\\[()|]$'
             let part = substitute(part, '\\\ze.$', '', '')
