@@ -7,10 +7,10 @@ function calls etc.
 
 Other than |tags| or |cscope|, it doesn't build a database to speed up 
 searches but always scans all files. It can make use of external tools 
-like `git grep` or `ack` though in order to gain acceptable performance 
-for medium-sized projects. The builtin vimscript-based version file 
-scanner and also |vimgrep| are suitable for small projects. See 
-|g:trag#grep_type| for available options.
+like `git grep`, `ack`, or `ag` though, in order to gain acceptable 
+performance for medium-sized projects. The builtin vimscript-based 
+version file scanner and also |vimgrep| are suitable for small projects. 
+See |g:trag#grep_type| for available options.
 
 
 Usage~
@@ -30,11 +30,12 @@ You can also type <Leader>r# to search for the word under cursor (see
 supported filetypes, <Leader>rd will search for the definition of the 
 word under cursor.
 
-Currently the following filetypes are supported (to some extent):
+Currently the following filetypes are supported:
 
     - java
     - javascript
     - json
+    - make
     - r
     - ruby
     - viki
@@ -42,6 +43,8 @@ Currently the following filetypes are supported (to some extent):
 
 Run `:echo globpath(&rtp, 'ftplugin/*/trag.vim')` to get a full listing 
 of supported filetypes.
+
+NOTE: Some kinds are available only for a subset of known filetypes.
 
 
 
