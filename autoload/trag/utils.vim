@@ -1,6 +1,6 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    25
+" @Revision:    27
 
 
 if !exists('g:trag#utils#cmdline_max')
@@ -9,8 +9,7 @@ endif
 
 
 function! trag#utils#GrepaddFiles(args, files) "{{{3
-    let files = map(copy(a:files), 'fnameescape(v:val)')
-    let files = map(files, 'escape(v:val, ''()'')')
+    let files = map(copy(a:files), 'shellescape(fnameescape(v:val))')
     " TLogVAR files
     " TLogVAR len(files)
     let flen = len(files)
