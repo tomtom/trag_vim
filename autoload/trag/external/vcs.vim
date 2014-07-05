@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    202
+" @Revision:    203
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -27,6 +27,7 @@ endf
 
 
 " Currently only git is supported.
+" For other VCSs, I'd recommend to use "ag".
 function! trag#external#vcs#Run(rx, files) "{{{3
     " TLogVAR a:rx
     if exists('b:trag_support_vcs')

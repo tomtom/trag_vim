@@ -76,6 +76,7 @@ common base:
     l ... variable definition
     m ... module definitions
     r ... variable assignment (e.g. "= WORD")
+    u ... uses of word (ignore comments)
     w ... find as word
     x ... subclasses
 
@@ -468,7 +469,8 @@ g:trag#grep_type               (default: 'trag')
       - trag
       - vimgrep
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
-        this option always searches all files in the VCS)
+        this option always searches all files in the VCS); for a list of 
+        supported VCSs see |trag#external#vcs#Run()|
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
       - ag
@@ -703,7 +705,8 @@ g:trag#grep_type               (default: 'trag')
       - trag
       - vimgrep
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
-        this option always searches all files in the VCS)
+        this option always searches all files in the VCS); for a list of 
+        supported VCSs see |trag#external#vcs#Run()|
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
       - ag
@@ -984,6 +987,7 @@ trag#external#vcs#IsSupported(kinds)
                                                     *trag#external#vcs#Run()*
 trag#external#vcs#Run(rx, files)
     Currently only git is supported.
+    For other VCSs, I'd recommend to use "ag".
 
                                                     *trag#external#vcs#ConvertFilename_git()*
 trag#external#vcs#ConvertFilename_git(type, filename)
@@ -1038,7 +1042,7 @@ trag#rx#ConvertRx_perl(type, rx)
 autoload/trag/utils.vim~
 
                                                     *g:trag#utils#cmdline_max*
-g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 1000000)
+g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 2000000)
 
                                                     *trag#utils#GrepaddFiles()*
 trag#utils#GrepaddFiles(args, files)
@@ -1061,7 +1065,8 @@ g:trag#grep_type               (default: 'trag')
       - trag
       - vimgrep
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
-        this option always searches all files in the VCS)
+        this option always searches all files in the VCS); for a list of 
+        supported VCSs see |trag#external#vcs#Run()|
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
       - ag
@@ -1296,7 +1301,8 @@ g:trag#grep_type               (default: 'trag')
       - trag
       - vimgrep
       - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
-        this option always searches all files in the VCS)
+        this option always searches all files in the VCS); for a list of 
+        supported VCSs see |trag#external#vcs#Run()|
       - external:CMD (CMD defaults to grep; use vimgrep as fallback)
       - ack
       - ag

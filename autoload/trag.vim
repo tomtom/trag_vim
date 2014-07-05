@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1387
+" @Revision:    1388
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -11,7 +11,8 @@
 "   - trag
 "   - vimgrep
 "   - vcs (use the VCS's grep function; see |trag#external#vcs#Run()|, 
-"     this option always searches all files in the VCS)
+"     this option always searches all files in the VCS); for a list of 
+"     supported VCSs see |trag#external#vcs#Run()|
 "   - external:CMD (CMD defaults to grep; use vimgrep as fallback)
 "   - ack
 "   - ag
