@@ -97,3 +97,57 @@ version: "0.11"
   - trag#RunCmdOnSelected(): Optional argument: Don't close scratch
   MD5 checksum: e4bc34f9c3ef3ce134f2c41918d0922d
 
+  - addon-info
+  - <c-l> Edit line
+  - Help template
+  - trag#RunCmdOnSelected(): Optionally use w.GetBufferLines() if provided (see vikitasks #104b45b)
+  - trag#RunCmdOnSelected(): Preliminary support for w.AfterRunCmd()
+  - trag#Grep(): Takes filetype as second optional argument
+  - g:trag#grep_type replaces g:trag_search_mode
+  - g:trag_map_leader, TragInstallMap(), TragInstallKindMap(): Make it easier to set up maps
+  - trag#GetGitFiles(): Use g:tlib#dir#sep, not the obsolete g:tlib_filename_sep
+  - Rename most commands matching TRag* -> Trag*
+  - trag#SetRepoFiles(): Use files in current VCS repo
+  - trag#Grep(): Refactor to enable use of external grep commands
+  - s:GetRx(): Return [posrx, filetype]
+  - First draft for use of external grep
+  - vim: Use :grepadd
+  - Further improvements to allow use of external grep commands
+  - Initial support for VCS (e.g. git grep)
+  - g:trag#file_sources: Define source for file lists
+  - trag#external#vcs#Run(): Use fnameescape()
+  - Fixed some regexps
+  - Rename s:trag_filenames to g:trag_extension_filetype
+  - TRagDefKind: accepts an optional "!"
+  - g:trag#file_sources can be buffer-local (b:trag_file_sources)
+  - Remove references to trag#Process_*
+  - trag#GetGitFiles(): Use \%()
+  - trag#external#grep#IsSupported(): Minor simplification
+  - trag#external#vcs#Run(): Minor optimization
+  - trag#DefFiletype()
+  - trag#external#vcs#Run(): Use
+  - Move filetype definitions to ftplugin/*/trag.vim
+  - json support
+  - FIX javascript regexp
+  - Use viki for *.TXT
+  - Draft for "hg grep" support (currently disabled due to poor performance)
+  - rx.vim: Convert regexps
+  - trag#utils#GrepaddFiles(): Process files in batches
+  - Adapt vcs to previous changes
+  - Improved support for grep
+  - Support for ack
+  - b:trag_grep_type: Buffer-local g:trag#grep_type
+  - GrepWith_grep, GrepWith_ack
+  - g:trag#file_sources: tags support
+  - Rename g:trag#external#ack#ack_params to g:trag#external#ack#opts
+  - Support for ag (the_silver_searcher)
+  - FIX javascript l regexp
+  - g:trag_kinds_ignored_comments: A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments
+  - New kind: "u" (uses of word; ignore comments)
+  - trag#utils#GrepaddFiles(): Escape "()" in filenames
+  - trag#rx#ConvertRx_perl(): Handle \{-}, \+, \?
+  - trag#utils#GrepaddFiles(): Use shellescape()
+  - Support for Makefiles
+  MD5 checksum: c87df75189cfb7574a10ba093bf60a0a
+version: "1.00"
+
