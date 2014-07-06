@@ -4,16 +4,16 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    673
+" @Revision:    674
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
     finish
 endif
-if !exists('g:loaded_tlib') || g:loaded_tlib < 111
+if !exists('g:loaded_tlib') || g:loaded_tlib < 112
     runtime plugin/02tlib.vim
-    if !exists('g:loaded_tlib') || g:loaded_tlib < 111
-        echoerr 'tlib >= 0.111 is required'
+    if !exists('g:loaded_tlib') || g:loaded_tlib < 112
+        echoerr 'tlib >= 0.112 is required'
         finish
     endif
 endif

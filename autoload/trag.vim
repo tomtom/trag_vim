@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    1388
+" @Revision:    1402
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -738,15 +738,22 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         endif
         call add(group_defs[ft].files, grep_def.ff)
     endfor
+    let unprocessed_fnames = {}
     for group_def in values(group_defs)
         let rx = get(group_def, 'use_rx', group_def.rxpos)
-        let ok = trag#external#{grep_cmd}#Run(rx, group_def.files)
+        let [ok, unprocessed_files] = trag#external#{grep_cmd}#Run(rx, group_def.files)
         " TLogVAR len(getqflist())
-        if g:trag#debug && !ok
-            echohl WarningMsg
-            echom 'Trag: Error when using external grep:' grep_cmd
-            echom v:exception
-            echohl NONE
+        if ok
+            for unprocessed_file in unprocessed_files
+                let unprocessed_fnames[unprocessed_file] = 1
+            endfor
+        else
+            if g:trag#debug
+                echohl WarningMsg
+                echom 'Trag: Error when using external grep:' grep_cmd
+                echom v:exception
+                echohl NONE
+            endif
             return 0
         endif
     endfor
@@ -775,6 +782,10 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         endif
     endfor
     call s:FilterRxNegs(rxnegs)
+    if !empty(unprocessed_fnames)
+        let grep_defs1 = filter(copy(a:grep_defs), 'has_key(unprocessed_fnames, v:val.ff) != -1')
+        call s:GrepWith_trag(grep_defs1, a:grep_opts)
+    endif
     return 1
 endf
 

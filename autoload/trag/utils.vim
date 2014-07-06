@@ -1,16 +1,17 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    28
+" @Revision:    32
 
 
 if !exists('g:trag#utils#cmdline_max')
     let g:trag#utils#cmdline_max = g:tlib#sys#windows ? 7000 : 2000000   "{{{2
+    " let g:trag#utils#cmdline_max = 200   " DBG
 endif
 
 
 function! trag#utils#GrepaddFiles(args, files) "{{{3
     let files = map(copy(a:files), 'shellescape(fnameescape(v:val), 1)')
-    " TLogVAR files
+    " TLogVAR a:args, files
     " TLogVAR len(files)
     let flen = len(files)
     let fidx = 0

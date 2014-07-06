@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    94
+" @Revision:    99
 
 
 if !exists('g:trag#external#grep#args')
@@ -38,7 +38,7 @@ function! trag#external#grep#Run(rx, files, ...) "{{{3
     " TLogVAR &grepprg, &grepformat, args
     try
         call trag#utils#GrepaddFiles(args, a:files)
-        return 1
+        return [1, []]
     finally
         if grep_prg0 != grep_prg1
             let &grepprg = grep_prg0
