@@ -1,4 +1,4 @@
-*trag.txt*          A language-aware file scanner
+*trag.txt*          A language-aware source code scanner (with support for git grep, ack, ag ...)
                     Author: Tom Link, micathom at gmail com
 
 This plugin uses ad-hoc searches to find strings in files. For certain 
