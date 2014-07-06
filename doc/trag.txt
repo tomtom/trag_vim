@@ -197,6 +197,7 @@ Contents~
         g:trag#file_sources ..................... |g:trag#file_sources|
         g:trag#use_buffer ....................... |g:trag#use_buffer|
         g:trag#check_vcs ........................ |g:trag#check_vcs|
+        g:trag#debug ............................ |g:trag#debug|
         trag#HasFiletype ........................ |trag#HasFiletype()|
         trag#SetFiletype ........................ |trag#SetFiletype()|
         trag#GetFiletype ........................ |trag#GetFiletype()|
@@ -271,6 +272,7 @@ Contents~
         g:trag#file_sources ..................... |g:trag#file_sources|
         g:trag#use_buffer ....................... |g:trag#use_buffer|
         g:trag#check_vcs ........................ |g:trag#check_vcs|
+        g:trag#debug ............................ |g:trag#debug|
         trag#HasFiletype ........................ |trag#HasFiletype()|
         trag#SetFiletype ........................ |trag#SetFiletype()|
         trag#GetFiletype ........................ |trag#GetFiletype()|
@@ -528,6 +530,9 @@ g:trag#check_vcs               (default: 1)
     If true, try to detect whether the current file is under an VCS and 
     use that later on.
 
+                                                    *g:trag#debug*
+g:trag#debug                   (default: 0)
+
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
     Return true, if a filetype for "name" (an extension or a filename) is 
@@ -763,6 +768,9 @@ g:trag#use_buffer              (default: 1)
 g:trag#check_vcs               (default: 1)
     If true, try to detect whether the current file is under an VCS and 
     use that later on.
+
+                                                    *g:trag#debug*
+g:trag#debug                   (default: 0)
 
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
@@ -1124,6 +1132,9 @@ g:trag#check_vcs               (default: 1)
     If true, try to detect whether the current file is under an VCS and 
     use that later on.
 
+                                                    *g:trag#debug*
+g:trag#debug                   (default: 0)
+
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
     Return true, if a filetype for "name" (an extension or a filename) is 
@@ -1359,6 +1370,9 @@ g:trag#use_buffer              (default: 1)
 g:trag#check_vcs               (default: 1)
     If true, try to detect whether the current file is under an VCS and 
     use that later on.
+
+                                                    *g:trag#debug*
+g:trag#debug                   (default: 0)
 
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
