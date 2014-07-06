@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2014-07-03.
-" @Revision:    674
+" @Revision:    679
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("loaded_trag")
@@ -36,7 +36,8 @@ TLet g:trag_map_leader = '<Leader>r'
 " FILENAME_EXTENSION should be a lower-case string.
 TLet g:trag_extension_filetype = {}
 
-" A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
+" A list of kinds for which |TragInstallKindMap()| will install maps 
+" that ignore comments.
 TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r', 'u']
 
 
@@ -62,7 +63,7 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
                 \ | endif
 
 
-" :display: TRagDefFiletype FILETYPE EXTENSION ... FILENAME ...
+" :display: TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
 " In order to recognize files based on their extension, you have to 
 " declare filetypes first.
 " If a file has no extension, the whole filename is used.

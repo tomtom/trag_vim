@@ -1,11 +1,11 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    32
+" @Revision:    55
 
 
 if !exists('g:trag#utils#cmdline_max')
-    let g:trag#utils#cmdline_max = g:tlib#sys#windows ? 7000 : 2000000   "{{{2
-    " let g:trag#utils#cmdline_max = 200   " DBG
+    let g:trag#utils#cmdline_max = g:tlib#sys#windows ? 7000 : 100000   "{{{2
+    " let g:trag#utils#cmdline_max = 500   " DBG
 endif
 
 
@@ -20,10 +20,11 @@ function! trag#utils#GrepaddFiles(args, files) "{{{3
         let ulen = 0
         while fidx < flen
             let file = files[fidx]
-            if ulen + len(file) < g:trag#utils#cmdline_max
+            let ulen1 = ulen + len(file)
+            if ulen1 < g:trag#utils#cmdline_max
                 call add(use_files, file)
                 let fidx += 1
-                let ulen += len(file)
+                let ulen = ulen1
             else
                 break
             endif
@@ -31,7 +32,15 @@ function! trag#utils#GrepaddFiles(args, files) "{{{3
         let filess = join(use_files)
         " TLogVAR len(filess)
         " TLogVAR use_files
-        exec 'silent grepadd!' a:args filess
+        try
+            " TLogVAR &grepprg, &grepformat
+            " echom 'DBG' 'silent grepadd!' a:args
+            exec 'silent grepadd!' a:args filess
+        catch
+            echohl Error
+            echom 'Trag: Error when calling grepadd:' len(filess) filess
+            echohl NONE
+        endtry
     endwh
     " echom '-- PRESS ENTER --' | call getchar() " DBG
 endf
