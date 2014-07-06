@@ -58,6 +58,8 @@ TLet g:trag#use_buffer = 1
 " use that later on.
 TLet g:trag#check_vcs = 1
 
+TLet g:trag#debug = 0
+
 
 " :nodoc:
 function! trag#DefFiletype(args) "{{{3
@@ -300,16 +302,17 @@ function! s:GetFiles() "{{{3
         call trag#SetFiles()
     endif
     if empty(b:trag_files_)
-        " echohl Error
-        " echoerr 'TRag: No project files'
-        " echohl NONE
         let trag_get_files = tlib#var#Get('trag_get_files_'. &filetype, 'bg', '')
         " TLogVAR trag_get_files
         if empty(trag_get_files)
             let trag_get_files = tlib#var#Get('trag_get_files', 'bg', '')
             " TLogVAR trag_get_files
         endif
-        echom 'TRag: No project files ... use: '. trag_get_files
+        if g:trag#debug
+            " echohl Error
+            echom 'TRag: No project files ... use: '. trag_get_files
+            " echohl NONE
+        endif
         let b:trag_files_ = eval(trag_get_files)
     endif
     " TLogVAR b:trag_files_
@@ -739,7 +742,7 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         let rx = get(group_def, 'use_rx', group_def.rxpos)
         let ok = trag#external#{grep_cmd}#Run(rx, group_def.files)
         " TLogVAR len(getqflist())
-        if !ok
+        if g:trag#debug && !ok
             echohl WarningMsg
             echom 'Trag: Error when using external grep:' grep_cmd
             echom v:exception
