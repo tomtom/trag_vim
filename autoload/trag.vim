@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-03.
-" @Revision:    1462
+" @Last Change: 2014-07-07.
+" @Revision:    1477
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -774,7 +774,8 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     let bnums = {}
     for bnum in range(1, bufnr('$'))
         if bufexists(bnum)
-            let bnums[fnamemodify(bufname(bnum), ':p')] = bnum
+            let fname = tlib#file#Canonic(fnamemodify(bufname(bnum), ':p'))
+            let bnums[fname] = bnum
         endif
     endfor
     " TLogVAR bnums
@@ -783,18 +784,24 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         let qfl = filter(qfl, 'v:val.bufnr > 0')
         " TLogVAR qfl
         " TLogVAR 1, len(qfl)
+        let collected_bufnrs = {}
         for [ft, rxpos] in items(must_filter)
             " TLogVAR ft, rxpos
-            let bufnrs = tlib#list#ToDictionary(filter(map(copy(group_defs[ft].files), 'get(bnums, v:val, 0)'), 'v:val > 0'), 1)
+            " TLogVAR group_defs[ft].files
+            let bufnrs = tlib#list#ToDictionary(filter(map(copy(group_defs[ft].files), 'get(bnums, tlib#file#Canonic(v:val), 0)'), 'v:val > 0'), 1)
+            " TLogVAR bufnrs
+            let collected_bufnrs = extend(collected_bufnrs, bufnrs)
             let qfl = filter(qfl, '!has_key(bufnrs, v:val.bufnr) || v:val.text =~ rxpos')
         endfor
         " TLogVAR 2, len(qfl)
+        " let qfl = filter(qfl, 'has_key(collected_bufnrs, v:val.bufnr)')
+        " TLogVAR 3, len(qfl)
         call setqflist(qfl)
     endif
     let rxnegs = {}
     for grep_def in deepcopy(a:grep_defs)
         if !empty(grep_def.rxneg)
-            let bufnr = get(bnums, grep_def.ff, 0)
+            let bufnr = get(bnums, tlib#file#Canonic(grep_def.ff), 0)
             if bufnr > 0 && !has_key(rxnegs, bufnr)
                 let rxnegs[bufnr] = grep_def.rxneg
             endif
