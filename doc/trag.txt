@@ -190,6 +190,7 @@ Contents~
         TragInstallMap .......................... |TragInstallMap()|
         TragInstallKindMap ...................... |TragInstallKindMap()|
         g:trag#grep_type ........................ |g:trag#grep_type|
+        g:trag#grep_fallback_type ............... |g:trag#grep_fallback_type|
         g:trag_get_files ........................ |g:trag_get_files|
         g:trag_get_files_java ................... |g:trag_get_files_java|
         g:trag_get_files_c ...................... |g:trag_get_files_c|
@@ -265,6 +266,7 @@ Contents~
         trag#utils#GrepaddFiles ................. |trag#utils#GrepaddFiles()|
         trag#java#Rename ........................ |trag#java#Rename()|
         g:trag#grep_type ........................ |g:trag#grep_type|
+        g:trag#grep_fallback_type ............... |g:trag#grep_fallback_type|
         g:trag_get_files ........................ |g:trag_get_files|
         g:trag_get_files_java ................... |g:trag_get_files_java|
         g:trag_get_files_c ...................... |g:trag_get_files_c|
@@ -330,7 +332,8 @@ g:trag_extension_filetype      (default: {})
 
                                                     *g:trag_kinds_ignored_comments*
 g:trag_kinds_ignored_comments  (default: ['c', 'd', 'f', 'l', 'r', 'u'])
-    A list of kinds for which |TragInstallKindMap()| will install maps that ignore comments.
+    A list of kinds for which |TragInstallKindMap()| will install maps 
+    that ignore comments.
 
                                                     *:TRagDefKind*
 :TRagDefKind[!] KIND FILETYPE /REGEXP_FORMAT/
@@ -350,7 +353,7 @@ TRagKeyword FILETYPE KEYWORD_CHARS
     Override 'iskeyword' for a certain filetype. See also |trag#CWord()|.
 
                                                     *:TRagDefFiletype*
-TRagDefFiletype FILETYPE EXTENSION ... FILENAME ...
+TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
     In order to recognize files based on their extension, you have to 
     declare filetypes first.
     If a file has no extension, the whole filename is used.
@@ -489,6 +492,11 @@ g:trag#grep_type               (default: 'trag')
     trag & vimgrep should work everywhere.
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
+
+                                                    *g:trag#grep_fallback_type*
+g:trag#grep_fallback_type      (default: 'trag')
+    Use this type for files that are not supported by |g:trag#grep_type| 
+    (e.g. files outside of a VCS if |g:trag#grep_type| includes "vcs").
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -728,6 +736,11 @@ g:trag#grep_type               (default: 'trag')
     trag & vimgrep should work everywhere.
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
+
+                                                    *g:trag#grep_fallback_type*
+g:trag#grep_fallback_type      (default: 'trag')
+    Use this type for files that are not supported by |g:trag#grep_type| 
+    (e.g. files outside of a VCS if |g:trag#grep_type| includes "vcs").
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -974,13 +987,13 @@ autoload/trag/external/ack.vim~
 g:trag#external#ack#opts       (default: {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'})
 
                                                     *g:trag#external#ack#supported_kinds*
-g:trag#external#ack#supported_kinds (default: ['identity', 'w', 'todo'])
+g:trag#external#ack#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
 
                                                     *trag#external#ack#IsSupported()*
 trag#external#ack#IsSupported(kinds)
 
                                                     *trag#external#ack#Run()*
-trag#external#ack#Run(rx, files)
+trag#external#ack#Run(kinds, rx, files)
 
 
 ========================================================================
@@ -996,7 +1009,7 @@ g:trag#external#vcs#supported_kinds (default: ['identity', 'w', 'todo'])
 trag#external#vcs#IsSupported(kinds)
 
                                                     *trag#external#vcs#Run()*
-trag#external#vcs#Run(rx, files)
+trag#external#vcs#Run(kinds, rx, files)
     Currently only git is supported.
     For other VCSs, I'd recommend to use "ag".
 
@@ -1011,13 +1024,13 @@ autoload/trag/external/ag.vim~
 g:trag#external#ag#opts        (default: {'grepprg': 'ag', 'args': '-U -f --line-numbers --nogroup --nocolor -- %s'})
 
                                                     *g:trag#external#ag#supported_kinds*
-g:trag#external#ag#supported_kinds (default: ['identity', 'w', 'todo'])
+g:trag#external#ag#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
 
                                                     *trag#external#ag#IsSupported()*
 trag#external#ag#IsSupported(kinds)
 
                                                     *trag#external#ag#Run()*
-trag#external#ag#Run(rx, files)
+trag#external#ag#Run(kinds, rx, files)
 
 
 ========================================================================
@@ -1027,13 +1040,13 @@ autoload/trag/external/grep.vim~
 g:trag#external#grep#args      (default: '-Hn -E %s --')
 
                                                     *g:trag#external#grep#supported_kinds*
-g:trag#external#grep#supported_kinds (default: ['identity', 'w', 'todo'])
+g:trag#external#grep#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
 
                                                     *trag#external#grep#IsSupported()*
 trag#external#grep#IsSupported(kinds)
 
                                                     *trag#external#grep#Run()*
-trag#external#grep#Run(rx, files, ...)
+trag#external#grep#Run(kinds, rx, files, ...)
 
 
 ========================================================================
@@ -1053,7 +1066,7 @@ trag#rx#ConvertRx_perl(type, rx)
 autoload/trag/utils.vim~
 
                                                     *g:trag#utils#cmdline_max*
-g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 2000000)
+g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 100000)
 
                                                     *trag#utils#GrepaddFiles()*
 trag#utils#GrepaddFiles(args, files)
@@ -1091,6 +1104,11 @@ g:trag#grep_type               (default: 'trag')
     trag & vimgrep should work everywhere.
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
+
+                                                    *g:trag#grep_fallback_type*
+g:trag#grep_fallback_type      (default: 'trag')
+    Use this type for files that are not supported by |g:trag#grep_type| 
+    (e.g. files outside of a VCS if |g:trag#grep_type| includes "vcs").
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
@@ -1330,6 +1348,11 @@ g:trag#grep_type               (default: 'trag')
     trag & vimgrep should work everywhere.
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
+
+                                                    *g:trag#grep_fallback_type*
+g:trag#grep_fallback_type      (default: 'trag')
+    Use this type for files that are not supported by |g:trag#grep_type| 
+    (e.g. files outside of a VCS if |g:trag#grep_type| includes "vcs").
 
                                                     *g:trag_get_files*
 g:trag_get_files               (default: 'split(glob("*"), "\n")')
