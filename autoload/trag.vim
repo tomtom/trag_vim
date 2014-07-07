@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-07.
-" @Revision:    1477
+" @Revision:    1480
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -747,6 +747,7 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
                 let group_defs[ft].use_rx = grep_def.rx
                 let group_defs[ft].use_kinds = [['identity']]
             endif
+            " TLogVAR group_defs[ft]
         endif
         call add(group_defs[ft].files, grep_def.ff)
     endfor
@@ -754,6 +755,7 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     for [ft, group_def] in items(group_defs)
         let rx = get(group_def, 'use_rx', group_def.rxpos)
         let kinds = get(group_def, 'use_kinds', group_def.kindspos)
+        " TLogVAR rx, kinds
         let [ok, unprocessed_files] = trag#external#{grep_cmd}#Run(kinds, rx, group_def.files)
         " TLogVAR ft, len(getqflist())
         if ok

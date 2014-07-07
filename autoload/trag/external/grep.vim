@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2014-07-03.
-" @Revision:    102
+" @Revision:    105
 
 
 if !exists('g:trag#external#grep#args')
@@ -26,8 +26,7 @@ function! trag#external#grep#Run(kinds, rx, files, ...) "{{{3
     let grep_prg1 = get(grep_params, 'grepprg', grep_prg0)
     let grep_format1 = get(grep_params, 'grepformat', grep_format0)
     let rx = trag#rx#ConvertRx(a:rx, 'perl', grep_params)
-    " TLogVAR a:
-    " rx, rx
+    " TLogVAR a:rx, rx
     let args = get(grep_params, 'args', g:trag#external#grep#args)
     let args = tlib#string#Printf1(args, shellescape(rx, 1))
     if grep_prg0 != grep_prg1

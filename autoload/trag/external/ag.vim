@@ -1,14 +1,14 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    29
+" @Revision:    30
 
 if !exists('g:trag#external#ag#opts')
     let g:trag#external#ag#opts = {'grepprg': 'ag', 'args': '-U -f --line-numbers --nogroup --nocolor -- %s'}   "{{{2
 endif
 
-if !exists('g:trag#external#ag#opts_identity')
-    let g:trag#external#ag#opts_identity = {'grepprg': 'ag', 'args': '-Q -U -f --line-numbers --nogroup --nocolor -- %s'}   "{{{2
-endif
+" if !exists('g:trag#external#ag#opts_identity')
+"     let g:trag#external#ag#opts_identity = {'grepprg': 'ag', 'args': '-Q -U -f --line-numbers --nogroup --nocolor -- %s'}   "{{{2
+" endif
 
 
 if !exists('g:trag#external#ag#supported_kinds')
