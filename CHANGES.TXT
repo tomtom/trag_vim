@@ -151,3 +151,13 @@ version: "0.11"
   MD5 checksum: c87df75189cfb7574a10ba093bf60a0a
 version: "1.00"
 
+  - trag#utils#GrepaddFiles(): Use shellescape(..., 1)
+  - g:trag#debug: Hide warnings by default
+  - Make sure not to run git grep on files outside of the repo (use trag instead; require tlib 0.112)
+  - Minor improvements; g:trag#grep_fallback_type
+  - GrepWith_external(): bufnr optimization
+  - GrepWith_external(): normalize filenames
+  - ag: Don't use -Q for "identity"
+  MD5 checksum: 3c5f2c7653a0345612891fe614655997
+version: "1.01"
+
