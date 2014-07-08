@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-07.
-" @Revision:    1480
+" @Last Change: 2014-07-08.
+" @Revision:    1494
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -418,7 +418,9 @@ function! trag#SetFiles(...) "{{{3
     TVarArg ['files', []]
     call trag#ClearFiles()
     if empty(files)
+        let source1 = ''
         for source in tlib#var#Get('trag#file_sources', 'bg', [])
+            let source1 = source
             if source == 'files'
                 let files = tlib#var#Get('trag_files', 'bg', [])
             elseif source == 'glob'
@@ -466,6 +468,9 @@ function! trag#SetFiles(...) "{{{3
         call map(files, 'fnamemodify(v:val, ":p")')
         " TLogVAR files
         call trag#AddFiles(files)
+        let b:trag_source = source1
+    else
+        let b:trag_source = ''
     endif
     " TLogVAR b:trag_files_
     if empty(b:trag_files_)
@@ -521,7 +526,11 @@ function! trag#Edit() "{{{3
     let w.base = s:GetFiles()
     let w.show_empty = 1
     let w.pick_last_item = 0
-    call w.SetInitialFilter(matchstr(expand('%:t:r'), '^\w\+'))
+    if b:trag_source !~ '\<vcs\>'
+        let pattern = matchstr(expand('%:t:r'), '^\w\+')
+        " call w.SetInitialFilter(pattern)
+        call w.SetInitialFilter([[''], [pattern]])
+    endif
     call w.Set_display_format('filename')
     " TLogVAR w.base
     call tlib#input#ListW(w)
