@@ -1001,7 +1001,7 @@ function! s:Rx(rxacc, default) "{{{3
 endf
 
 
-function! s:GetFilename(qfe) "{{{3
+function! trag#GetFilename(qfe) "{{{3
     let filename = get(a:qfe, 'filename')
     if empty(filename)
         let filename = bufname(get(a:qfe, 'bufnr'))
@@ -1010,7 +1010,7 @@ function! s:GetFilename(qfe) "{{{3
 endf
 
 function! s:FormatQFLE(qfe) "{{{3
-    let filename = s:GetFilename(a:qfe)
+    let filename = trag#GetFilename(a:qfe)
     if get(s:world, 'trag_short_filename', '')
         let filename = pathshorten(filename)
     endif
@@ -1090,13 +1090,13 @@ function! trag#AgentEditQFE(world, selected, ...) "{{{3
             " TLogVAR idx
             if idx >= 0
                 " TLogVAR a:world.qfl
-                " call tlog#Debug(string(map(copy(a:world.qfl), 's:GetFilename(v:val)')))
+                " call tlog#Debug(string(map(copy(a:world.qfl), 'trag#GetFilename(v:val)')))
                 " call tlog#Debug(string(map(copy(a:world.qfl), 'v:val.bufnr')))
                 " TLogVAR idx, a:world.qfl[idx]
                 let qfe = a:world.qfl[idx]
                 " let back = a:world.SwitchWindow('win')
                 " TLogVAR cmd_edit, cmd_buffer, qfe
-                let fn = s:GetFilename(qfe)
+                let fn = trag#GetFilename(qfe)
                 " TLogVAR cmd_edit, cmd_buffer, fn
                 call tlib#file#With(cmd_edit, cmd_buffer, [fn], a:world)
                 " TLogDBG bufname('%')
