@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-08.
-" @Revision:    1494
+" @Last Change: 2014-10-09.
+" @Revision:    1500
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -251,8 +251,17 @@ let s:grep_rx = ''
 
 
 function! trag#InitListBuffer() "{{{3
-    let syntax = get(s:world, 'trag_list_syntax', '')
-    let nextgroup = get(s:world, 'trag_list_syntax_nextgroup', '')
+    let set_syntax = get(s:world, 'set_syntax', 's:SetSyntax')
+    call call(set_syntax, [], s:world)
+    if has('balloon_eval')
+        setlocal ballooneval balloonexpr=trag#Balloon()
+    endif
+endf
+
+
+function! s:SetSyntax() dict "{{{3
+    let syntax = get(self, 'trag_list_syntax', '')
+    let nextgroup = get(self, 'trag_list_syntax_nextgroup', '')
     if !empty(syntax)
         exec printf('runtime syntax/%s.vim', syntax)
     endif
@@ -264,9 +273,6 @@ function! trag#InitListBuffer() "{{{3
     endif
     hi def link TTagedFilesFilename Directory
     hi def link TTagedFilesLNum LineNr
-    if has('balloon_eval')
-        setlocal ballooneval balloonexpr=trag#Balloon()
-    endif
 endf
 
 
