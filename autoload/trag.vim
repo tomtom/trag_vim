@@ -1074,7 +1074,8 @@ endf
 
 
 function! s:FormatBase(world) "{{{3
-    let a:world.base = map(copy(a:world.qfl), 's:FormatQFLE(v:val)')
+    let fmt = get(a:world, 'format_item', 's:FormatQFLE(v:val)')
+    let a:world.base = map(copy(a:world.qfl),  fmt)
 endf
 
 function! trag#AgentEditQFE(world, selected, ...) "{{{3
