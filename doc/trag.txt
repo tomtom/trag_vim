@@ -220,6 +220,7 @@ Contents~
         trag#Edit ............................... |trag#Edit()|
         trag#Grep ............................... |trag#Grep()|
         trag#ClearCachedRx ...................... |trag#ClearCachedRx()|
+        trag#GetFilename ........................ |trag#GetFilename()|
         trag#QuickList .......................... |trag#QuickList()|
         trag#QuickListMaybe ..................... |trag#QuickListMaybe()|
         trag#BrowseList ......................... |trag#BrowseList()|
@@ -296,6 +297,7 @@ Contents~
         trag#Edit ............................... |trag#Edit()|
         trag#Grep ............................... |trag#Grep()|
         trag#ClearCachedRx ...................... |trag#ClearCachedRx()|
+        trag#GetFilename ........................ |trag#GetFilename()|
         trag#QuickList .......................... |trag#QuickList()|
         trag#QuickListMaybe ..................... |trag#QuickListMaybe()|
         trag#BrowseList ......................... |trag#BrowseList()|
@@ -653,6 +655,9 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
                                                     *trag#ClearCachedRx()*
 trag#ClearCachedRx()
 
+                                                    *trag#GetFilename()*
+trag#GetFilename(qfe)
+
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
     Display the |quickfix| list with |tlib#input#ListW()|.
@@ -896,6 +901,9 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 
                                                     *trag#ClearCachedRx()*
 trag#ClearCachedRx()
+
+                                                    *trag#GetFilename()*
+trag#GetFilename(qfe)
 
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
@@ -1265,6 +1273,9 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
                                                     *trag#ClearCachedRx()*
 trag#ClearCachedRx()
 
+                                                    *trag#GetFilename()*
+trag#GetFilename(qfe)
+
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
     Display the |quickfix| list with |tlib#input#ListW()|.
@@ -1508,6 +1519,9 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 
                                                     *trag#ClearCachedRx()*
 trag#ClearCachedRx()
+
+                                                    *trag#GetFilename()*
+trag#GetFilename(qfe)
 
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
