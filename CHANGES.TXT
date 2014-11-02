@@ -168,3 +168,10 @@ version: "1.01"
   MD5 checksum: 738c7a98299f22507000ab21a53d7b2f
 version: "1.02"
 
+  - trag#Edit(): Don't set initial filter when the source of the files listing was a VCS
+  - trag#InitListBuffer: Use set_syntax
+  - trag#GetFilename() instead of s:GetFilename()
+  - FormatBase(): Allow customization via format_item
+  MD5 checksum: 738c7a98299f22507000ab21a53d7b2f
+version: "1.02"
+
