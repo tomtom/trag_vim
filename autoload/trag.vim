@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-10-09.
+" @Last Change: 2015-05-21.
 " @Revision:    1500
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
@@ -1079,7 +1079,8 @@ function! s:FormatBase(world) "{{{3
 endf
 
 function! trag#AgentEditQFE(world, selected, ...) "{{{3
-    TVarArg ['cmd_edit', 'edit'], ['cmd_buffer', 'buffer']
+    TVarArg ['cmd_edit', ''], ['cmd_buffer', '']
+    " TVarArg ['cmd_edit', 'edit'], ['cmd_buffer', 'buffer']
     " TLogVAR a:selected
     if empty(a:selected)
         call a:world.RestoreOrigin()
@@ -1099,12 +1100,18 @@ function! trag#AgentEditQFE(world, selected, ...) "{{{3
                 " TLogVAR cmd_edit, cmd_buffer, qfe
                 let fn = trag#GetFilename(qfe)
                 " TLogVAR cmd_edit, cmd_buffer, fn
-                call tlib#file#With(cmd_edit, cmd_buffer, [fn], a:world)
-                " TLogDBG bufname('%')
-                " TLogVAR &filetype
-                call tlib#buffer#ViewLine(qfe.lnum)
-                " call a:world.SetOrigin()
-                " exec back
+                if empty(cmd_edit) && empty(cmd_buffer)
+                    if tlib#file#Edit(fn)
+                        call tlib#buffer#ViewLine(qfe.lnum)
+                    endif
+                else
+                    call tlib#file#With(cmd_edit, cmd_buffer, [fn], a:world)
+                    " TLogDBG bufname('%')
+                    " TLogVAR &filetype
+                    call tlib#buffer#ViewLine(qfe.lnum)
+                    " call a:world.SetOrigin()
+                    " exec back
+                endif
             endif
         endfor
     endif
