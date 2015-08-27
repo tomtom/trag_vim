@@ -3,7 +3,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-05-22.
+" @Last Change: 2015-06-25.
 " @Revision:    682
 " GetLatestVimScripts: 2033 1 trag.vim
 
@@ -180,6 +180,7 @@ command! -bar TragRepoFiles call trag#SetRepoFiles()
 function! TragInstallMap(leader) "{{{3
     " TLogVAR a:leader
     exec 'noremap' a:leader .'. :Trag * '
+    exec 'noremap' a:leader .'+ :Tragcw<cr>'
     exec 'noremap' a:leader .'- :Tragfile<cr>'
     exec 'noremap <silent>' a:leader .'# :Trag #w <c-r>=trag#CWord()<cr><cr>'
     for kind in keys(g:trag_kinds)
