@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-05-21.
+" @Last Change: 2015-08-27.
 " @Revision:    1500
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
@@ -599,6 +599,8 @@ function! trag#Grep(args, ...) "{{{3
         let grep_defs = filter(grep_defs, '!empty(v:val)')
         let done = 0
         let trag_type = tlib#var#Get('trag#grep_type', 'bg')
+        let s:last_run_files = files
+        let s:last_run_grep_defs = grep_defs
         for grep_name in split(trag_type, ',\s*')
             " TLogVAR grep_name
             let ml = matchlist(grep_name, '^\(\w\+\):\s*\(.\{-}\)\s*$')
@@ -645,6 +647,15 @@ function! trag#Grep(args, ...) "{{{3
 endf
 
 
+function! trag#LastRun(what) abort "{{{3
+    if a:what =~# '^\%(f\%[iles]\|grep_defs\)$'
+        return s:last_run_{a:what}
+    else
+        echoerr 'trag#LastRun: Unsupported type:' a:what
+    endif
+endf
+
+
 function! s:GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
     let ff = fnamemodify(a:filename, ':p')
     if filereadable(ff)
@@ -675,8 +686,6 @@ function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
     for grep_def in a:grep_defs
         let fidx += 1
         call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
-        let qfl = {}
-        let lnum = 1
         let bnum = bufnr(grep_def.ff)
         if g:trag#use_buffer && bnum != -1 && bufloaded(bnum)
             " TLogVAR bnum, a:filename, bufname(bnum)
@@ -685,18 +694,26 @@ function! s:GrepWith_trag(grep_defs, grep_opts) "{{{3
             let lines = readfile(grep_def.ff)
         endif
         " TLogVAR grep_def.rxpos, grep_def.rxneg
-        for line in lines
-            if line =~ grep_def.rxpos && (empty(grep_def.rxneg) || line !~ grep_def.rxneg)
-                let qfl[lnum] = {"filename": grep_def.ff, "lnum": lnum, "text": tlib#string#Strip(line)}
-            endif
-            let lnum += 1
-        endfor
-        " TLogVAR qfl
-        if !empty(qfl)
-            call setqflist(values(qfl), 'a')
-        endif
+        call trag#ScanWithGrepDefs(grep_def, lines, 1)
     endfor
     return 1
+endf
+
+
+function! trag#ScanWithGrepDefs(grep_def, lines, setqflist) "{{{3
+    let qfl = {}
+    let lnum = 1
+    for line in a:lines
+        if line =~ a:grep_def.rxpos && (empty(a:grep_def.rxneg) || line !~ a:grep_def.rxneg)
+            let qfl[lnum] = {"filename": a:grep_def.ff, "lnum": lnum, "text": tlib#string#Strip(line)}
+        endif
+        let lnum += 1
+    endfor
+    " TLogVAR qfl
+    if a:setqflist && !empty(qfl)
+        call setqflist(values(qfl), 'a')
+    endif
+    return qfl
 endf
 
 
