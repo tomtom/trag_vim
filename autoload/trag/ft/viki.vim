@@ -14,5 +14,5 @@ TRagDefKind h viki /\C^\*\+\s\+%s/
 TRagDefKind l viki /\C^\s\+%s\s\+::/
 TRagDefKind r viki /\C^\s\+\%(.\{-}\s::\|[-+*#]\|[@?].\)\s\+%s/
 TRagDefKind todo viki /\C\%(TODO:\?\|FIXME:\?\|+++\|!!!\|###\|???\)\s\+%s/
-
+TRagDefKind tag viki /\C\%({idx:\s*\|{label:\s*\|#\)\<%s\>/
 

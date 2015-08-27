@@ -166,7 +166,7 @@ TRagDefKind W * /\C.\{-}%s.\{-}/
 
 TRagDefKind fuzzy * /\c%{fuzzyrx}/
 
-runtime! ftplugin/*/trag.vim
+runtime! autoload/trag/ft/*.vim
 
 
 
