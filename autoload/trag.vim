@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-08-27.
+" @Last Change: 2015-08-29.
 " @Revision:    1500
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
@@ -713,7 +713,7 @@ function! trag#ScanWithGrepDefs(grep_def, lines, setqflist) "{{{3
     if a:setqflist && !empty(qfl)
         call setqflist(values(qfl), 'a')
     endif
-    return qfl
+    return values(qfl)
 endf
 
 
