@@ -3,7 +3,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-06-25.
+" @Last Change: 2015-08-29.
 " @Revision:    682
 " GetLatestVimScripts: 2033 1 trag.vim
 
@@ -17,7 +17,7 @@ if !exists('g:loaded_tlib') || g:loaded_tlib < 114
         finish
     endif
 endif
-let g:loaded_trag = 102
+let g:loaded_trag = 103
 
 let s:save_cpo = &cpo
 set cpo&vim
