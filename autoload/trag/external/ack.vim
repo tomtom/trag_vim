@@ -1,6 +1,6 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    15
+" @Revision:    17
 
 if !exists('g:trag#external#ack#opts')
     let g:trag#external#ack#opts = {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'}   "{{{2
@@ -18,6 +18,7 @@ endf
 
 
 function! trag#external#ack#Run(kinds, rx, files) "{{{3
+    " TLogVAR a:kinds, a:rx
     return trag#external#grep#Run(a:kinds, a:rx, a:files, g:trag#external#ack#opts)
 endf
 

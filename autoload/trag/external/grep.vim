@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-03.
-" @Revision:    105
+" @Last Change: 2015-09-29.
+" @Revision:    109
 
 
 if !exists('g:trag#external#grep#args')
@@ -20,6 +20,7 @@ endf
 
 
 function! trag#external#grep#Run(kinds, rx, files, ...) "{{{3
+    " TLogVAR a:kinds, a:rx
     let grep_params = a:0 >= 1 ? a:1 : {}
     let grep_prg0 = &grepprg
     let grep_format0 = &grepformat

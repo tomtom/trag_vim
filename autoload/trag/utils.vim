@@ -1,6 +1,6 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    55
+" @Revision:    62
 
 
 if !exists('g:trag#utils#cmdline_max')
@@ -10,7 +10,8 @@ endif
 
 
 function! trag#utils#GrepaddFiles(args, files) "{{{3
-    let files = map(copy(a:files), 'shellescape(fnameescape(v:val), 1)')
+    " let files = map(copy(a:files), 'shellescape(fnameescape(v:val), 1)')
+    let files = a:files
     " TLogVAR a:args, files
     " TLogVAR len(files)
     let flen = len(files)
@@ -22,7 +23,7 @@ function! trag#utils#GrepaddFiles(args, files) "{{{3
             let file = files[fidx]
             let ulen1 = ulen + len(file)
             if ulen1 < g:trag#utils#cmdline_max
-                call add(use_files, file)
+                call add(use_files, shellescape(file, 1))
                 let fidx += 1
                 let ulen = ulen1
             else
@@ -33,9 +34,10 @@ function! trag#utils#GrepaddFiles(args, files) "{{{3
         " TLogVAR len(filess)
         " TLogVAR use_files
         try
-            " TLogVAR &grepprg, &grepformat
+            " TLogVAR &grepprg, &grepformat, len(getqflist())
             " echom 'DBG' 'silent grepadd!' a:args
             exec 'silent grepadd!' a:args filess
+            " TLogVAR getqflist()
         catch
             echohl Error
             echom 'Trag: Error when calling grepadd:' len(filess) filess
