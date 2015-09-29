@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-08-29.
-" @Revision:    1500
+" @Last Change: 2015-09-23.
+" @Revision:    1502
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -14,8 +14,8 @@
 "     this option always searches all files in the VCS); for a list of 
 "     supported VCSs see |trag#external#vcs#Run()|
 "   - external:CMD (CMD defaults to grep; use vimgrep as fallback)
-"   - ack
-"   - ag
+"   - ack (https://github.com/petdance/ack2)
+"   - ag (https://github.com/ggreer/the_silver_searcher)
 "   - grep (uses 'grepprg')
 "
 " The first valid option is used. E.g. if the value is "vcs,trag" and if 
@@ -762,6 +762,9 @@ endf
 function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     let opts = tlib#arg#StringAsKeyArgsEqual(a:grep_opts)
     let grep_cmd = get(opts, 0, 'grep')
+    if !tlib#sys#IsExecutable(grep_cmd)
+        return 0
+    endif
     " TLogVAR grep_cmd
     let group_defs = {}
     let must_filter = {}
@@ -893,11 +896,16 @@ endf
 
 function! s:SplitArgs(args) "{{{3
     " TLogVAR a:args
-    let kind = matchstr(a:args, '^\S\+')
-    if kind == '.' || kind == '*'
+    if a:args =~ '\s'
+        let kind = matchstr(a:args, '^\S\+')
+        if kind == '.' || kind == '*'
+            let kind = ''
+        endif
+        let rx = matchstr(a:args, '\s\zs.*')
+    else
         let kind = ''
+        let rx = a:args
     endif
-    let rx = matchstr(a:args, '\s\zs.*')
     if stridx(kind, '#') != -1
         let kind = substitute(kind, '#', '', 'g')
         let rx = tlib#rx#Escape(rx)
