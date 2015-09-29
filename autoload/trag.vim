@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-09-23.
-" @Revision:    1502
+" @Last Change: 2015-09-29.
+" @Revision:    1510
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -829,6 +829,7 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
             " TLogVAR bufnrs
             let collected_bufnrs = extend(collected_bufnrs, bufnrs)
             let qfl = filter(qfl, '!has_key(bufnrs, v:val.bufnr) || v:val.text =~ rxpos')
+            let qfl = map(qfl, 's:StripText(v:val)')
         endfor
         " TLogVAR 2, len(qfl)
         " let qfl = filter(qfl, 'has_key(collected_bufnrs, v:val.bufnr)')
@@ -903,9 +904,10 @@ function! s:SplitArgs(args) "{{{3
         endif
         let rx = matchstr(a:args, '\s\zs.*')
     else
-        let kind = ''
-        let rx = a:args
+        let kind = a:args
+        let rx = ''
     endif
+    " TLogVAR kind
     if stridx(kind, '#') != -1
         let kind = substitute(kind, '#', '', 'g')
         let rx = tlib#rx#Escape(rx)
