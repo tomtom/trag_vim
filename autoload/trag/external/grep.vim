@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-09-29.
-" @Revision:    109
+" @Last Change: 2015-10-13.
+" @Revision:    112
 
 
 if !exists('g:trag#external#grep#args')

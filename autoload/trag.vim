@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-09-29.
-" @Revision:    1510
+" @Last Change: 2015-10-13.
+" @Revision:    1511
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -746,6 +746,11 @@ endf
 
 function! s:GrepWith_ag(grep_defs, grep_opts) "{{{3
     return s:GrepWith_external(a:grep_defs, 'ag '. a:grep_opts)
+endf
+
+
+function! s:GrepWith_sift(grep_defs, grep_opts) "{{{3
+    return s:GrepWith_external(a:grep_defs, 'sift '. a:grep_opts)
 endf
 
 
