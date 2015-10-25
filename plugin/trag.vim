@@ -3,17 +3,17 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-08-29.
-" @Revision:    682
+" @Last Change: 2015-10-25.
+" @Revision:    683
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
     finish
 endif
-if !exists('g:loaded_tlib') || g:loaded_tlib < 114
+if !exists('g:loaded_tlib') || g:loaded_tlib < 115
     runtime plugin/02tlib.vim
-    if !exists('g:loaded_tlib') || g:loaded_tlib < 114
-        echoerr 'tlib >= 1.14 is required'
+    if !exists('g:loaded_tlib') || g:loaded_tlib < 115
+        echoerr 'tlib >= 1.15 is required'
         finish
     endif
 endif

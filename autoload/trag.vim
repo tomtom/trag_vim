@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-10-14.
-" @Revision:    1514
+" @Last Change: 2015-10-24.
+" @Revision:    1534
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -64,6 +64,11 @@ TLet g:trag#check_vcs = 1
 
 TLet g:trag#debug = 0
 
+TLet g:trag#world = {
+            \ 'key_handlers': [
+                \ {'key':  6, 'agent': 'trag#AgentRefactor',     'key_name': '<c-f>', 'help': 'Run a refactor command'},
+            \ ],
+            \ }
 
 " :nodoc:
 function! trag#DefFiletype(args) "{{{3
@@ -204,7 +209,6 @@ TLet g:trag_project = ''
 TLet g:trag_git = ''
 
 
-
 """ input#List {{{1
 
 " :nodoc:
@@ -217,101 +221,9 @@ TLet g:trag_edit_world = {
             \ }
 
 
-" :nodoc:
-TLet g:trag_qfl_world = {
-            \ 'type': 'mi',
-            \ 'query': 'Select entry',
-            \ 'pick_last_item': 0,
-            \ 'resize_vertical': 0,
-            \ 'resize': 20,
-            \ 'scratch': '__TRagQFL__',
-            \ 'tlib_UseInputListScratch': 'call trag#InitListBuffer()',
-            \ 'key_handlers': [
-                \ {'key':  5, 'agent': 'trag#AgentWithSelected', 'key_name': '<c-e>', 'help': 'Run a command on selected lines'},
-                \ {'key':  6, 'agent': 'trag#AgentRefactor',     'key_name': '<c-f>', 'help': 'Run a refactor command'},
-                \ {'key': 16, 'agent': 'trag#AgentPreviewQFE',   'key_name': '<c-p>', 'help': 'Preview'},
-                \ {'key': 60, 'agent': 'trag#AgentGotoQFE',      'key_name': '<',     'help': 'Jump (don''t close the list)'},
-                \ {'key': 19, 'agent': 'trag#AgentSplitBuffer',  'key_name': '<c-s>', 'help': 'Show in split buffer'},
-                \ {'key': 20, 'agent': 'trag#AgentTabBuffer',    'key_name': '<c-t>', 'help': 'Show in tab'},
-                \ {'key': 22, 'agent': 'trag#AgentVSplitBuffer', 'key_name': '<c-v>', 'help': 'Show in vsplit buffer'},
-                \ {'key': 12, 'agent': 'trag#AgentEditLine',     'key_name': '<c-l>', 'help': 'Edit selected line(s)'},
-                \ {'key': "\<c-insert>", 'agent': 'trag#SetFollowCursor', 'key_name': '<c-ins>', 'help': 'Toggle trace cursor'},
-            \ ],
-            \ 'return_agent': 'trag#AgentEditQFE',
-            \ }
-                " \ {'key': 23, 'agent': 'trag#AgentOpenBuffer',   'key_name': '<c-w>', 'help': 'View in window'},
-
-
-
-
-
 """ Functions {{{1
     
 let s:grep_rx = ''
-
-
-function! trag#InitListBuffer() "{{{3
-    let set_syntax = get(s:world, 'set_syntax', 's:SetSyntax')
-    call call(set_syntax, [], s:world)
-    if has('balloon_eval')
-        setlocal ballooneval balloonexpr=trag#Balloon()
-    endif
-endf
-
-
-function! s:SetSyntax() dict "{{{3
-    let syntax = get(self, 'trag_list_syntax', '')
-    let nextgroup = get(self, 'trag_list_syntax_nextgroup', '')
-    if !empty(syntax)
-        exec printf('runtime syntax/%s.vim', syntax)
-    endif
-    syn match TTagedFilesFilename / \zs.\{-}\ze|\d\+| / nextgroup=TTagedFilesLNum
-    if !empty(nextgroup)
-        exec 'syn match TTagedFilesLNum /|\d\+|\s\+/ nextgroup='. nextgroup
-    else
-        syn match TTagedFilesLNum /|\d\+|/
-    endif
-    hi def link TTagedFilesFilename Directory
-    hi def link TTagedFilesLNum LineNr
-endf
-
-
-function! trag#Balloon() "{{{3
-    let world = getbufvar(v:beval_bufnr, 'tlibDisplayListWorld')
-    let current = max([1, world.offset]) + v:beval_lnum - 1
-    if current > len(world.table)
-        let current = len(world.table)
-    endif
-    let baseidx = world.GetBaseIdx0(current)
-    " TLogVAR world.offset, v:beval_lnum, current, baseidx
-    let item = world.qfl[baseidx]
-    " TLogVAR item
-    if item.bufnr == 0
-        return ''
-    else
-        let lines = [printf("%d#%d: %s", item.bufnr, item.lnum, bufname(item.bufnr))]
-        if has('balloon_multiline')
-            let desc = {'nr': 'Error number', 'type': 'Error type', 'text': ''}
-            for key in ['nr', 'type', 'text']
-                if has_key(item, key) && !empty(item[key])
-                    let keydesc = get(desc, key, key)
-                    if empty(keydesc)
-                        let text = item[key]
-                    else
-                        let text = printf("%s: %s", key, item[key])
-                    endif
-                    call add(lines, text)
-                endif
-            endfor
-        endif
-        return join(lines, "\n")
-    endif
-    " v:beval_bufnr	number of the buffer in which balloon is going to show
-    " v:beval_winnr	number of the window
-    " v:beval_lnum	line number
-    " v:beval_col	column number (byte index)
-    " v:beval_text	word under or after the mouse pointer
-endf
 
 
 function! s:GetFiles() "{{{3
@@ -1033,25 +945,6 @@ function! s:Rx(rxacc, default) "{{{3
 endf
 
 
-function! trag#GetFilename(qfe) "{{{3
-    let filename = get(a:qfe, 'filename')
-    if empty(filename)
-        let filename = bufname(get(a:qfe, 'bufnr'))
-    endif
-    return filename
-endf
-
-function! s:FormatQFLE(qfe) "{{{3
-    let filename = trag#GetFilename(a:qfe)
-    if get(s:world, 'trag_short_filename', '')
-        let filename = pathshorten(filename)
-    endif
-    " let err = get(v:val, "type") . get(v:val, "nr")
-    " return printf("%20s|%d|%s: %s", filename, v:val.lnum, err, get(v:val, "text"))
-    return printf("%s|%d| %s", filename, a:qfe.lnum, get(a:qfe, "text"))
-endf
-
-
 " :display: trag#QuickList(?world={}, ?suspended=0)
 " Display the |quickfix| list with |tlib#input#ListW()|.
 function! trag#QuickList(...) "{{{3
@@ -1066,29 +959,8 @@ endf
 
 
 function! trag#BrowseList(world_dict, list, ...) "{{{3
-    TVarArg ['anyway', 0], ['suspended', 0]
-    " TLogVAR a:world_dict, a:list
-    " TLogVAR anyway, suspended
-    " TVarArg ['sign', 'TRag']
-    " if !empty(sign) && !empty(g:trag_sign)
-    "     " call tlib#signs#ClearAll(sign)
-    "     " call tlib#signs#Mark(sign, getqflist())
-    " endif
-    " if !anyway && empty(filter(copy(a:list), 'v:val.nr != -1'))
-    if !anyway && empty(a:list)
-        return
-    endif
-    let s:world = copy(g:trag_qfl_world)
-    if !empty(a:world_dict)
-        call extend(s:world, a:world_dict)
-    endif
-    let s:world = tlib#World#New(s:world)
-    " echom "DBG s:world" string(sort(keys(s:world)))
-    let s:world.qfl  = copy(a:list)
-    " TLogVAR s:world.qfl
-    call s:FormatBase(s:world)
-    " TLogVAR s:world.base
-    call tlib#input#ListW(s:world, suspended ? 'hibernate' : '')
+    let world_dict = tlib#eval#Extend(copy(g:trag#world), a:world_dict)
+    call call(function('tlib#qfl#QflList'), [a:list, world_dict] + a:000)
 endf
 
 
@@ -1102,163 +974,6 @@ function! trag#LocList(...) "{{{3
     "     " call tlib#signs#Mark(sign, getqflist())
     " endif
     call trag#BrowseList(world, getloclist(0), 0, suspended)
-endf
-
-
-function! s:FormatBase(world) "{{{3
-    let fmt = get(a:world, 'format_item', 's:FormatQFLE(v:val)')
-    let a:world.base = map(copy(a:world.qfl),  fmt)
-endf
-
-function! trag#AgentEditQFE(world, selected, ...) "{{{3
-    TVarArg ['cmd_edit', ''], ['cmd_buffer', '']
-    " TVarArg ['cmd_edit', 'edit'], ['cmd_buffer', 'buffer']
-    " TLogVAR a:selected
-    if empty(a:selected)
-        call a:world.RestoreOrigin()
-        " call a:world.ResetSelected()
-    else
-        call a:world.RestoreOrigin()
-        for idx in a:selected
-            let idx -= 1
-            " TLogVAR idx
-            if idx >= 0
-                " TLogVAR a:world.qfl
-                " call tlog#Debug(string(map(copy(a:world.qfl), 'trag#GetFilename(v:val)')))
-                " call tlog#Debug(string(map(copy(a:world.qfl), 'v:val.bufnr')))
-                " TLogVAR idx, a:world.qfl[idx]
-                let qfe = a:world.qfl[idx]
-                " let back = a:world.SwitchWindow('win')
-                " TLogVAR cmd_edit, cmd_buffer, qfe
-                let fn = trag#GetFilename(qfe)
-                " TLogVAR cmd_edit, cmd_buffer, fn
-                if empty(cmd_edit) && empty(cmd_buffer)
-                    if tlib#file#Edit(fn)
-                        call tlib#buffer#ViewLine(qfe.lnum)
-                    endif
-                else
-                    call tlib#file#With(cmd_edit, cmd_buffer, [fn], a:world)
-                    " TLogDBG bufname('%')
-                    " TLogVAR &filetype
-                    call tlib#buffer#ViewLine(qfe.lnum)
-                    " call a:world.SetOrigin()
-                    " exec back
-                endif
-            endif
-        endfor
-    endif
-    return a:world
-endf 
-
-
-function! trag#AgentPreviewQFE(world, selected) "{{{3
-    " TLogVAR a:selected
-    let back = a:world.SwitchWindow('win')
-    call trag#AgentEditQFE(a:world, a:selected[0:0])
-    exec back
-    redraw
-    let a:world.state = 'redisplay'
-    return a:world
-endf
-
-
-function! trag#AgentGotoQFE(world, selected) "{{{3
-    if !empty(a:selected)
-        if a:world.win_wnr != winnr()
-            let world = tlib#agent#Suspend(a:world, a:selected)
-            exec a:world.win_wnr .'wincmd w'
-        endif
-        call trag#AgentEditQFE(a:world, a:selected[0:0])
-    endif
-    return a:world
-endf
-
-
-function! trag#AgentWithSelected(world, selected, ...) "{{{3
-    let cmd = a:0 >= 1 ? a:1 : input('Ex command: ', '', 'command')
-    if !empty(cmd)
-        call trag#RunCmdOnSelected(a:world, a:selected, cmd)
-    else
-        let a:world.state = 'redisplay'
-    endif
-    return a:world
-endf
-
-
-function! trag#RunCmdOnSelected(world, selected, cmd, ...) "{{{3
-    let close_scratch = a:0 >= 1 ? a:1 : 1
-    if close_scratch
-        call a:world.CloseScratch()
-    endif
-    " TLogVAR a:cmd
-    for entry in a:selected
-        " TLogVAR entry, a:world.GetBaseItem(entry)
-        call trag#AgentEditQFE(a:world, [entry])
-        " TLogDBG bufname('%')
-        exec a:cmd
-        " let item = a:world.qfl[a:world.GetBaseIdx(entry - 1)]
-        " <+TODO+>
-        let item = a:world.qfl[entry - 1]
-        " TLogVAR entry, item, getline('.')
-        if has_key(a:world, 'GetBufferLines')
-            let lines = a:world.GetBufferLines('.', '.')
-        else
-            let lines = getline('.', '.')
-        endif
-        let item['text'] = tlib#string#Strip(lines[0])
-    endfor
-    if has_key(a:world, 'AfterRunCmd')
-        if bufnr('%') == a:world.bufnr
-            call a:world.AfterRunCmd()
-        else
-            " <+TODO+> Run in other buffer
-        endif
-    endif
-    call s:FormatBase(a:world)
-    call a:world.RestoreOrigin()
-    let a:world.state = 'reset'
-    return a:world
-endf
-
-
-function! trag#AgentSplitBuffer(world, selected) "{{{3
-    call a:world.CloseScratch()
-    return trag#AgentEditQFE(a:world, a:selected, 'split', 'sbuffer')
-endf
-
-
-function! trag#AgentTabBuffer(world, selected) "{{{3
-    call a:world.CloseScratch()
-    return trag#AgentEditQFE(a:world, a:selected, 'tabedit', 'tab sbuffer')
-endf
-
-
-function! trag#AgentVSplitBuffer(world, selected) "{{{3
-    call a:world.CloseScratch()
-    return trag#AgentEditQFE(a:world, a:selected, 'vertical split', 'vertical sbuffer')
-endf
-
-
-" function! trag#AgentOpenBuffer(world, selected) "{{{3
-" endf
-
-
-function! trag#AgentEditLine(world, selected) "{{{3
-    call a:world.CloseScratch()
-    let cmd = 'call trag#EditLine(".")'
-    return trag#RunCmdOnSelected(a:world, a:selected, cmd)
-    let a:world.state = 'reset'
-    return a:world
-endf
-
-
-function! trag#EditLine(lnum) "{{{3
-    call inputsave()
-    let line = input('', getline(a:lnum))
-    call inputrestore()
-    if !empty(line)
-        call setline(line(a:lnum), line)
-    endif
 endf
 
 
@@ -1315,17 +1030,6 @@ function! trag#RefactorRename(world, selected) "{{{3
         endif
     endif
     let a:world.state = 'reset'
-    return a:world
-endf
-
-
-function! trag#SetFollowCursor(world, selected) "{{{3
-    if empty(a:world.follow_cursor)
-        let a:world.follow_cursor = 'trag#AgentPreviewQFE'
-    else
-        let a:world.follow_cursor = ''
-    endif
-    let a:world.state = 'redisplay'
     return a:world
 endf
 
