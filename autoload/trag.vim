@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-10-24.
-" @Revision:    1534
+" @Last Change: 2015-10-25.
+" @Revision:    1537
 
 " call tlog#Log('Load: '. expand('<sfile>')) " vimtlib-sfile
 
@@ -959,7 +959,8 @@ endf
 
 
 function! trag#BrowseList(world_dict, list, ...) "{{{3
-    let world_dict = tlib#eval#Extend(copy(g:trag#world), a:world_dict)
+    let world_dict = tlib#eval#Extend(deepcopy(g:trag#world), a:world_dict)
+    " TLogVAR world_dict
     call call(function('tlib#qfl#QflList'), [a:list, world_dict] + a:000)
 endf
 
