@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2015-10-27.
-" @Revision:    703
+" @Revision:    709
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -69,7 +69,9 @@ command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 
 " :display: :Trag[!] [ARGS] [REGEXP]
 " Run |:Tragsearch| and instantly display the result with |:Tragcw|.
-" See |trag#GrepWithArgs()| for help on ARGS.
+"
+" See |:Tragsearch| for help on ARGS.
+" 
 " If the kind rx doesn't contain %s (e.g. todo), you can skip the 
 " regexp.
 "
@@ -105,7 +107,7 @@ command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
 command! -nargs=? Traglw call trag#LocList()
 
 
-" :display: :Tragsearch[!] [ARGS] REGEXP
+" :display: :Tragsearch[!] [ARGS] REGEXP [GLOBPATTERN]
 " Scan the files registered in your tag files for REGEXP. Generate a 
 " quickfix list. With [!], append to the given list. The quickfix list 
 " can be viewed with commands like |:cw| or |:Tragcw|.
@@ -115,7 +117,19 @@ command! -nargs=? Traglw call trag#LocList()
 " If you choose your identifiers wisely, this should guide you well 
 " through your sources.
 "
-" See |trag#GrepWithArgs()| for help on ARGS.
+" Supported command-line options for ARGS:
+"
+"   -i=KINDS, --include=KINDS ... Include KINDS (default: .)
+"   -x=KINDS, --exclude=KINDS ... Exclude KINDS
+"   --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
+"   -l, --literal ............... RX is a literal text, not a |regexp|
+"   --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
+"   --file_sources=SOURCES ...... A comma-separated list of sources (see 
+"                                 |g:trag#file_sources|)
+"
+" Positional arguments:
+"   REGEXP ...................... A |regexp| or text (see --literal)
+"   GLOB PATTERNS ............... Optional |glob| patterns
 command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call trag#GrepWithArgs([<f-args>], empty("<bang>"))
 
 
@@ -126,7 +140,7 @@ command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call
 "   :Traggrep foo *.vim
 "   :Traggrep bar
 command! -nargs=+ -bang -bar -complete=file Traggrep
-            \ | call trag#GrepWithArgs([<f-args>], empty("<bang>"))
+            \ | Tragsearch<bang> <args>
             \ | Tragcw
 
 

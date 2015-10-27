@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2015-10-27.
-" @Revision:    1631
+" @Revision:    1632
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -543,18 +543,7 @@ let s:trag_args = {
 
 
 " :def: function! trag#GrepWithArgs(args, ?replace=1)
-" args is a list of command-line options as strings:
-"   -i=KINDS, --include=KINDS ... Include KINDS (default: .)
-"   -x=KINDS, --exclude=KINDS ... Exclude KINDS
-"   --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
-"   -l, --literal ............... RX is a literal text, not a |regexp|
-"   --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
-"   --file_sources=SOURCES ...... A comma-separated list of sources (see 
-"                                 |g:trag#file_sources|)
-"
-" Positional arguments:
-"   RX ......................... A |regexp| or text (see --literal)
-"   GLOB PATTERNS .............. Optional |glob| patterns
+" args is a list of strings of command-line arguments of |:Tragsearch|.
 "
 " If the variables [bg]:trag_rxf_{kind}_{&filetype} or 
 " [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 

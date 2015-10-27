@@ -196,6 +196,11 @@ Contents~
         g:trag#external#ack#supported_kinds ..... |g:trag#external#ack#supported_kinds|
         trag#external#ack#IsSupported ........... |trag#external#ack#IsSupported()|
         trag#external#ack#Run ................... |trag#external#ack#Run()|
+        g:trag#external#sift#ignore_dirs ........ |g:trag#external#sift#ignore_dirs|
+        g:trag#external#sift#opts ............... |g:trag#external#sift#opts|
+        g:trag#external#sift#supported_kinds .... |g:trag#external#sift#supported_kinds|
+        trag#external#sift#IsSupported .......... |trag#external#sift#IsSupported()|
+        trag#external#sift#Run .................. |trag#external#sift#Run()|
         g:trag#external#vcs#options_git ......... |g:trag#external#vcs#options_git|
         g:trag#external#vcs#supported_kinds ..... |g:trag#external#vcs#supported_kinds|
         trag#external#vcs#IsSupported ........... |trag#external#vcs#IsSupported()|
@@ -225,6 +230,7 @@ Contents~
         g:trag#use_buffer ....................... |g:trag#use_buffer|
         g:trag#check_vcs ........................ |g:trag#check_vcs|
         g:trag#debug ............................ |g:trag#debug|
+        g:trag#world ............................ |g:trag#world|
         trag#HasFiletype ........................ |trag#HasFiletype()|
         trag#SetFiletype ........................ |trag#SetFiletype()|
         trag#GetFiletype ........................ |trag#GetFiletype()|
@@ -233,8 +239,6 @@ Contents~
         g:trag_project_ruby ..................... |g:trag_project_ruby|
         g:trag_project .......................... |g:trag_project|
         g:trag_git .............................. |g:trag_git|
-        trag#InitListBuffer ..................... |trag#InitListBuffer()|
-        trag#Balloon ............................ |trag#Balloon()|
         trag#ClearFiles ......................... |trag#ClearFiles()|
         trag#AddFiles ........................... |trag#AddFiles()|
         trag#GetProjectFiles .................... |trag#GetProjectFiles()|
@@ -245,29 +249,19 @@ Contents~
         trag#FindGitRepos ....................... |trag#FindGitRepos()|
         trag#Edit ............................... |trag#Edit()|
         trag#Grep ............................... |trag#Grep()|
+        trag#GrepWithArgs ....................... |trag#GrepWithArgs()|
         trag#LastRun ............................ |trag#LastRun()|
         trag#ScanWithGrepDefs ................... |trag#ScanWithGrepDefs()|
         trag#ClearCachedRx ...................... |trag#ClearCachedRx()|
-        trag#GetFilename ........................ |trag#GetFilename()|
         trag#QuickList .......................... |trag#QuickList()|
         trag#QuickListMaybe ..................... |trag#QuickListMaybe()|
         trag#BrowseList ......................... |trag#BrowseList()|
         trag#LocList ............................ |trag#LocList()|
-        trag#AgentEditQFE ....................... |trag#AgentEditQFE()|
-        trag#AgentPreviewQFE .................... |trag#AgentPreviewQFE()|
-        trag#AgentGotoQFE ....................... |trag#AgentGotoQFE()|
-        trag#AgentWithSelected .................. |trag#AgentWithSelected()|
-        trag#RunCmdOnSelected ................... |trag#RunCmdOnSelected()|
-        trag#AgentSplitBuffer ................... |trag#AgentSplitBuffer()|
-        trag#AgentTabBuffer ..................... |trag#AgentTabBuffer()|
-        trag#AgentVSplitBuffer .................. |trag#AgentVSplitBuffer()|
-        trag#AgentEditLine ...................... |trag#AgentEditLine()|
-        trag#EditLine ........................... |trag#EditLine()|
         trag#AgentRefactor ...................... |trag#AgentRefactor()|
         trag#CWord .............................. |trag#CWord()|
         trag#RefactorRename ..................... |trag#RefactorRename()|
-        trag#SetFollowCursor .................... |trag#SetFollowCursor()|
         trag#IsSupported ........................ |trag#IsSupported()|
+        trag#CComplete .......................... |trag#CComplete()|
 
 
 ========================================================================
@@ -317,27 +311,29 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
 <
 
                                                     *:Trag*
-:Trag[!] KIND [REGEXP]
+:Trag[!] [ARGS] [REGEXP]
     Run |:Tragsearch| and instantly display the result with |:Tragcw|.
-    See |trag#Grep()| for help on the arguments.
+
+    See |:Tragsearch| for help on ARGS.
+
     If the kind rx doesn't contain %s (e.g. todo), you can skip the 
     regexp.
 
     Examples: >
         " Find any matches
-        Trag . foo
+        Trag foo
 
         " Find variable definitions (word on the left-hand): foo = 1
-        Trag l foo
+        Trag -i=l foo
 
         " Find variable __or__ function/method definitions
-        Trag d,l foo
+        Trag -i=d,l foo
 
         " Find function calls like: foo(a, b)
-        Trag f foo
+        Trag -i=f foo
 
         " Find TODO markers
-        Trag todo
+        Trag -i=todo
 <
 
                                                     *:Tragfile*
@@ -353,7 +349,7 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
     Display a |location-list| using |tlib#input#ListD()|.
 
                                                     *:Tragsearch*
-:Tragsearch[!] KIND REGEXP
+:Tragsearch[!] [ARGS] REGEXP [GLOBPATTERN]
     Scan the files registered in your tag files for REGEXP. Generate a 
     quickfix list. With [!], append to the given list. The quickfix list 
     can be viewed with commands like |:cw| or |:Tragcw|.
@@ -362,7 +358,20 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
     scans the lines. This is an alternative to |:vimgrep|.
     If you choose your identifiers wisely, this should guide you well 
     through your sources.
-    See |trag#Grep()| for help on the arguments.
+
+    Supported command-line options for ARGS:
+
+      -i=KINDS, --include=KINDS ... Include KINDS (default: .)
+      -x=KINDS, --exclude=KINDS ... Exclude KINDS
+      --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
+      -l, --literal ............... RX is a literal text, not a |regexp|
+      --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
+      --file_sources=SOURCES ...... A comma-separated list of sources (see 
+                                    |g:trag#file_sources|)
+
+    Positional arguments:
+      REGEXP ...................... A |regexp| or text (see --literal)
+      GLOB PATTERNS ............... Optional |glob| patterns
 
                                                     *:Traggrep*
 :Traggrep REGEXP [GLOBPATTERN]
@@ -455,6 +464,27 @@ trag#external#ack#IsSupported(kinds)
 
                                                     *trag#external#ack#Run()*
 trag#external#ack#Run(kinds, rx, files)
+
+
+========================================================================
+autoload/trag/external/sift.vim~
+
+                                                    *g:trag#external#sift#ignore_dirs*
+g:trag#external#sift#ignore_dirs (default: ['.git', '.hg'])
+
+                                                    *g:trag#external#sift#opts*
+g:trag#external#sift#opts      (default: {'grepprg': 'sift', 'args': '--exclude-dirs DIRS --no-color -n -- %s'})
+    "--exclude-dirs DIRS" will be replaced with the entries from 
+    |g:trag#external#sift#ignore_dirs|.
+
+                                                    *g:trag#external#sift#supported_kinds*
+g:trag#external#sift#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
+
+                                                    *trag#external#sift#IsSupported()*
+trag#external#sift#IsSupported(kinds)
+
+                                                    *trag#external#sift#Run()*
+trag#external#sift#Run(kinds, rx, files)
 
 
 ========================================================================
@@ -586,7 +616,7 @@ g:trag_get_files_c             (default: 'split(glob("**/*.[ch]"), "\n")')
 g:trag_get_files_cpp           (default: 'split(glob("**/*.[ch]"), "\n")')
 
                                                     *g:trag#file_sources*
-g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'tags'])
+g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'tags', 'buffer'])
     A list of sources.
     Possible values:
       vcs ....... Use g:trag#check_vcs
@@ -596,6 +626,8 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'ta
       glob ...... Use b:trag_glob or g:trag_glob
       project ... Use b:trag_project_{'filetype'} or 
                   g:trag_project_{'filetype'}
+      buffer .... Use the current buffer's directory
+      cd ........ Use the current working directory (see |getcwd()|)
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
@@ -613,6 +645,9 @@ g:trag#check_vcs               (default: 1)
 
                                                     *g:trag#debug*
 g:trag#debug                   (default: 0)
+
+                                                    *g:trag#world*
+g:trag#world                   (default: {)
 
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
@@ -663,12 +698,6 @@ g:trag_git                     (default: '')
     (|getcwd()|) upwards for a .git directory.
     If the value is "finddir", use |finddir()| to find a .git directory.
     Can be buffer local.
-
-                                                    *trag#InitListBuffer()*
-trag#InitListBuffer()
-
-                                                    *trag#Balloon()*
-trag#Balloon()
 
                                                     *trag#ClearFiles()*
 trag#ClearFiles()
@@ -723,6 +752,14 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
       if foo == 1
 <
 
+                                                    *trag#GrepWithArgs()*
+trag#GrepWithArgs(args, ?replace=1)
+    args is a list of strings of command-line arguments of |:Tragsearch|.
+
+    If the variables [bg]:trag_rxf_{kind}_{&filetype} or 
+    [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 
+    |printf()|) to format REGEXP.
+
                                                     *trag#LastRun()*
 trag#LastRun(what)
 
@@ -731,9 +768,6 @@ trag#ScanWithGrepDefs(grep_def, lines, setqflist)
 
                                                     *trag#ClearCachedRx()*
 trag#ClearCachedRx()
-
-                                                    *trag#GetFilename()*
-trag#GetFilename(qfe)
 
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
@@ -749,36 +783,6 @@ trag#BrowseList(world_dict, list, ...)
 trag#LocList(...)
     Display the |location-list| with |tlib#input#ListW()|.
 
-                                                    *trag#AgentEditQFE()*
-trag#AgentEditQFE(world, selected, ...)
-
-                                                    *trag#AgentPreviewQFE()*
-trag#AgentPreviewQFE(world, selected)
-
-                                                    *trag#AgentGotoQFE()*
-trag#AgentGotoQFE(world, selected)
-
-                                                    *trag#AgentWithSelected()*
-trag#AgentWithSelected(world, selected, ...)
-
-                                                    *trag#RunCmdOnSelected()*
-trag#RunCmdOnSelected(world, selected, cmd, ...)
-
-                                                    *trag#AgentSplitBuffer()*
-trag#AgentSplitBuffer(world, selected)
-
-                                                    *trag#AgentTabBuffer()*
-trag#AgentTabBuffer(world, selected)
-
-                                                    *trag#AgentVSplitBuffer()*
-trag#AgentVSplitBuffer(world, selected)
-
-                                                    *trag#AgentEditLine()*
-trag#AgentEditLine(world, selected)
-
-                                                    *trag#EditLine()*
-trag#EditLine(lnum)
-
                                                     *trag#AgentRefactor()*
 trag#AgentRefactor(world, selected)
     Invoke an refactor command.
@@ -790,11 +794,11 @@ trag#CWord()
                                                     *trag#RefactorRename()*
 trag#RefactorRename(world, selected)
 
-                                                    *trag#SetFollowCursor()*
-trag#SetFollowCursor(world, selected)
-
                                                     *trag#IsSupported()*
 trag#IsSupported(supported_kinds, kinds)
+
+                                                    *trag#CComplete()*
+trag#CComplete(ArgLead, CmdLine, CursorPos)
 
 
 
