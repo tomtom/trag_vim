@@ -3,21 +3,14 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-10-25.
-" @Revision:    683
+" @Last Change: 2015-10-27.
+" @Revision:    703
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
     finish
 endif
-if !exists('g:loaded_tlib') || g:loaded_tlib < 115
-    runtime plugin/02tlib.vim
-    if !exists('g:loaded_tlib') || g:loaded_tlib < 115
-        echoerr 'tlib >= 1.15 is required'
-        finish
-    endif
-endif
-let g:loaded_trag = 103
+let g:loaded_trag = 200
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -74,28 +67,28 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 
 
-" :display: :Trag[!] KIND [REGEXP]
+" :display: :Trag[!] [ARGS] [REGEXP]
 " Run |:Tragsearch| and instantly display the result with |:Tragcw|.
-" See |trag#Grep()| for help on the arguments.
+" See |trag#GrepWithArgs()| for help on ARGS.
 " If the kind rx doesn't contain %s (e.g. todo), you can skip the 
 " regexp.
 "
 " Examples: >
 "     " Find any matches
-"     Trag . foo
+"     Trag foo
 " 
 "     " Find variable definitions (word on the left-hand): foo = 1
-"     Trag l foo
+"     Trag -i=l foo
 " 
 "     " Find variable __or__ function/method definitions
-"     Trag d,l foo
+"     Trag -i=d,l foo
 " 
 "     " Find function calls like: foo(a, b)
-"     Trag f foo
+"     Trag -i=f foo
 "
 "     " Find TODO markers
-"     Trag todo
-command! -nargs=1 -bang -bar Trag Tragsearch<bang> <args> | Tragcw
+"     Trag -i=todo
+command! -nargs=1 -bang -bar -complete=customlist,trag#CComplete Trag Tragsearch<bang> <args> | Tragcw
 
 
 " :display: :Tragfile
@@ -112,7 +105,7 @@ command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
 command! -nargs=? Traglw call trag#LocList()
 
 
-" :display: :Tragsearch[!] KIND REGEXP
+" :display: :Tragsearch[!] [ARGS] REGEXP
 " Scan the files registered in your tag files for REGEXP. Generate a 
 " quickfix list. With [!], append to the given list. The quickfix list 
 " can be viewed with commands like |:cw| or |:Tragcw|.
@@ -121,8 +114,9 @@ command! -nargs=? Traglw call trag#LocList()
 " scans the lines. This is an alternative to |:vimgrep|.
 " If you choose your identifiers wisely, this should guide you well 
 " through your sources.
-" See |trag#Grep()| for help on the arguments.
-command! -nargs=1 -bang -bar Tragsearch call trag#Grep(<q-args>, empty("<bang>"))
+"
+" See |trag#GrepWithArgs()| for help on ARGS.
+command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call trag#GrepWithArgs([<f-args>], empty("<bang>"))
 
 
 " :display: :Traggrep REGEXP [GLOBPATTERN]
@@ -132,9 +126,7 @@ command! -nargs=1 -bang -bar Tragsearch call trag#Grep(<q-args>, empty("<bang>")
 "   :Traggrep foo *.vim
 "   :Traggrep bar
 command! -nargs=+ -bang -bar -complete=file Traggrep
-            \ let g:trag_grepargs = ['.', <f-args>]
-            \ | call trag#Grep(g:trag_grepargs[0] .' '. g:trag_grepargs[1], empty("<bang>"), g:trag_grepargs[2:-1])
-            \ | unlet g:trag_grepargs
+            \ | call trag#GrepWithArgs([<f-args>], empty("<bang>"))
             \ | Tragcw
 
 
@@ -182,21 +174,20 @@ function! TragInstallMap(leader) "{{{3
     exec 'noremap' a:leader .'. :Trag * '
     exec 'noremap' a:leader .'+ :Tragcw<cr>'
     exec 'noremap' a:leader .'- :Tragfile<cr>'
-    exec 'noremap <silent>' a:leader .'# :Trag #w <c-r>=trag#CWord()<cr><cr>'
+    exec 'noremap <silent>' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
     for kind in keys(g:trag_kinds)
         call TragInstallKindMap(leader, kind)
     endfor
 endf
 
+
 function! TragInstallKindMap(leader, kind) "{{{3
     " TLogVAR a:leader, a:kind
     if len(a:kind) == 1
         let kind = a:kind
-        if index(g:trag_kinds_ignored_comments, kind) != -1
-            let kind .= ',-i'
-        endif
-        exec 'nnoremap' a:leader . a:kind ':Trag #'. kind '<c-r>=trag#CWord()<cr><cr>'
-        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag #'. kind '<c-r>"<cr>'
+        let excl = index(g:trag_kinds_ignored_comments, kind) == -1 ? '' : '-x=i'
+        exec 'nnoremap' a:leader . a:kind ':Trag -l -i='. kind excl '<c-r>=trag#CWord()<cr><cr>'
+        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag -l -i='. kind excl '<c-r>"<cr>'
     endif
 endf
 
@@ -207,4 +198,3 @@ endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
