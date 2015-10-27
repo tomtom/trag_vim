@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2015-10-27.
-" @Revision:    1615
+" @Revision:    1631
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -355,19 +355,25 @@ function! trag#SetFiles(...) "{{{3
     call trag#ClearFiles()
     if empty(files)
         let source1 = ''
-        for source in get(opts, 'file_sources', tlib#var#Get('trag#file_sources', 'bg', []))
+        if has_key(opts, 'file_sources')
+            let file_sources = split(opts.file_sources, ',')
+        else
+            let file_sources = tlib#var#Get('trag#file_sources', 'bg', [])
+        endif
+        for source in file_sources
+            TLibTrace g:trag#debug, source
             let source1 = source
             if source == 'files'
                 let files = tlib#var#Get('trag_files', 'bg', [])
             elseif source == 'glob'
                 let glob = tlib#var#Get('trag_glob', 'bg', '')
                 if !empty(glob)
-                    " TLogVAR glob
+                    TLibTrace g:trag#debug, glob
                     let files = split(glob(glob), '\n')
                 endif
             elseif source == 'project'
                 let proj = tlib#var#Get('trag_project_'. &filetype, 'bg', tlib#var#Get('trag_project', 'bg', ''))
-                " TLogVAR proj
+                TLibTrace g:trag#debug, proj
                 if !empty(proj)
                     " let proj = fnamemodify(proj, ':p')
                     let proj = findfile(proj, '.;')
@@ -381,27 +387,29 @@ function! trag#SetFiles(...) "{{{3
                 let files = keys(filenames)
             elseif source == 'git'
                 let git_repos = tlib#var#Get('trag_git', 'bg', '')
+                TLibTrace g:trag#debug, git_repos
                 if git_repos == '*'
                     let git_repos = trag#FindGitRepos()
                 elseif git_repos == "finddir"
                     let git_repos = finddir('.git')
                 endif
                 if !empty(git_repos)
+                    TLibTrace g:trag#debug, git_repos
                     let files = trag#GetGitFiles(git_repos)
                 endif
             elseif source == 'vcs'
+                TLibTrace g:trag#debug, g:trag#check_vcs
                 if g:trag#check_vcs
                     let files = tlib#vcs#Ls()
                 end
             elseif source == 'buffer'
-                let pattern
                 let files = split(glob(s:GetGlobPattern(expand('%:p:h') .'/*')), '\n')
             elseif source == 'cd'
                 let files = split(glob(s:GetGlobPattern(getcwd() .'/*')), '\n')
             endif
             if !empty(files)
                 call filter(files, '!isdirectory(v:val)')
-                TLibTrace g:trag#debug, source, files
+                " TLibTrace g:trag#debug, source, files
                 break
             endif
         endfor
@@ -522,7 +530,14 @@ endf
 
 let s:trag_args = {
             \ 'help': ':Trag',
-            \ 'values': {'include': {'default': ''}, 'exclude': {'default': ''}, 'filetype': {'default': ''}, 'literal': {'default': 0, 'type': -1}},
+            \ 'values': {
+            \   'include': {'default': ''},
+            \   'exclude': {'default': ''},
+            \   'filetype': {'default': ''},
+            \   'literal': {'default': 0, 'type': -1},
+            \   'file_sources': {'type': 1},
+            \   'grep_type': {'type': 1},
+            \ },
             \ 'flags': {'i': '--include', 'x': '--exclude', 'l': '--literal'},
             \ }
 
@@ -534,6 +549,8 @@ let s:trag_args = {
 "   --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
 "   -l, --literal ............... RX is a literal text, not a |regexp|
 "   --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
+"   --file_sources=SOURCES ...... A comma-separated list of sources (see 
+"                                 |g:trag#file_sources|)
 "
 " Positional arguments:
 "   RX ......................... A |regexp| or text (see --literal)
@@ -575,7 +592,7 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
     else
         let files = split(join(map(a:files, 'glob(v:val)'), "\n"), '\n')
     endif
-    TLibTrace g:trag#debug, files
+    TLibTrace g:trag#debug, len(files)
     " TLogVAR files
     " TAssertType files, 'list'
     call s:DoAutoCmd('QuickFixCmdPre')
@@ -605,7 +622,7 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
             let strip = grep_type == 'vimgrep'
             " TLogVAR grep_type, grep_opts
             " TLogVAR grep_defs
-            TLibTrace g:trag#debug, grep_type, grep_defs, grep_opts
+            TLibTrace g:trag#debug, grep_type, grep_opts
             if s:GrepWith_{grep_type}(grep_defs, grep_opts)
                 let done = 1
                 break
