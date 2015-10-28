@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2015-10-27.
-" @Revision:    1632
+" @Revision:    1634
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -262,7 +262,7 @@ function! s:GetFiles(...) "{{{3
         endif
         let b:trag_files_ = eval(trag_get_files)
     endif
-    TLibTrace g:trag#debug, b:trag_files_
+    TLibTrace g:trag#debug, len(b:trag_files_)
     return b:trag_files_
 endf
 
@@ -409,7 +409,7 @@ function! trag#SetFiles(...) "{{{3
             endif
             if !empty(files)
                 call filter(files, '!isdirectory(v:val)')
-                " TLibTrace g:trag#debug, source, files
+                TLibTrace g:trag#debug, source, len(files)
                 break
             endif
         endfor
