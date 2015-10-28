@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2015-10-28.
-" @Revision:    1635
+" @Revision:    1640
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -37,6 +37,8 @@ endif
 "                                                     *b:trag_grep_type*
 " b:trag_grep_type overrides this global variable.
 TLet g:trag#grep_type = 'trag'
+
+TLet g:trag#assume_executable = ['vcs']
 
 " Use this type for files that are not supported by |g:trag#grep_type| 
 " (e.g. files outside of a VCS if |g:trag#grep_type| includes "vcs").
@@ -765,10 +767,10 @@ endf
 function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     let opts = tlib#arg#StringAsKeyArgsEqual(a:grep_opts)
     let grep_cmd = get(opts, 0, 'grep')
-    if !tlib#sys#IsExecutable(grep_cmd)
+    " TLogVAR grep_cmd
+    if index(g:trag#assume_executable, grep_cmd) == -1 && !tlib#sys#IsExecutable(grep_cmd)
         return 0
     endif
-    " TLogVAR grep_cmd
     let group_defs = {}
     let must_filter = {}
     for grep_def in deepcopy(a:grep_defs)
