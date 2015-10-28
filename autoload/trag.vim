@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-10-27.
-" @Revision:    1634
+" @Last Change: 2015-10-28.
+" @Revision:    1635
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -524,7 +524,7 @@ function! trag#Grep(args, ...) "{{{3
     TVarArg ['replace', 1], ['files', []], ['filetype', '']
     TLibTrace g:trag#debug, a:args, replace, files, filetype
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
-    call s:Grep(kindspos, kindsneg, rx, replace, files, filetype, {})
+    return s:Grep(kindspos, kindsneg, rx, replace, files, filetype, {})
 endf
 
 
