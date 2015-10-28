@@ -3,11 +3,18 @@ languages, it can also find variable/function/class definitions,
 function calls etc.
 
 Other than |tags| or |cscope|, it doesn't build a database to speed up 
-searches but always scans all files. It can make use of external tools 
-like `git grep`, `ack`, or `ag` though, in order to gain acceptable 
-performance for medium-sized projects. The builtin vimscript-based 
-version file scanner and also |vimgrep| are suitable for small projects. 
-See |g:trag#grep_type| for available options.
+searches but always scans all files. It can make use of the following 
+external tools in order to gain acceptable performance for medium-sized 
+projects:
+
+    - `git grep`
+    - `ack` http://beyondgrep.com/
+    - `ag` https://github.com/ggreer/the_silver_searcher
+    - `sift` https://sift-tool.org/
+
+The builtin vimscript-based version file scanner and also 
+|vimgrep| are suitable for small projects. See |g:trag#grep_type| for 
+available options.
 
 
 Usage~

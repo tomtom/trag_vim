@@ -1,4 +1,4 @@
-*trag.txt*          A language-aware source code scanner (with support for git grep, ack, ag ...)
+*trag.txt*          A language-aware source code scanner (with support for git grep, ack, ag, sift ...)
                     Author: Tom Link, micathom at gmail com
 
 This plugin uses ad-hoc searches to find strings in files. For certain 
@@ -6,11 +6,18 @@ languages, it can also find variable/function/class definitions,
 function calls etc.
 
 Other than |tags| or |cscope|, it doesn't build a database to speed up 
-searches but always scans all files. It can make use of external tools 
-like `git grep`, `ack`, or `ag` though, in order to gain acceptable 
-performance for medium-sized projects. The builtin vimscript-based 
-version file scanner and also |vimgrep| are suitable for small projects. 
-See |g:trag#grep_type| for available options.
+searches but always scans all files. It can make use of the following 
+external tools in order to gain acceptable performance for medium-sized 
+projects:
+
+    - `git grep`
+    - `ack` http://beyondgrep.com/
+    - `ag` https://github.com/ggreer/the_silver_searcher
+    - `sift` https://sift-tool.org/
+
+The builtin vimscript-based version file scanner and also 
+|vimgrep| are suitable for small projects. See |g:trag#grep_type| for 
+available options.
 
 
 Usage~
@@ -221,6 +228,7 @@ Contents~
         trag#utils#GrepaddFiles ................. |trag#utils#GrepaddFiles()|
         trag#java#Rename ........................ |trag#java#Rename()|
         g:trag#grep_type ........................ |g:trag#grep_type|
+        g:trag#assume_executable ................ |g:trag#assume_executable|
         g:trag#grep_fallback_type ............... |g:trag#grep_fallback_type|
         g:trag_get_files ........................ |g:trag_get_files|
         g:trag_get_files_java ................... |g:trag_get_files_java|
@@ -595,6 +603,9 @@ g:trag#grep_type               (default: 'trag')
     trag & vimgrep should work everywhere.
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
+
+                                                    *g:trag#assume_executable*
+g:trag#assume_executable       (default: ['vcs'])
 
                                                     *g:trag#grep_fallback_type*
 g:trag#grep_fallback_type      (default: 'trag')
