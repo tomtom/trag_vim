@@ -766,14 +766,17 @@ endf
 
 function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
     let opts = tlib#arg#StringAsKeyArgsEqual(a:grep_opts)
+    TLibTrace 'trag', opts
     let grep_cmd = get(opts, 0, 'grep')
     " TLogVAR grep_cmd
     if index(g:trag#assume_executable, grep_cmd) == -1 && !tlib#sys#IsExecutable(grep_cmd)
+        TLibTrace 'trag', grep_cmd, 0
         return 0
     endif
+    TLibTrace 'trag', len(a:grep_defs)
     let group_defs = {}
     let must_filter = {}
-    for grep_def in deepcopy(a:grep_defs)
+    for grep_def in a:grep_defs
         let ft = grep_def.filetype
         " TLogVAR ft, grep_def.ff
         if !has_key(group_defs, ft)
@@ -839,10 +842,11 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         " TLogVAR 2, len(qfl)
         " let qfl = filter(qfl, 'has_key(collected_bufnrs, v:val.bufnr)')
         " TLogVAR 3, len(qfl)
+        TLibTrace 'trag', 1, len(qfl)
         call setqflist(qfl)
     endif
     let rxnegs = {}
-    for grep_def in deepcopy(a:grep_defs)
+    for grep_def in a:grep_defs
         if !empty(grep_def.rxneg)
             let bufnr = get(bnums, tlib#file#Canonic(grep_def.ff), 0)
             if bufnr > 0 && !has_key(rxnegs, bufnr)
@@ -850,12 +854,15 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
             endif
         endif
     endfor
+    TLibTrace 'trag', len(rxnegs)
     call s:FilterRxNegs(rxnegs)
+    TLibTrace 'trag', len(unprocessed_fnames)
     if !empty(unprocessed_fnames)
         " TLogVAR unprocessed_fnames
         let grep_defs1 = filter(deepcopy(a:grep_defs), 'has_key(unprocessed_fnames, v:val.ff)')
         call s:GrepWith_{g:trag#grep_fallback_type}(grep_defs1, a:grep_opts)
     endif
+    TLibTrace 'trag', 'done'
     return 1
 endf
 
