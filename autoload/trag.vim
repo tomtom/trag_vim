@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-10-28.
-" @Revision:    1640
+" @Last Change: 2015-11-03.
+" @Revision:    1684
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -252,7 +252,7 @@ function! s:GetFiles(...) "{{{3
     endif
     if empty(b:trag_files_)
         let trag_get_files = tlib#var#Get('trag_get_files_'. &filetype, 'bg', '')
-        TLibTrace g:trag#debug, &ft, trag_get_files
+        TLibTrace 'trag', &ft, trag_get_files
         if empty(trag_get_files)
             let trag_get_files = tlib#var#Get('trag_get_files', 'bg', '')
             " TLogVAR trag_get_files
@@ -264,7 +264,7 @@ function! s:GetFiles(...) "{{{3
         endif
         let b:trag_files_ = eval(trag_get_files)
     endif
-    TLibTrace g:trag#debug, len(b:trag_files_)
+    TLibTrace 'trag', len(b:trag_files_)
     return b:trag_files_
 endf
 
@@ -363,19 +363,19 @@ function! trag#SetFiles(...) "{{{3
             let file_sources = tlib#var#Get('trag#file_sources', 'bg', [])
         endif
         for source in file_sources
-            TLibTrace g:trag#debug, source
+            TLibTrace 'trag', source
             let source1 = source
             if source == 'files'
                 let files = tlib#var#Get('trag_files', 'bg', [])
             elseif source == 'glob'
                 let glob = tlib#var#Get('trag_glob', 'bg', '')
                 if !empty(glob)
-                    TLibTrace g:trag#debug, glob
+                    TLibTrace 'trag', glob
                     let files = split(glob(glob), '\n')
                 endif
             elseif source == 'project'
                 let proj = tlib#var#Get('trag_project_'. &filetype, 'bg', tlib#var#Get('trag_project', 'bg', ''))
-                TLibTrace g:trag#debug, proj
+                TLibTrace 'trag', proj
                 if !empty(proj)
                     " let proj = fnamemodify(proj, ':p')
                     let proj = findfile(proj, '.;')
@@ -389,18 +389,18 @@ function! trag#SetFiles(...) "{{{3
                 let files = keys(filenames)
             elseif source == 'git'
                 let git_repos = tlib#var#Get('trag_git', 'bg', '')
-                TLibTrace g:trag#debug, git_repos
+                TLibTrace 'trag', git_repos
                 if git_repos == '*'
                     let git_repos = trag#FindGitRepos()
                 elseif git_repos == "finddir"
                     let git_repos = finddir('.git')
                 endif
                 if !empty(git_repos)
-                    TLibTrace g:trag#debug, git_repos
+                    TLibTrace 'trag', git_repos
                     let files = trag#GetGitFiles(git_repos)
                 endif
             elseif source == 'vcs'
-                TLibTrace g:trag#debug, g:trag#check_vcs
+                TLibTrace 'trag', g:trag#check_vcs
                 if g:trag#check_vcs
                     let files = tlib#vcs#Ls()
                 end
@@ -411,7 +411,7 @@ function! trag#SetFiles(...) "{{{3
             endif
             if !empty(files)
                 call filter(files, '!isdirectory(v:val)')
-                TLibTrace g:trag#debug, source, len(files)
+                TLibTrace 'trag', source, len(files)
                 break
             endif
         endfor
@@ -524,7 +524,7 @@ endf
 "   if foo == 1
 function! trag#Grep(args, ...) "{{{3
     TVarArg ['replace', 1], ['files', []], ['filetype', '']
-    TLibTrace g:trag#debug, a:args, replace, files, filetype
+    TLibTrace 'trag', a:args, replace, files, filetype
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
     return s:Grep(kindspos, kindsneg, rx, replace, files, filetype, {})
 endf
@@ -553,7 +553,7 @@ let s:trag_args = {
 function! trag#GrepWithArgs(args, ...) abort "{{{3
     TVarArg ['replace', 1]
     let opts = tlib#arg#GetOpts(a:args, s:trag_args)
-    TLibTrace g:trag#debug, a:args, a:000, replace, opts
+    TLibTrace 'trag', a:args, a:000, replace, opts
     if opts.__exit__
         return
     endif
@@ -569,7 +569,7 @@ endf
 
 
 function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
-    TLibTrace g:trag#debug, a:kindspos, a:kindsneg, a:rx, a:replace, a:files, a:filetype, a:opts
+    TLibTrace 'trag', a:kindspos, a:kindsneg, a:rx, a:replace, a:files, a:filetype, a:opts
     if empty(a:rx)
         let rx = '.\{-}'
         " throw 'Malformed arguments (should be: "KIND REGEXP"): '. string(a:args)
@@ -583,7 +583,7 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
     else
         let files = split(join(map(a:files, 'glob(v:val)'), "\n"), '\n')
     endif
-    TLibTrace g:trag#debug, len(files)
+    TLibTrace 'trag', len(files)
     " TLogVAR files
     " TAssertType files, 'list'
     call s:DoAutoCmd('QuickFixCmdPre')
@@ -594,8 +594,10 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
     let scratch = {}
     try
         let qfl_top = len(getqflist())
+        TLibTrace 'trag', qfl_top
         let grep_defs = map(copy(files), 's:GetGrepDef(v:val, a:kindspos, a:kindsneg, rx, a:filetype)')
         let grep_defs = filter(grep_defs, '!empty(v:val)')
+        TLibTrace 'trag', len(grep_defs)
         let done = 0
         let trag_type = get(a:opts, 'grep_type', tlib#var#Get('trag#grep_type', 'bg'))
         let s:last_run_files = files
@@ -613,13 +615,13 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
             let strip = grep_type == 'vimgrep'
             " TLogVAR grep_type, grep_opts
             " TLogVAR grep_defs
-            TLibTrace g:trag#debug, grep_type, grep_opts
+            TLibTrace 'trag', grep_type, grep_opts
             if s:GrepWith_{grep_type}(grep_defs, grep_opts)
                 let done = 1
                 break
             endif
         endfor
-        TLibTrace g:trag#debug, len(getqflist())
+        TLibTrace 'trag', len(getqflist())
         if !done
             throw 'TRag: Unsupported value for g:trag#grep_type: '. trag_type
         endif
@@ -657,14 +659,21 @@ endf
 
 
 function! s:GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
+    " let ff = a:filename
     let ff = fnamemodify(a:filename, ':p')
+    " TLibTrace 'trag', a:filename, ff, filereadable(ff)
     if filereadable(ff)
-        " TLogVAR f, kindspos, kindsneg
+        " TLogVAR ff, a:kindspos, a:kindsneg, a:rx
         let [rxpos, filetype0] = s:GetRx(ff, a:kindspos, a:rx, '.', a:filetype)
-        " TLogVAR a:rx, rxpos
+        " TLogVAR rxpos, filetype0
         if !empty(rxpos)
-            let [rxneg, filetype1] = s:GetRx(ff, a:kindsneg, '', '', filetype0)
-            " TLogVAR rxneg
+            if empty(a:kindsneg)
+                let rxneg = ''
+                let filetype1 = filetype0
+            else
+                let [rxneg, filetype1] = s:GetRx(ff, a:kindsneg, '', '', filetype0)
+            endif
+            " TLogVAR rxneg, filetype1
             let ft = empty(filetype0) ? '*' : filetype0
             return {
                         \ 'f': a:filename,
@@ -794,12 +803,15 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         endif
         call add(group_defs[ft].files, grep_def.ff)
     endfor
+    TLibTrace 'trag', len(group_defs)
     let unprocessed_fnames = {}
     for [ft, group_def] in items(group_defs)
         let rx = get(group_def, 'use_rx', group_def.rxpos)
         let kinds = get(group_def, 'use_kinds', group_def.kindspos)
-        " TLogVAR rx, kinds
+        " TLogVAR rx, kinds, len(group_def.files)
+        TLibTrace 'trag', rx, kinds
         let [ok, unprocessed_files] = trag#external#{grep_cmd}#Run(kinds, rx, group_def.files)
+        TLibTrace 'trag', ok
         " TLogVAR ft, len(getqflist())
         if ok
             for unprocessed_file in unprocessed_files
@@ -824,9 +836,11 @@ function! s:GrepWith_external(grep_defs, grep_opts) "{{{3
         endif
     endfor
     " TLogVAR bnums
+    TLibTrace 'trag', len(must_filter)
     if !empty(must_filter)
         let qfl = getqflist()
         let qfl = filter(qfl, 'v:val.bufnr > 0')
+        TLibTrace 'trag', 0, len(qfl)
         " TLogVAR qfl
         " TLogVAR 1, len(qfl)
         let collected_bufnrs = {}
