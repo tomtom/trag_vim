@@ -959,16 +959,15 @@ function! s:GetRx(filename, kinds, rx, default, filetype) "{{{3
             let filetype = ftdef.ft
         else
             let prototype = ''
-            for needle in [
-                        \ fnamemodify(a:filename, ':p'),
-                        \ fnamemodify(a:filename, ':t'),
-                        \ fnamemodify(a:filename, ':e')
-                        \ ]
-                let filetype = trag#GetFiletype(needle)
-                " TLogVAR needle, filetype
-                if !empty(filetype)
-                    let prototype = needle
-                    break
+            for mods in [':e', ':t', ':p']
+                let needle = fnamemodify(a:filename, mods)
+                if !empty(needle)
+                    let filetype = trag#GetFiletype(needle)
+                    " TLogVAR needle, filetype
+                    if !empty(filetype)
+                        let prototype = needle
+                        break
+                    endif
                 endif
             endfor
             let s:fnameftypes[a:filename] = {'ft': filetype, 'proto': prototype}
