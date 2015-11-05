@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-10-27.
-" @Revision:    709
+" @Last Change: 2015-11-05.
+" @Revision:    721
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -93,11 +93,6 @@ command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 command! -nargs=1 -bang -bar -complete=customlist,trag#CComplete Trag Tragsearch<bang> <args> | Tragcw
 
 
-" :display: :Tragfile
-" Edit a file registered in your tag files.
-command! Tragfile call trag#Edit()
-
-
 " :display: :Tragcw
 " Display a quick fix list using |tlib#input#ListD()|.
 command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
@@ -121,11 +116,16 @@ command! -nargs=? Traglw call trag#LocList()
 "
 "   -i=KINDS, --include=KINDS ... Include KINDS (default: .)
 "   -x=KINDS, --exclude=KINDS ... Exclude KINDS
+"   -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
+"   -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
 "   --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
 "   -l, --literal ............... RX is a literal text, not a |regexp|
 "   --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
 "   --file_sources=SOURCES ...... A comma-separated list of sources (see 
 "                                 |g:trag#file_sources|)
+"   --filenames ................. Include matching filenames
+"   --no-text ................... Don't include matching text lines
+"   --glob=PATTERN .............. Pattern for "glob" source
 "
 " Positional arguments:
 "   REGEXP ...................... A |regexp| or text (see --literal)
@@ -133,48 +133,10 @@ command! -nargs=? Traglw call trag#LocList()
 command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call trag#GrepWithArgs([<f-args>], empty("<bang>"))
 
 
-" :display: :Traggrep REGEXP [GLOBPATTERN]
-" A 99%-replacement for grep. The glob pattern is optional.
-"
-" Example: >
-"   :Traggrep foo *.vim
-"   :Traggrep bar
-command! -nargs=+ -bang -bar -complete=file Traggrep
-            \ | Tragsearch<bang> <args>
-            \ | Tragcw
-
-
-" :display: :Tragsetfiles [GLOB PATTERN]
-" The file list is set only once per buffer. If the list of the project 
-" files has changed, you have to run this command on order to reset the 
-" per-buffer list.
-"
-" If no filelist is given, collect the files in your tags files.
-"
-" Examples: >
-"   :Tragsetfiles
-"   :Tragsetfiles foo*.txt
-command! -nargs=? -bar -complete=file Tragsetfiles call trag#SetFiles(<q-args>)
-
-" :display: :Tragaddfiles FILELIST
-" Add more files to the project list.
-command! -nargs=1 -bar -complete=file Tragaddfiles call trag#AddFiles(<args>)
-
-" :display: :Tragclearfiles
-" Remove any files from the project list.
-command! Tragclearfiles call trag#ClearFiles()
-
-" :display: :TragGitFiles GIT_REPOS
-command! -nargs=1 -bar -complete=dir TragGitFiles call trag#SetGitFiles(<q-args>)
-
-command! -bar TragRepoFiles call trag#SetRepoFiles()
-
-
 " Install the following maps:
 "
 "   <trag_map_leader># ........ Search word under cursor
 "   <trag_map_leader>. ........ :Trag * <Input>
-"   <trag_map_leader>- ........ :Tragfile
 "
 " The following maps might be defined only after the first invocation:
 "
@@ -187,7 +149,6 @@ function! TragInstallMap(leader) "{{{3
     " TLogVAR a:leader
     exec 'noremap' a:leader .'. :Trag * '
     exec 'noremap' a:leader .'+ :Tragcw<cr>'
-    exec 'noremap' a:leader .'- :Tragfile<cr>'
     exec 'noremap <silent>' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
     for kind in keys(g:trag_kinds)
         call TragInstallKindMap(leader, kind)
