@@ -24,11 +24,6 @@ TLet g:trag_keyword_chars = {}
 " Trag map leader. See also |TragInstallMap()|.
 TLet g:trag_map_leader = '<Leader>r'
 
-" A dictionary FILENAME_EXTENSION => FILETYPE
-" On systems without has('fname_case') (see |feature-list|), 
-" FILENAME_EXTENSION should be a lower-case string.
-TLet g:trag_extension_filetype = {}
-
 " A list of kinds for which |TragInstallKindMap()| will install maps 
 " that ignore comments.
 TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r', 'u']
@@ -44,7 +39,7 @@ TLet g:trag_kinds_ignored_comments = ['c', 'd', 'f', 'l', 'r', 'u']
 " Examples: >
 "   TRagDefKind v * /\C\<%s\>\s*=[^=~<>]/
 "   TRagDefKind v ruby /\C\<%s\>\(\s*,\s*[[:alnum:]_@$]\+\s*\)*\s*=[^=~<>]/
-command! -bang -nargs=1 TRagDefKind call trag#TRagDefKind(<q-args>, !empty("<bang>"))
+command! -bang -nargs=1 TRagDefKind call trag#TragDefKind(<q-args>, !empty("<bang>"))
 
 
 " :display: TRagKeyword FILETYPE KEYWORD_CHARS
