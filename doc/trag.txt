@@ -178,27 +178,26 @@ See |trag#Grep()| for details of how to use this.
 Contents~
 
         g:trag_map_leader ....................... |g:trag_map_leader|
-        g:trag_extension_filetype ............... |g:trag_extension_filetype|
         g:trag_kinds_ignored_comments ........... |g:trag_kinds_ignored_comments|
         :TRagDefKind ............................ |:TRagDefKind|
         :TRagKeyword ............................ |:TRagKeyword|
         :TRagDefFiletype ........................ |:TRagDefFiletype|
         :Trag ................................... |:Trag|
-        :Tragfile ............................... |:Tragfile|
         :Tragcw ................................. |:Tragcw|
         :Traglw ................................. |:Traglw|
         :Tragsearch ............................. |:Tragsearch|
-        :Traggrep ............................... |:Traggrep|
-        :Tragsetfiles ........................... |:Tragsetfiles|
-        :Tragaddfiles ........................... |:Tragaddfiles|
-        :Tragclearfiles ......................... |:Tragclearfiles|
-        :TragGitFiles ........................... |:TragGitFiles|
-        :TragRepoFiles .......................... |:TragRepoFiles|
         TragInstallMap .......................... |TragInstallMap()|
         TragInstallKindMap ...................... |TragInstallKindMap()|
         trag#general#Rename ..................... |trag#general#Rename()|
         trag#viki#Rename ........................ |trag#viki#Rename()|
         trag#rename#Rename ...................... |trag#rename#Rename()|
+        prototype.Get_files
+        prototype.Get_grep_defs
+        prototype.Get_group_defs
+        prototype.Get_must_filter
+        trag#grepdefs#New ....................... |trag#grepdefs#New()|
+        trag#grepdefs#GetGrepDef ................ |trag#grepdefs#GetGrepDef()|
+        trag#grepdefs#ClearCachedRx ............. |trag#grepdefs#ClearCachedRx()|
         g:trag#external#ack#opts ................ |g:trag#external#ack#opts|
         g:trag#external#ack#supported_kinds ..... |g:trag#external#ack#supported_kinds|
         trag#external#ack#IsSupported ........... |trag#external#ack#IsSupported()|
@@ -227,6 +226,7 @@ Contents~
         g:trag#utils#cmdline_max ................ |g:trag#utils#cmdline_max|
         trag#utils#GrepaddFiles ................. |trag#utils#GrepaddFiles()|
         trag#java#Rename ........................ |trag#java#Rename()|
+        g:trag#extension_filetype ............... |g:trag#extension_filetype|
         g:trag#grep_type ........................ |g:trag#grep_type|
         g:trag#assume_executable ................ |g:trag#assume_executable|
         g:trag#grep_fallback_type ............... |g:trag#grep_fallback_type|
@@ -247,20 +247,11 @@ Contents~
         g:trag_project_ruby ..................... |g:trag_project_ruby|
         g:trag_project .......................... |g:trag_project|
         g:trag_git .............................. |g:trag_git|
-        trag#ClearFiles ......................... |trag#ClearFiles()|
-        trag#AddFiles ........................... |trag#AddFiles()|
         trag#GetProjectFiles .................... |trag#GetProjectFiles()|
         trag#GetGitFiles ........................ |trag#GetGitFiles()|
-        trag#SetRepoFiles ....................... |trag#SetRepoFiles()|
-        trag#SetGitFiles ........................ |trag#SetGitFiles()|
-        trag#SetFiles ........................... |trag#SetFiles()|
-        trag#FindGitRepos ....................... |trag#FindGitRepos()|
-        trag#Edit ............................... |trag#Edit()|
         trag#Grep ............................... |trag#Grep()|
         trag#GrepWithArgs ....................... |trag#GrepWithArgs()|
-        trag#LastRun ............................ |trag#LastRun()|
         trag#ScanWithGrepDefs ................... |trag#ScanWithGrepDefs()|
-        trag#ClearCachedRx ...................... |trag#ClearCachedRx()|
         trag#QuickList .......................... |trag#QuickList()|
         trag#QuickListMaybe ..................... |trag#QuickListMaybe()|
         trag#BrowseList ......................... |trag#BrowseList()|
@@ -278,12 +269,6 @@ plugin/trag.vim~
                                                     *g:trag_map_leader*
 g:trag_map_leader              (default: '<Leader>r')
     Trag map leader. See also |TragInstallMap()|.
-
-                                                    *g:trag_extension_filetype*
-g:trag_extension_filetype      (default: {})
-    A dictionary FILENAME_EXTENSION => FILETYPE
-    On systems without has('fname_case') (see |feature-list|), 
-    FILENAME_EXTENSION should be a lower-case string.
 
                                                     *g:trag_kinds_ignored_comments*
 g:trag_kinds_ignored_comments  (default: ['c', 'd', 'f', 'l', 'r', 'u'])
@@ -344,10 +329,6 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
         Trag -i=todo
 <
 
-                                                    *:Tragfile*
-:Tragfile
-    Edit a file registered in your tag files.
-
                                                     *:Tragcw*
 :Tragcw
     Display a quick fix list using |tlib#input#ListD()|.
@@ -371,51 +352,20 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
 
       -i=KINDS, --include=KINDS ... Include KINDS (default: .)
       -x=KINDS, --exclude=KINDS ... Exclude KINDS
+      -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
+      -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
       --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
       -l, --literal ............... RX is a literal text, not a |regexp|
       --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
       --file_sources=SOURCES ...... A comma-separated list of sources (see 
                                     |g:trag#file_sources|)
+      --filenames ................. Include matching filenames
+      --no-text ................... Don't include matching text lines
+      --glob=PATTERN .............. Pattern for "glob" source
 
     Positional arguments:
       REGEXP ...................... A |regexp| or text (see --literal)
       GLOB PATTERNS ............... Optional |glob| patterns
-
-                                                    *:Traggrep*
-:Traggrep REGEXP [GLOBPATTERN]
-    A 99%-replacement for grep. The glob pattern is optional.
-
-    Example: >
-      :Traggrep foo *.vim
-      :Traggrep bar
-<
-
-                                                    *:Tragsetfiles*
-:Tragsetfiles [GLOB PATTERN]
-    The file list is set only once per buffer. If the list of the project 
-    files has changed, you have to run this command on order to reset the 
-    per-buffer list.
-
-    If no filelist is given, collect the files in your tags files.
-
-    Examples: >
-      :Tragsetfiles
-      :Tragsetfiles foo*.txt
-<
-
-                                                    *:Tragaddfiles*
-:Tragaddfiles FILELIST
-    Add more files to the project list.
-
-                                                    *:Tragclearfiles*
-:Tragclearfiles
-    Remove any files from the project list.
-
-                                                    *:TragGitFiles*
-:TragGitFiles GIT_REPOS
-
-                                                    *:TragRepoFiles*
-:TragRepoFiles
 
                                                     *TragInstallMap()*
 TragInstallMap(leader)
@@ -423,7 +373,6 @@ TragInstallMap(leader)
 
       <trag_map_leader># ........ Search word under cursor
       <trag_map_leader>. ........ :Trag * <Input>
-      <trag_map_leader>- ........ :Tragfile
 
     The following maps might be defined only after the first invocation:
 
@@ -456,6 +405,27 @@ autoload/trag/rename.vim~
 
                                                     *trag#rename#Rename()*
 trag#rename#Rename(world, selected, from, to, suffix)
+
+
+========================================================================
+autoload/trag/grepdefs.vim~
+
+prototype.Get_files
+
+prototype.Get_grep_defs
+
+prototype.Get_group_defs
+
+prototype.Get_must_filter
+
+                                                    *trag#grepdefs#New()*
+trag#grepdefs#New(files, kindspos, kindsneg, rx, filetype)
+
+                                                    *trag#grepdefs#GetGrepDef()*
+trag#grepdefs#GetGrepDef(filename, kindspos, kindsneg, rx, filetype)
+
+                                                    *trag#grepdefs#ClearCachedRx()*
+trag#grepdefs#ClearCachedRx()
 
 
 ========================================================================
@@ -581,6 +551,12 @@ trag#java#Rename(world, selected, from, to)
 ========================================================================
 autoload/trag.vim~
 
+                                                    *g:trag#extension_filetype*
+g:trag#extension_filetype      (default: {})
+    A dictionary FILENAME_EXTENSION => FILETYPE
+    On systems without has('fname_case') (see |feature-list|), 
+    FILENAME_EXTENSION should be a lower-case string.
+
                                                     *g:trag#grep_type*
 g:trag#grep_type               (default: 'trag')
     A comma-separated list of preferred grep programs:
@@ -627,7 +603,7 @@ g:trag_get_files_c             (default: 'split(glob("**/*.[ch]"), "\n")')
 g:trag_get_files_cpp           (default: 'split(glob("**/*.[ch]"), "\n")')
 
                                                     *g:trag#file_sources*
-g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'tags', 'buffer'])
+g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'tags', 'filetype', 'buffer'])
     A list of sources.
     Possible values:
       vcs ....... Use g:trag#check_vcs
@@ -639,6 +615,7 @@ g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'ta
                   g:trag_project_{'filetype'}
       buffer .... Use the current buffer's directory
       cd ........ Use the current working directory (see |getcwd()|)
+      *FN ....... Call function FN with one arg (a dictionary of options)
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
@@ -710,36 +687,11 @@ g:trag_git                     (default: '')
     If the value is "finddir", use |finddir()| to find a .git directory.
     Can be buffer local.
 
-                                                    *trag#ClearFiles()*
-trag#ClearFiles()
-
-                                                    *trag#AddFiles()*
-trag#AddFiles(files)
-
                                                     *trag#GetProjectFiles()*
 trag#GetProjectFiles(manifest)
 
                                                     *trag#GetGitFiles()*
 trag#GetGitFiles(repos)
-
-                                                    *trag#SetRepoFiles()*
-trag#SetRepoFiles()
-    Set the files list to the files in the current VCS repository.
-
-                                                    *trag#SetGitFiles()*
-trag#SetGitFiles(repos)
-    Set the files list from the files included in a given git repository.
-
-                                                    *trag#SetFiles()*
-trag#SetFiles(?files=[])
-
-                                                    *trag#FindGitRepos()*
-trag#FindGitRepos()
-
-                                                    *trag#Edit()*
-trag#Edit()
-    Edit a file from the project catalog. See |g:trag_project| and 
-    |:TRagfile|.
 
                                                     *trag#Grep()*
 trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
@@ -764,21 +716,15 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 <
 
                                                     *trag#GrepWithArgs()*
-trag#GrepWithArgs(args, ?replace=1)
+trag#GrepWithArgs(args, ?replace=1, ?extra={})
     args is a list of strings of command-line arguments of |:Tragsearch|.
 
     If the variables [bg]:trag_rxf_{kind}_{&filetype} or 
     [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 
     |printf()|) to format REGEXP.
 
-                                                    *trag#LastRun()*
-trag#LastRun(what)
-
                                                     *trag#ScanWithGrepDefs()*
 trag#ScanWithGrepDefs(grep_def, lines, setqflist)
-
-                                                    *trag#ClearCachedRx()*
-trag#ClearCachedRx()
 
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
