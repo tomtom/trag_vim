@@ -2,7 +2,7 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Last Change: 2015-11-06.
-" @Revision:    1828
+" @Revision:    1832
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -467,6 +467,8 @@ endf
 "   KIND REGEXP
 "   KIND1,KIND2 REGEXP
 "
+" DEPRECATED: Old syntax. Please use |trag#GrepWithArgs()| instead.
+"
 " If the variables [bg]:trag_rxf_{kind}_{&filetype} or 
 " [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 
 " |printf()|) to format REGEXP.
@@ -484,6 +486,9 @@ endf
 function! trag#Grep(args, ...) "{{{3
     TVarArg ['replace', 1], ['files', []], ['filetype', '']
     TLibTrace 'trag', a:args, replace, files, filetype
+    echohl WarningMsg
+    echom 'trag#Grep() is deprecated. Please use trag#GrepWithArgs() instead.'
+    echohl NONE
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
     return get(s:Grep(kindspos, kindsneg, rx, replace, files, filetype, {}), 'items', [])
 endf
