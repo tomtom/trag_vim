@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
 " @Last Change: 2015-11-06.
-" @Revision:    725
+" @Revision:    727
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -148,8 +148,9 @@ command! Tragfiles call trag#Edit()
 " cursor.
 function! TragInstallMap(leader) "{{{3
     " TLogVAR a:leader
-    exec 'noremap' a:leader .'. :Trag * '
+    exec 'noremap' a:leader .'. :Trag '
     exec 'noremap' a:leader .'+ :Tragcw<cr>'
+    exec 'noremap' a:leader .'* :Tragfiles<cr>'
     exec 'noremap <silent>' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
     for kind in keys(g:trag_kinds)
         call TragInstallKindMap(leader, kind)
