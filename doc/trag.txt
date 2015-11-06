@@ -186,6 +186,7 @@ Contents~
         :Tragcw ................................. |:Tragcw|
         :Traglw ................................. |:Traglw|
         :Tragsearch ............................. |:Tragsearch|
+        :Tragfiles .............................. |:Tragfiles|
         TragInstallMap .......................... |TragInstallMap()|
         TragInstallKindMap ...................... |TragInstallKindMap()|
         trag#general#Rename ..................... |trag#general#Rename()|
@@ -249,6 +250,7 @@ Contents~
         g:trag_git .............................. |g:trag_git|
         trag#GetProjectFiles .................... |trag#GetProjectFiles()|
         trag#GetGitFiles ........................ |trag#GetGitFiles()|
+        trag#Edit ............................... |trag#Edit()|
         trag#Grep ............................... |trag#Grep()|
         trag#GrepWithArgs ....................... |trag#GrepWithArgs()|
         trag#ScanWithGrepDefs ................... |trag#ScanWithGrepDefs()|
@@ -362,10 +364,15 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
       --filenames ................. Include matching filenames
       --no-text ................... Don't include matching text lines
       --glob=PATTERN .............. Pattern for "glob" source
+      --force ..................... Don't use cached information
 
     Positional arguments:
       REGEXP ...................... A |regexp| or text (see --literal)
       GLOB PATTERNS ............... Optional |glob| patterns
+
+                                                    *:Tragfiles*
+:Tragfiles
+    Edit a file registered in your tag files.
 
                                                     *TragInstallMap()*
 TragInstallMap(leader)
@@ -692,6 +699,11 @@ trag#GetProjectFiles(manifest)
 
                                                     *trag#GetGitFiles()*
 trag#GetGitFiles(repos)
+
+                                                    *trag#Edit()*
+trag#Edit()
+    Edit a file from the project catalog. See |g:trag_project| and 
+    |:TRagfile|.
 
                                                     *trag#Grep()*
 trag#Grep(args, ?replace=1, ?files=[], ?filetype='')

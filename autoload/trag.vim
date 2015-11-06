@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-05.
-" @Revision:    1808
+" @Last Change: 2015-11-06.
+" @Revision:    1828
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -234,6 +234,19 @@ TLet g:trag_project = ''
 TLet g:trag_git = ''
 
 
+
+""" input#List {{{1
+
+" :nodoc:
+TLet g:trag_edit_world = {
+            \ 'type': 's',
+            \ 'query': 'Select file',
+            \ 'pick_last_item': 1,
+            \ 'scratch': '__TRagEdit__',
+            \ 'return_agent': 'tlib#agent#ViewFile',
+            \ }
+
+
 """ Functions {{{1
     
 let s:grep_rx = ''
@@ -242,40 +255,24 @@ let s:grep_rx = ''
 function! s:GetFiles(...) "{{{3
     TVarArg ['opts', {}]
     let fopts = deepcopy(opts)
-    if has_key(fopts, '__rest__')
-        call remove(fopts, '__rest__')
-    endif
-    if !exists('b:trag_files_') || !exists('b:trag_filesopts_') || b:trag_filesopts_ != fopts
+    for k in ['__rest__', 'kinds', 'include', 'exclude', 'literal', '__exit__', 'text', 'filenames', 'filetype']
+        if has_key(fopts, k)
+            call remove(fopts, k)
+        endif
+    endfor
+    if get(opts, 'force', 0) || !exists('b:trag_cache_files') || b:trag_cache_files.options != fopts
         TLibTrace 'trag', fopts
-        call s:SetFiles([], opts)
-        let b:trag_filesopts_ = deepcopy(fopts)
+        let b:trag_cache_files = s:SetFiles([], opts)
+        let b:trag_cache_files.options = fopts
     endif
-    TLibTrace 'trag', len(b:trag_files_)
-    return b:trag_files_
+    TLibTrace 'trag', len(b:trag_cache_files.files)
+    return b:trag_cache_files.files
 endf
 
 
 function! s:ClearFiles() "{{{3
-    TLibTrace 'trag', exists('b:trag_files_'), exists('b:trag_filesopts_')
-    let b:trag_files_ = []
-    let b:trag_filesopts_ = {}
-endf
-
-
-function! s:AddFiles(files) "{{{3
-    if tlib#type#IsString(a:files)
-        let files_ = eval(a:files)
-    else
-        let files_ = a:files
-    endif
-    if !tlib#type#IsList(files_)
-        echoerr 'trag_files must result in a list: '. string(a:files)
-    elseif exists('b:trag_files_')
-        let b:trag_files_ += files_
-    else
-        let b:trag_files_ = files_
-    endif
-    unlet files_
+    TLibTrace 'trag', exists('b:trag_cache_files')
+    let b:trag_cache_files = {}
 endf
 
 
@@ -320,6 +317,7 @@ function! s:SetFiles(...) "{{{3
     TVarArg ['files', []], ['opts', {}]
     call s:ClearFiles()
     TLibTrace 'trag', len(files), opts
+    let use_source = ''
     if empty(files)
         let source1 = ''
         if has_key(opts, 'file_sources')
@@ -401,6 +399,7 @@ function! s:SetFiles(...) "{{{3
             endif
             if !empty(files)
                 call filter(files, '!isdirectory(v:val)')
+                let use_source = source
                 TLibTrace 'trag', source, len(files)
                 break
             endif
@@ -410,9 +409,8 @@ function! s:SetFiles(...) "{{{3
         call map(files, 'tlib#file#Canonic(fnamemodify(v:val, ":p"))')
         let files = tlib#list#Uniq(files)
         " TLogVAR files
-        call s:AddFiles(files)
     endif
-    " TLogVAR b:trag_files_
+    return {'source': use_source, 'files': files}
 endf
 
 
@@ -443,6 +441,24 @@ function! trag#FindGitRepos() "{{{3
     else
         return ''
     endif
+endf
+
+
+" Edit a file from the project catalog. See |g:trag_project| and 
+" |:TRagfile|.
+function! trag#Edit() "{{{3
+    let w = tlib#World#New(copy(g:trag_edit_world))
+    let w.base = s:GetFiles()
+    let w.show_empty = 1
+    let w.pick_last_item = 0
+    if b:trag_cache_files.source !~ '\<vcs\>'
+        let pattern = matchstr(expand('%:t:r'), '^\w\+')
+        " call w.SetInitialFilter(pattern)
+        call w.SetInitialFilter([[''], [pattern]])
+    endif
+    call w.Set_display_format('filename')
+    " TLogVAR w.base
+    call tlib#input#ListW(w)
 endf
 
 
@@ -482,9 +498,10 @@ let s:trag_args = {
             \   'include': {'default': ''},
             \   'exclude': {'default': ''},
             \   'filetype': {'default': ''},
-            \   'literal': {'default': 0, 'type': -1},
-            \   'filenames': {'default': 0, 'type': -1},
-            \   'text': {'default': 1, 'type': -1},
+            \   'literal': {'type': -1},
+            \   'filenames': {'type': -1},
+            \   'text': {'type': -1},
+            \   'force': {'type': -1},
             \   'file_sources': {'type': 1, 'complete_customlist': 'g:trag#file_sources'},
             \   'grep_type': {'type': 1, 'complete_customlist': 'map(filter(tlib#cmd#OutputAsList("fun"), ''v:val =~ "GrepWith_\\w\\+(grepdef"''), ''matchstr(v:val, "GrepWith_\\zs\\w\\+")'')'},
             \ },
@@ -513,7 +530,7 @@ function! trag#GrepWithArgs(args, ...) abort "{{{3
         return
     endif
     let rx = get(opts.__rest__, 0, '')
-    if opts.literal
+    if get(opts, 'literal', 0)
         let rx = tlib#rx#Escape(rx)
     endif
     let files = opts.__rest__[1 : -1]

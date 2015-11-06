@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-11-05.
-" @Revision:    721
+" @Last Change: 2015-11-06.
+" @Revision:    725
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -121,11 +121,17 @@ command! -nargs=? Traglw call trag#LocList()
 "   --filenames ................. Include matching filenames
 "   --no-text ................... Don't include matching text lines
 "   --glob=PATTERN .............. Pattern for "glob" source
+"   --force ..................... Don't use cached information
 "
 " Positional arguments:
 "   REGEXP ...................... A |regexp| or text (see --literal)
 "   GLOB PATTERNS ............... Optional |glob| patterns
 command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call trag#GrepWithArgs([<f-args>], empty("<bang>"))
+
+
+" :display: :Tragfiles
+" Edit a file registered in your tag files.
+command! Tragfiles call trag#Edit()
 
 
 " Install the following maps:
