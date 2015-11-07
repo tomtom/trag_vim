@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-11-06.
-" @Revision:    727
+" @Last Change: 2015-11-07.
+" @Revision:    733
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -62,42 +62,7 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 
 
-" :display: :Trag[!] [ARGS] [REGEXP]
-" Run |:Tragsearch| and instantly display the result with |:Tragcw|.
-"
-" See |:Tragsearch| for help on ARGS.
-" 
-" If the kind rx doesn't contain %s (e.g. todo), you can skip the 
-" regexp.
-"
-" Examples: >
-"     " Find any matches
-"     Trag foo
-" 
-"     " Find variable definitions (word on the left-hand): foo = 1
-"     Trag -i=l foo
-" 
-"     " Find variable __or__ function/method definitions
-"     Trag -i=d,l foo
-" 
-"     " Find function calls like: foo(a, b)
-"     Trag -i=f foo
-"
-"     " Find TODO markers
-"     Trag -i=todo
-command! -nargs=1 -bang -bar -complete=customlist,trag#CComplete Trag Tragsearch<bang> <args> | Tragcw
-
-
-" :display: :Tragcw
-" Display a quick fix list using |tlib#input#ListD()|.
-command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
-
-" :display: :Traglw
-" Display a |location-list| using |tlib#input#ListD()|.
-command! -nargs=? Traglw call trag#LocList()
-
-
-" :display: :Tragsearch[!] [ARGS] REGEXP [GLOBPATTERN]
+" :display: :Trag[!] [ARGS] [REGEXP] [GLOBPATTERN]
 " Scan the files registered in your tag files for REGEXP. Generate a 
 " quickfix list. With [!], append to the given list. The quickfix list 
 " can be viewed with commands like |:cw| or |:Tragcw|.
@@ -122,11 +87,43 @@ command! -nargs=? Traglw call trag#LocList()
 "   --no-text ................... Don't include matching text lines
 "   --glob=PATTERN .............. Pattern for "glob" source
 "   --force ..................... Don't use cached information
+"   --cw=CMD .................... Command to use for displaying the 
+"                                 result (default: :Tragcw; use "none" 
+"                                 in order not to display the results 
+"                                 list)
 "
 " Positional arguments:
 "   REGEXP ...................... A |regexp| or text (see --literal)
 "   GLOB PATTERNS ............... Optional |glob| patterns
-command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Tragsearch call trag#GrepWithArgs([<f-args>], empty("<bang>"))
+" 
+" If the kind rx doesn't contain %s (e.g. todo), you can skip the 
+" regexp.
+"
+" Examples: >
+"     " Find any matches
+"     Trag foo
+" 
+"     " Find variable definitions (word on the left-hand): foo = 1
+"     Trag -i=l foo
+" 
+"     " Find variable __or__ function/method definitions
+"     Trag -i=d,l foo
+" 
+"     " Find function calls like: foo(a, b)
+"     Trag -i=f foo
+"
+"     " Find TODO markers
+"     Trag -i=todo
+command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Trag call trag#GrepWithArgs([<f-args>], empty("<bang>"))
+
+
+" :display: :Tragcw
+" Display a quick fix list using |tlib#input#ListD()|.
+command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
+
+" :display: :Traglw
+" Display a |location-list| using |tlib#input#ListD()|.
+command! -nargs=? Traglw call trag#LocList()
 
 
 " :display: :Tragfiles

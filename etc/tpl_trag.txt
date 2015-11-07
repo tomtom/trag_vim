@@ -60,7 +60,7 @@ Default maps:
     <Leader>r+ ... Show quickfixlist via |:Tragcw|
     <Leader>r* ... Edit a file from the files list, i.e. the list that would be 
                    used if no "--file_sources" argument were passed to 
-                   |:Tragsearch|
+                   |:Trag|
     <Leader>rx ... The same as `:Trag -l -i=x -x=i <cword><cr>`
                    where x is a alphabetical letter that describes a kind in 
                    |g:trag_kinds| and <cword> is the word under cursor.
@@ -113,7 +113,7 @@ much sense (a word that CONTAINs a comment, which could only be the word
 itself) but i.w does (a comment that CONTAINs a word, which is quite 
 possible).
 
-The available command-line options are documented in |:Tragsearch|. These 
+The available command-line options are documented in |:Trag|. These 
 command-line options allow users to defined which lines should be matched.
 
 Example:

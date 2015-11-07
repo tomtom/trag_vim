@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     https://github.com/tomtom
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-05
-" @Revision:    50
+" @Last Change: 2015-11-07
+" @Revision:    51
 
 
 let s:prototype = {}
@@ -15,22 +15,22 @@ endf
 
 function! s:prototype.Get_grep_defs() abort dict "{{{3
     if !has_key(self, 'grep_defs')
-        TLibTrace 'trag', len(self.files)
+        Tlibtrace 'trag', len(self.files)
         let self.grep_defs = map(copy(self.files), 'trag#grepdefs#GetGrepDef(v:val, self.kindspos, self.kindsneg, self.rx, self.filetype)')
         call filter(self.grep_defs, '!empty(v:val)')
-        TLibTrace 'trag', len(self.grep_defs)
+        Tlibtrace 'trag', len(self.grep_defs)
     endif
     return self.grep_defs
 endf
 
 
 function! s:prototype.Get_group_defs(grep_cmd) abort dict "{{{3
-    TLibTrace 'trag', a:grep_cmd
+    Tlibtrace 'trag', a:grep_cmd
     let is_mf = !trag#external#{a:grep_cmd}#IsSupported(self.kindspos)
     let gdid = 'group_defs_'. is_mf
     if !has_key(self, gdid)
         let mfid = 'must_filter_'. is_mf
-        TLibTrace 'trag', is_mf, gdid, mfid
+        Tlibtrace 'trag', is_mf, gdid, mfid
         let group_defs = {}
         let must_filter = {}
         for filename in self.Get_files()
@@ -80,7 +80,7 @@ function! s:prototype.Get_group_defs(grep_cmd) abort dict "{{{3
         " endfor
         let self[gdid] = group_defs
         let self[mfid] = must_filter
-        TLibTrace 'trag', len(self[gdid])
+        Tlibtrace 'trag', len(self[gdid])
     endif
     return self[gdid]
 endf
@@ -89,7 +89,7 @@ endf
 function! s:prototype.Get_must_filter(grep_cmd) abort dict "{{{3
     let is_mf = !trag#external#{a:grep_cmd}#IsSupported(self.kindspos)
     let mfid = 'must_filter_'. is_mf
-    TLibTrace 'trag', a:grep_cmd, is_mf, mfid
+    Tlibtrace 'trag', a:grep_cmd, is_mf, mfid
     if !has_key(self, mfid)
         call self.Get_group_defs(a:grep_cmd)
     endif
@@ -107,7 +107,7 @@ endf
 function! trag#grepdefs#GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
     " let ff = a:filename
     let ff = fnamemodify(a:filename, ':p')
-    " TLibTrace 'trag', a:filename, ff, filereadable(ff)
+    " Tlibtrace 'trag', a:filename, ff, filereadable(ff)
     " TLogVAR a:filename, ff, filereadable(ff)
     if filereadable(ff)
         " TLogVAR ff, a:kindspos, a:kindsneg, a:rx

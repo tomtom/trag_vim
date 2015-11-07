@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2014-07-03.
-" @Revision:    225
+" @Last Change: 2015-11-06.
+" @Revision:    233
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -29,16 +29,18 @@ endf
 " Currently only git is supported.
 " For other VCSs, I'd recommend to use "ag".
 function! trag#external#vcs#Run(kinds, rx, files) "{{{3
-    " TLogVAR a:rx, a:files
+    " TLogVAR a:rx, len(a:files)
     if exists('b:trag_support_vcs')
         if empty(b:trag_support_vcs)
             return [0, a:files]
         else
-            let [type, dir, bin] = b:trag_support_vcs
+            let [type, dir, bin] = deepcopy(b:trag_support_vcs)
+            " TLogVAR type, dir, bin
         endif
     else
         let b:trag_support_vcs = []
         let [type, dir] = tlib#vcs#FindVCS(expand('%:p'))
+        " TLogVAR type, dir, getcwd()
         if empty(type)
             return [0, a:files]
         endif
