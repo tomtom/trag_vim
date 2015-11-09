@@ -60,7 +60,7 @@ Default maps:
     <Leader>r+ ... Show quickfixlist via |:Tragcw|
     <Leader>r* ... Edit a file from the files list, i.e. the list that would be 
                    used if no "--file_sources" argument were passed to 
-                   |:Tragsearch|
+                   |:Trag|
     <Leader>rx ... The same as `:Trag -l -i=x -x=i <cword><cr>`
                    where x is a alphabetical letter that describes a kind in 
                    |g:trag_kinds| and <cword> is the word under cursor.
@@ -113,7 +113,7 @@ much sense (a word that CONTAINs a comment, which could only be the word
 itself) but i.w does (a comment that CONTAINs a word, which is quite 
 possible).
 
-The available command-line options are documented in |:Tragsearch|. These 
+The available command-line options are documented in |:Trag|. These 
 command-line options allow users to defined which lines should be matched.
 
 Example:
@@ -169,7 +169,6 @@ Contents~
         :Trag ................................... |:Trag|
         :Tragcw ................................. |:Tragcw|
         :Traglw ................................. |:Traglw|
-        :Tragsearch ............................. |:Tragsearch|
         :Tragfiles .............................. |:Tragfiles|
         TragInstallMap .......................... |TragInstallMap()|
         TragInstallKindMap ...................... |TragInstallKindMap()|
@@ -290,10 +289,39 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
 <
 
                                                     *:Trag*
-:Trag[!] [ARGS] [REGEXP]
-    Run |:Tragsearch| and instantly display the result with |:Tragcw|.
+:Trag[!] [ARGS] [REGEXP] [GLOBPATTERN]
+    Scan the files registered in your tag files for REGEXP. Generate a 
+    quickfix list. With [!], append to the given list. The quickfix list 
+    can be viewed with commands like |:cw| or |:Tragcw|.
 
-    See |:Tragsearch| for help on ARGS.
+    The REGEXP has to match a single line. This uses |readfile()| and the 
+    scans the lines. This is an alternative to |:vimgrep|.
+    If you choose your identifiers wisely, this should guide you well 
+    through your sources.
+
+    Supported command-line options for ARGS:
+
+      -i=KINDS, --include=KINDS ... Include KINDS (default: .)
+      -x=KINDS, --exclude=KINDS ... Exclude KINDS
+      -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
+      -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
+      --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
+      -l, --literal ............... RX is a literal text, not a |regexp|
+      --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
+      --file_sources=SOURCES ...... A comma-separated list of sources (see 
+                                    |g:trag#file_sources|)
+      --filenames ................. Include matching filenames
+      --no-text ................... Don't include matching text lines
+      --glob=PATTERN .............. Pattern for "glob" source
+      --force ..................... Don't use cached information
+      --cw=CMD .................... Command to use for displaying the 
+                                    result (default: :Tragcw; use "none" 
+                                    in order not to display the results 
+                                    list)
+
+    Positional arguments:
+      REGEXP ...................... A |regexp| or text (see --literal)
+      GLOB PATTERNS ............... Optional |glob| patterns
 
     If the kind rx doesn't contain %s (e.g. todo), you can skip the 
     regexp.
@@ -322,37 +350,6 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
                                                     *:Traglw*
 :Traglw
     Display a |location-list| using |tlib#input#ListD()|.
-
-                                                    *:Tragsearch*
-:Tragsearch[!] [ARGS] REGEXP [GLOBPATTERN]
-    Scan the files registered in your tag files for REGEXP. Generate a 
-    quickfix list. With [!], append to the given list. The quickfix list 
-    can be viewed with commands like |:cw| or |:Tragcw|.
-
-    The REGEXP has to match a single line. This uses |readfile()| and the 
-    scans the lines. This is an alternative to |:vimgrep|.
-    If you choose your identifiers wisely, this should guide you well 
-    through your sources.
-
-    Supported command-line options for ARGS:
-
-      -i=KINDS, --include=KINDS ... Include KINDS (default: .)
-      -x=KINDS, --exclude=KINDS ... Exclude KINDS
-      -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
-      -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
-      --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
-      -l, --literal ............... RX is a literal text, not a |regexp|
-      --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
-      --file_sources=SOURCES ...... A comma-separated list of sources (see 
-                                    |g:trag#file_sources|)
-      --filenames ................. Include matching filenames
-      --no-text ................... Don't include matching text lines
-      --glob=PATTERN .............. Pattern for "glob" source
-      --force ..................... Don't use cached information
-
-    Positional arguments:
-      REGEXP ...................... A |regexp| or text (see --literal)
-      GLOB PATTERNS ............... Optional |glob| patterns
 
                                                     *:Tragfiles*
 :Tragfiles
@@ -715,7 +712,7 @@ trag#Grep(args, ?replace=1, ?files=[], ?filetype='')
 
                                                     *trag#GrepWithArgs()*
 trag#GrepWithArgs(args, ?replace=1, ?extra={})
-    args is a list of strings of command-line arguments of |:Tragsearch|.
+    args is a list of strings of command-line arguments of |:Trag|.
 
     If the variables [bg]:trag_rxf_{kind}_{&filetype} or 
     [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 
