@@ -175,3 +175,31 @@ version: "1.02"
   MD5 checksum: 738c7a98299f22507000ab21a53d7b2f
 version: "1.02"
 
+version: "2.00"
+  - Require tlib 1.14; use tlib#file#Edit()
+  - Move ftplugin/* -> autoload/trag/ft/*
+  - trag#ScanWithGrepDefs() etc.
+  - a:leader .'+' map -> :Tragcw
+  - trag#ScanWithGrepDefs(): Return values(qfl)
+  - Misc fixes
+  - GrepWith_external(): strip text
+  - trag#utils#GrepaddFiles(): Use shellescape()
+  - Support for sift (https://sift-tool.org)
+  - Support for markdown
+  - Move qfl/loclist browser to tlib; require tlib 1.15
+  - trag#BrowseList: deepcopy g:trag#world
+  - trag#BrowseList: Use copy()
+  - Breaking change: Use tlib#arg#GetOpts
+  - :Tragsearch --file_sources command-line option
+  - trag#Grep: Use return
+  - s:GrepWith_external: Don't check if executable for grep_type == vcs
+  - s:GrepWith_external(): Don't use deepcopy
+  - s:GetRx(): don't precalc fnamemodify()
+  - Removed :Tragfile, :Traggrep, :Tragsetfiles, :Tragaddfiles, :Tragclearfiles, :TragGitFiles, :TragRepoFiles
+  - g:trag#file_sources: support for function sources; various improvements
+  - Re-introduce :Tragfiles command
+  - Deprecate trag#Grep()
+  - FIX maps
+  - Remove Tragsearch command; s/TLibTrace/Tlibtrace/g
+  MD5 checksum: 099e3abc4020163be874d233f90b59f1
+
