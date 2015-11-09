@@ -25,9 +25,9 @@ First, define which files belong to your project. See
 will scan the files in the VCS. Maybe your project's source files are 
 already registered in your tags files, in which case those will be used.
 
-Secondly, use |:Trag| or |:Traggrep| to scan your project's files. You 
-can restrict searches to certain "kinds" like only variable definitions 
-or only function calls. See |trag-kinds| for details.
+Secondly, use |:Trag| to scan your project's files. You can restrict searches 
+to certain "kinds" like only variable definitions or only function calls. See 
+|trag-kinds| for details.
 
 You can also type <Leader>r# to search for the word under cursor (see 
 |g:trag_map_leader| and |TragInstallMap()| for details on maps). In 
@@ -50,6 +50,19 @@ of supported filetypes.
 
 NOTE: Some kinds are available only for a subset of known filetypes.
 
+Default maps:
+
+    <Leader>r# ... Trag the word under cursor
+    <Leader>r. ... :Trag command-line
+    <Leader>r+ ... Show quickfixlist via |:Tragcw|
+    <Leader>r* ... Edit a file from the files list, i.e. the list that would be 
+                   used if no "--file_sources" argument were passed to 
+                   |:Trag|
+    <Leader>rx ... The same as `:Trag -l -i=x -x=i <cword><cr>`
+                   where x is a alphabetical letter that describes a kind in 
+                   |g:trag_kinds| and <cword> is the word under cursor.
+                   "-x=i" (exclude commented text) is only added if kind x is 
+                   in |g:trag_kinds_ignored_comments|.
 
 
 -----------------------------------------------------------------------
