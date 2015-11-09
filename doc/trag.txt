@@ -158,6 +158,25 @@ Use |:TRagDefKind| to define new kinds.
 See |trag#Grep()| for details of how to use this.
 
 
+-----------------------------------------------------------------------
+Install~
+
+To install the vimball, edit the vba file and type: >
+
+    :so %
+
+See :help vimball for details.
+
+To install from github, please use
+    1. git + a plugin loader like enable_vim, pathogen, vim-unbundle etc.
+    2. a plugin manager like VAM, Vundle, NeoBundle, vim-plug etc.
+
+The tlib_vim plugin is required:
+https://github.com/tomtom/tlib_vim
+
+Also available via git: http://github.com/tomtom/trag_vim
+
+
 ========================================================================
 Contents~
 
