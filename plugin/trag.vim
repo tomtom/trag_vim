@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-11-07.
-" @Revision:    733
+" @Last Change: 2015-11-16.
+" @Revision:    738
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -59,7 +59,7 @@ command! -nargs=+ TRagKeyword if len([<f-args>]) == 2
 " has('fname_case')), EXTENSION should be defined in lower case letters.
 " Examples: >
 "   TRagDefFiletype html html htm xhtml
-command! -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
+command! -bar -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 
 
 " :display: :Trag[!] [ARGS] [REGEXP] [GLOBPATTERN]
@@ -119,16 +119,16 @@ command! -nargs=+ -bang -bar -complete=customlist,trag#CComplete Trag call trag#
 
 " :display: :Tragcw
 " Display a quick fix list using |tlib#input#ListD()|.
-command! -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
+command! -bar -bang -nargs=? Tragcw call trag#QuickListMaybe(!empty("<bang>"))
 
 " :display: :Traglw
 " Display a |location-list| using |tlib#input#ListD()|.
-command! -nargs=? Traglw call trag#LocList()
+command! -bar -nargs=? Traglw call trag#LocList()
 
 
 " :display: :Tragfiles
 " Edit a file registered in your tag files.
-command! Tragfiles call trag#Edit()
+command! -bar -nargs=* Tragfiles call trag#Edit([<f-args>])
 
 
 " Install the following maps:

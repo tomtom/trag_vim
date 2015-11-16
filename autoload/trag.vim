@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-07.
-" @Revision:    1845
+" @Last Change: 2015-11-16.
+" @Revision:    1848
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -446,9 +446,10 @@ endf
 
 " Edit a file from the project catalog. See |g:trag_project| and 
 " |:TRagfile|.
-function! trag#Edit() "{{{3
+function! trag#Edit(args) "{{{3
+    let opts = tlib#arg#GetOpts(a:args, s:trag_args)
     let w = tlib#World#New(copy(g:trag_edit_world))
-    let w.base = s:GetFiles()
+    let w.base = s:GetFiles(opts)
     let w.show_empty = 1
     let w.pick_last_item = 0
     if b:trag_cache_files.source !~ '\<vcs\>'
