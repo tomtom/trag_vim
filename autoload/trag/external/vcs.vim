@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-06.
-" @Revision:    233
+" @Last Change: 2015-11-24.
+" @Revision:    234
 
 
 if !exists('g:trag#external#vcs#options_git')
@@ -86,13 +86,13 @@ function! trag#external#vcs#Run(kinds, rx, files) "{{{3
         if exists('*'. convert_filename)
             let files = map(files, 'call(convert_filename, [type, v:val])')
         endif
-        exec 'cd!' fnameescape(ddir)
+        exec 'silent cd!' fnameescape(ddir)
         " TLogVAR getcwd()
         call trag#utils#GrepaddFiles('', files)
         return [1, unprocessed_fnames]
     finally
         if getcwd() != cd
-            exec 'cd!' fnameescape(cd)
+            exec 'silent cd!' fnameescape(cd)
         endif
         let &gfm = gfm
         let &grepprg = grepprg
