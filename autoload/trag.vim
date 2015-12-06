@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-12-01.
-" @Revision:    1850
+" @Last Change: 2015-12-04.
+" @Revision:    1851
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -282,11 +282,11 @@ function! trag#GetProjectFiles(manifest) "{{{3
         let files = readfile(a:manifest)
         let cwd   = getcwd()
         try
-            call tlib#dir#CD(fnamemodify(a:manifest, ':h'), 1)
+            call tlib#dir#CD(fnamemodify(a:manifest, ':h'))
             call map(files, 'fnamemodify(v:val, ":p")')
             return files
         finally
-            call tlib#dir#CD(cwd, 1)
+            call tlib#dir#CD(cwd)
         endtry
     endif
     return []
