@@ -1,11 +1,11 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-24.
-" @Revision:    234
+" @Last Change: 2015-12-06.
+" @Revision:    235
 
 
 if !exists('g:trag#external#vcs#options_git')
-    let g:trag#external#vcs#options_git = {'args': 'grep -Hn -G %s --'}  "{{{2
+    let g:trag#external#vcs#options_git = {'args': 'grep --untracked -Hn -G %s --'}  "{{{2
 endif
 
 
