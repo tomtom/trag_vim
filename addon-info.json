@@ -7,5 +7,5 @@
     "dependencies" : {
     "tlib": {"type": "git", "url": "git://github.com/tomtom/tlib_vim.git"}
   },
-    "description" : "Jump to a file registered in your tags"
+    "description" : "A language-aware source code scanner (with support for git grep, ack, ag, sift ...)"
 }
