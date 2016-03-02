@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-12-04.
-" @Revision:    1851
+" @Last Change: 2016-03-02.
+" @Revision:    1852
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 116
@@ -485,11 +485,13 @@ endf
 "   call foo(bar)
 "   if foo == 1
 function! trag#Grep(args, ...) "{{{3
-    TVarArg ['replace', 1], ['files', []], ['filetype', '']
+    TVarArg ['replace', 1], ['files', []], ['filetype', ''], ['silent', 0]
     Tlibtrace 'trag', a:args, replace, files, filetype
-    echohl WarningMsg
-    echom 'trag#Grep() is deprecated. Please use trag#GrepWithArgs() instead.'
-    echohl NONE
+    if !silent
+        echohl WarningMsg
+        echom 'trag#Grep() is deprecated. Please use trag#GrepWithArgs() instead.'
+        echohl NONE
+    endif
     let [kindspos, kindsneg, rx] = s:SplitArgs(a:args)
     return get(s:Grep(kindspos, kindsneg, rx, replace, files, filetype, {}), 'items', [])
 endf
