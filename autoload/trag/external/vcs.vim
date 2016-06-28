@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-12-06.
-" @Revision:    235
+" @Last Change: 2015-12-17.
+" @Revision:    237
 
 
 if !exists('g:trag#external#vcs#options_git')

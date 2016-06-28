@@ -1,6 +1,6 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    13
+" @Revision:    19
 
 
 function! trag#rx#ConvertRx(rx, type, ...) "{{{3
@@ -20,6 +20,8 @@ endf
 
 function! trag#rx#ConvertRx_git(type, rx) "{{{3
     let rx = substitute(a:rx, '\\C', '', 'g')
+    let rx = substitute(rx, '\\%(', '\\(', 'g')
+    let rx = substitute(rx, '\\{-}', '*\\?', 'g')
     " let rx = substitute(a:rx, '\\{-}', '\\+\\?', 'g')
     return rx
 endf
