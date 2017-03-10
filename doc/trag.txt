@@ -53,15 +53,15 @@ of supported filetypes.
 
 NOTE: Some kinds are available only for a subset of known filetypes.
 
-Default maps:
+Default maps (see also |TragInstallMap()|):
 
-    <Leader>r# ... Trag the word under cursor
-    <Leader>r. ... :Trag command-line
-    <Leader>r+ ... Show quickfixlist via |:Tragcw|
-    <Leader>r* ... Edit a file from the files list, i.e. the list that would be 
+    <Leader>rr ... Trag the word under cursor
+    <Leader>rq ... Show |quickfix|list via |:Tragcw|
+    <Leader>rl ... Show |location-list| via |:Traglw|
+    <Leader>rf ... Edit a file from the files list, i.e. the list that would be 
                    used if no "--file_sources" argument were passed to 
                    |:Trag|
-    <Leader>rx ... The same as `:Trag -l -i=x -x=i <cword><cr>`
+    <Leader>r<Leader>x ... The same as `:Trag -l -i=x -x=i <cword><cr>`
                    where x is a alphabetical letter that describes a kind in 
                    |g:trag_kinds| and <cword> is the word under cursor.
                    "-x=i" (exclude commented text) is only added if kind x is 
@@ -180,96 +180,45 @@ Also available via git: http://github.com/tomtom/trag_vim
 ========================================================================
 Contents~
 
-        g:trag_map_leader ....................... |g:trag_map_leader|
-        g:trag_kinds_ignored_comments ........... |g:trag_kinds_ignored_comments|
-        :TRagDefKind ............................ |:TRagDefKind|
-        :TRagKeyword ............................ |:TRagKeyword|
-        :TRagDefFiletype ........................ |:TRagDefFiletype|
-        :Trag ................................... |:Trag|
-        :Tragcw ................................. |:Tragcw|
-        :Traglw ................................. |:Traglw|
-        :Tragfiles .............................. |:Tragfiles|
-        TragInstallMap .......................... |TragInstallMap()|
-        TragInstallKindMap ...................... |TragInstallKindMap()|
-        trag#general#Rename ..................... |trag#general#Rename()|
-        trag#viki#Rename ........................ |trag#viki#Rename()|
-        trag#rename#Rename ...................... |trag#rename#Rename()|
-        prototype.Get_files
-        prototype.Get_grep_defs
-        prototype.Get_group_defs
-        prototype.Get_must_filter
-        trag#grepdefs#New ....................... |trag#grepdefs#New()|
-        trag#grepdefs#GetGrepDef ................ |trag#grepdefs#GetGrepDef()|
-        trag#grepdefs#ClearCachedRx ............. |trag#grepdefs#ClearCachedRx()|
-        g:trag#external#ack#opts ................ |g:trag#external#ack#opts|
-        g:trag#external#ack#supported_kinds ..... |g:trag#external#ack#supported_kinds|
-        trag#external#ack#IsSupported ........... |trag#external#ack#IsSupported()|
-        trag#external#ack#Run ................... |trag#external#ack#Run()|
-        g:trag#external#sift#ignore_dirs ........ |g:trag#external#sift#ignore_dirs|
-        g:trag#external#sift#opts ............... |g:trag#external#sift#opts|
-        g:trag#external#sift#supported_kinds .... |g:trag#external#sift#supported_kinds|
-        trag#external#sift#IsSupported .......... |trag#external#sift#IsSupported()|
-        trag#external#sift#Run .................. |trag#external#sift#Run()|
-        g:trag#external#vcs#options_git ......... |g:trag#external#vcs#options_git|
-        g:trag#external#vcs#supported_kinds ..... |g:trag#external#vcs#supported_kinds|
-        trag#external#vcs#IsSupported ........... |trag#external#vcs#IsSupported()|
-        trag#external#vcs#Run ................... |trag#external#vcs#Run()|
-        trag#external#vcs#ConvertFilename_git ... |trag#external#vcs#ConvertFilename_git()|
-        g:trag#external#ag#opts ................. |g:trag#external#ag#opts|
-        g:trag#external#ag#supported_kinds ...... |g:trag#external#ag#supported_kinds|
-        trag#external#ag#IsSupported ............ |trag#external#ag#IsSupported()|
-        trag#external#ag#Run .................... |trag#external#ag#Run()|
-        g:trag#external#grep#args ............... |g:trag#external#grep#args|
-        g:trag#external#grep#supported_kinds .... |g:trag#external#grep#supported_kinds|
-        trag#external#grep#IsSupported .......... |trag#external#grep#IsSupported()|
-        trag#external#grep#Run .................. |trag#external#grep#Run()|
-        trag#rx#ConvertRx ....................... |trag#rx#ConvertRx()|
-        trag#rx#ConvertRx_git ................... |trag#rx#ConvertRx_git()|
-        trag#rx#ConvertRx_perl .................. |trag#rx#ConvertRx_perl()|
-        g:trag#utils#cmdline_max ................ |g:trag#utils#cmdline_max|
-        trag#utils#GrepaddFiles ................. |trag#utils#GrepaddFiles()|
-        trag#java#Rename ........................ |trag#java#Rename()|
-        g:trag#extension_filetype ............... |g:trag#extension_filetype|
-        g:trag#grep_type ........................ |g:trag#grep_type|
-        g:trag#assume_executable ................ |g:trag#assume_executable|
-        g:trag#grep_fallback_type ............... |g:trag#grep_fallback_type|
-        g:trag_get_files ........................ |g:trag_get_files|
-        g:trag_get_files_java ................... |g:trag_get_files_java|
-        g:trag_get_files_c ...................... |g:trag_get_files_c|
-        g:trag_get_files_cpp .................... |g:trag_get_files_cpp|
-        g:trag#file_sources ..................... |g:trag#file_sources|
-        g:trag#use_buffer ....................... |g:trag#use_buffer|
-        g:trag#check_vcs ........................ |g:trag#check_vcs|
-        g:trag#debug ............................ |g:trag#debug|
-        g:trag#world ............................ |g:trag#world|
-        trag#HasFiletype ........................ |trag#HasFiletype()|
-        trag#SetFiletype ........................ |trag#SetFiletype()|
-        trag#GetFiletype ........................ |trag#GetFiletype()|
-        g:trag_files ............................ |g:trag_files|
-        g:trag_glob ............................. |g:trag_glob|
-        g:trag_project_ruby ..................... |g:trag_project_ruby|
-        g:trag_project .......................... |g:trag_project|
-        g:trag_git .............................. |g:trag_git|
-        trag#GetProjectFiles .................... |trag#GetProjectFiles()|
-        trag#GetGitFiles ........................ |trag#GetGitFiles()|
-        trag#Edit ............................... |trag#Edit()|
-        trag#Grep ............................... |trag#Grep()|
-        trag#GrepWithArgs ....................... |trag#GrepWithArgs()|
-        trag#ScanWithGrepDefs ................... |trag#ScanWithGrepDefs()|
-        trag#QuickList .......................... |trag#QuickList()|
-        trag#QuickListMaybe ..................... |trag#QuickListMaybe()|
-        trag#BrowseList ......................... |trag#BrowseList()|
-        trag#LocList ............................ |trag#LocList()|
-        trag#AgentRefactor ...................... |trag#AgentRefactor()|
-        trag#CWord .............................. |trag#CWord()|
-        trag#RefactorRename ..................... |trag#RefactorRename()|
-        trag#IsSupported ........................ |trag#IsSupported()|
-        trag#CComplete .......................... |trag#CComplete()|
+        g:trag_map_leader ................. |g:trag_map_leader|
+        g:trag_kinds_ignored_comments ..... |g:trag_kinds_ignored_comments|
+        :TRagDefKind ...................... |:TRagDefKind|
+        :TRagKeyword ...................... |:TRagKeyword|
+        :TRagDefFiletype .................. |:TRagDefFiletype|
+        :Trag ............................. |:Trag|
+        :Tragcw ........................... |:Tragcw|
+        :Traglw ........................... |:Traglw|
+        :Tragfiles ........................ |:Tragfiles|
+        TragInstallMap .................... |TragInstallMap()|
+        g:trag#extension_filetype ......... |g:trag#extension_filetype|
+        g:trag#grep_type .................. |g:trag#grep_type|
+        g:trag#grep_fallback_type ......... |g:trag#grep_fallback_type|
+        g:trag_get_files .................. |g:trag_get_files|
+        g:trag#file_sources ............... |g:trag#file_sources|
+        g:trag#use_buffer ................. |g:trag#use_buffer|
+        g:trag#workspaces ................. |g:trag#workspaces|
+        g:trag#reject_default ............. |g:trag#reject_default|
+        g:trag#check_vcs .................. |g:trag#check_vcs|
+        trag#HasFiletype .................. |trag#HasFiletype()|
+        trag#SetFiletype .................. |trag#SetFiletype()|
+        trag#GetFiletype .................. |trag#GetFiletype()|
+        g:trag_files ...................... |g:trag_files|
+        g:trag_glob ....................... |g:trag_glob|
+        g:trag_manifest_ruby .............. |g:trag_manifest_ruby|
+        g:trag_manifest ................... |g:trag_manifest|
+        g:trag_git ........................ |g:trag_git|
+        trag#Edit ......................... |trag#Edit()|
+        trag#Grep ......................... |trag#Grep()|
+        trag#GrepWithArgs ................. |trag#GrepWithArgs()|
+        trag#QuickList .................... |trag#QuickList()|
+        trag#LocList ...................... |trag#LocList()|
+        trag#AgentRefactor ................ |trag#AgentRefactor()|
+        g:trag#external#sift#opts ......... |g:trag#external#sift#opts|
+        trag#external#vcs#Run ............. |trag#external#vcs#Run()|
 
 
-========================================================================
-plugin/trag.vim~
-
+------------------------------------------------------------------------
+                                                    *plugin/trag.vim*
                                                     *g:trag_map_leader*
 g:trag_map_leader              (default: '<Leader>r')
     Trag map leader. See also |TragInstallMap()|.
@@ -323,7 +272,8 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
       -i=KINDS, --include=KINDS ... Include KINDS (default: .)
       -x=KINDS, --exclude=KINDS ... Exclude KINDS
       -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
-      -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
+      -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP (see 
+                                    also |g:trag#reject_default|)
       --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
       -l, --literal ............... RX is a literal text, not a |regexp|
       --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
@@ -337,6 +287,12 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
                                     result (default: :Tragcw; use "none" 
                                     in order not to display the results 
                                     list)
+      --workspace=NAMES ........... A comma-separated list of workspaces 
+                                    (see |g:trag#workspaces|) that should 
+                                    be scanned.
+                                    `*` is an alias for all workspaces.
+                                    `?` is an alias for the buffer's 
+                                    'filetype'.
 
     Positional arguments:
       REGEXP ...................... A |regexp| or text (see --literal)
@@ -378,186 +334,25 @@ TRagDefFiletype FILETYPE /REGEXP/ ... EXTENSION ... FILENAME ...
 TragInstallMap(leader)
     Install the following maps:
 
-      <trag_map_leader># ........ Search word under cursor
-      <trag_map_leader>. ........ :Trag * <Input>
+      <trag_map_leader>r ........ Search word under cursor
+      <trag_map_leader>w ........ Search in the filetype workspace (see 
+                                  |:Trag|)
+      <trag_map_leader><space> .. Command line
+      <trag_map_leader>q ........ Re-Open the previous quickfix list
+      <trag_map_leader>l ........ Re-Open the previous location list
+      <trag_map_leader>f ........ Open a list of files
 
     The following maps might be defined only after the first invocation:
 
-      <trag_map_leader><KIND> ... Search word under cursor of KIND
+      <trag_map_leader><Leader><KIND> ... Search word under cursor of KIND
                                   See |g:trag_kinds|
 
     E.g. <trag_map_leader>d searches for the definition of the word under 
     cursor.
 
-                                                    *TragInstallKindMap()*
-TragInstallKindMap(leader, kind)
 
-
-========================================================================
-autoload/trag/general.vim~
-
-                                                    *trag#general#Rename()*
-trag#general#Rename(world, selected, rx, subst)
-
-
-========================================================================
-autoload/trag/viki.vim~
-
-                                                    *trag#viki#Rename()*
-trag#viki#Rename(world, selected, from, to)
-
-
-========================================================================
-autoload/trag/rename.vim~
-
-                                                    *trag#rename#Rename()*
-trag#rename#Rename(world, selected, from, to, suffix)
-
-
-========================================================================
-autoload/trag/grepdefs.vim~
-
-prototype.Get_files
-
-prototype.Get_grep_defs
-
-prototype.Get_group_defs
-
-prototype.Get_must_filter
-
-                                                    *trag#grepdefs#New()*
-trag#grepdefs#New(files, kindspos, kindsneg, rx, filetype)
-
-                                                    *trag#grepdefs#GetGrepDef()*
-trag#grepdefs#GetGrepDef(filename, kindspos, kindsneg, rx, filetype)
-
-                                                    *trag#grepdefs#ClearCachedRx()*
-trag#grepdefs#ClearCachedRx()
-
-
-========================================================================
-autoload/trag/external/ack.vim~
-
-                                                    *g:trag#external#ack#opts*
-g:trag#external#ack#opts       (default: {'grepprg': 'ack', 'args': '-Hns --nocolor --nogroup %s --'})
-
-                                                    *g:trag#external#ack#supported_kinds*
-g:trag#external#ack#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
-
-                                                    *trag#external#ack#IsSupported()*
-trag#external#ack#IsSupported(kinds)
-
-                                                    *trag#external#ack#Run()*
-trag#external#ack#Run(kinds, rx, files)
-
-
-========================================================================
-autoload/trag/external/sift.vim~
-
-                                                    *g:trag#external#sift#ignore_dirs*
-g:trag#external#sift#ignore_dirs (default: ['.git', '.hg'])
-
-                                                    *g:trag#external#sift#opts*
-g:trag#external#sift#opts      (default: {'grepprg': 'sift', 'args': '--exclude-dirs DIRS --no-color -n -- %s'})
-    "--exclude-dirs DIRS" will be replaced with the entries from 
-    |g:trag#external#sift#ignore_dirs|.
-
-                                                    *g:trag#external#sift#supported_kinds*
-g:trag#external#sift#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
-
-                                                    *trag#external#sift#IsSupported()*
-trag#external#sift#IsSupported(kinds)
-
-                                                    *trag#external#sift#Run()*
-trag#external#sift#Run(kinds, rx, files)
-
-
-========================================================================
-autoload/trag/external/vcs.vim~
-
-                                                    *g:trag#external#vcs#options_git*
-g:trag#external#vcs#options_git (default: {'args': 'grep -Hn -G %s --'})
-
-                                                    *g:trag#external#vcs#supported_kinds*
-g:trag#external#vcs#supported_kinds (default: ['identity', 'w', 'todo'])
-
-                                                    *trag#external#vcs#IsSupported()*
-trag#external#vcs#IsSupported(kinds)
-
-                                                    *trag#external#vcs#Run()*
-trag#external#vcs#Run(kinds, rx, files)
-    Currently only git is supported.
-    For other VCSs, I'd recommend to use "ag".
-
-                                                    *trag#external#vcs#ConvertFilename_git()*
-trag#external#vcs#ConvertFilename_git(type, filename)
-
-
-========================================================================
-autoload/trag/external/ag.vim~
-
-                                                    *g:trag#external#ag#opts*
-g:trag#external#ag#opts        (default: {'grepprg': 'ag', 'args': '-U -f --line-numbers --nogroup --nocolor -- %s'})
-
-                                                    *g:trag#external#ag#supported_kinds*
-g:trag#external#ag#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
-
-                                                    *trag#external#ag#IsSupported()*
-trag#external#ag#IsSupported(kinds)
-
-                                                    *trag#external#ag#Run()*
-trag#external#ag#Run(kinds, rx, files)
-
-
-========================================================================
-autoload/trag/external/grep.vim~
-
-                                                    *g:trag#external#grep#args*
-g:trag#external#grep#args      (default: '-Hn -E %s --')
-
-                                                    *g:trag#external#grep#supported_kinds*
-g:trag#external#grep#supported_kinds (default: ['identity', 'u', 'w', 'todo'])
-
-                                                    *trag#external#grep#IsSupported()*
-trag#external#grep#IsSupported(kinds)
-
-                                                    *trag#external#grep#Run()*
-trag#external#grep#Run(kinds, rx, files, ...)
-
-
-========================================================================
-autoload/trag/rx.vim~
-
-                                                    *trag#rx#ConvertRx()*
-trag#rx#ConvertRx(rx, type, ...)
-
-                                                    *trag#rx#ConvertRx_git()*
-trag#rx#ConvertRx_git(type, rx)
-
-                                                    *trag#rx#ConvertRx_perl()*
-trag#rx#ConvertRx_perl(type, rx)
-
-
-========================================================================
-autoload/trag/utils.vim~
-
-                                                    *g:trag#utils#cmdline_max*
-g:trag#utils#cmdline_max       (default: g:tlib#sys#windows ? 7000 : 100000)
-
-                                                    *trag#utils#GrepaddFiles()*
-trag#utils#GrepaddFiles(args, files)
-
-
-========================================================================
-autoload/trag/java.vim~
-
-                                                    *trag#java#Rename()*
-trag#java#Rename(world, selected, from, to)
-
-
-========================================================================
-autoload/trag.vim~
-
+------------------------------------------------------------------------
+                                                    *autoload/trag.vim*
                                                     *g:trag#extension_filetype*
 g:trag#extension_filetype      (default: {})
     A dictionary FILENAME_EXTENSION => FILETYPE
@@ -587,9 +382,6 @@ g:trag#grep_type               (default: 'trag')
                                                         *b:trag_grep_type*
     b:trag_grep_type overrides this global variable.
 
-                                                    *g:trag#assume_executable*
-g:trag#assume_executable       (default: ['vcs'])
-
                                                     *g:trag#grep_fallback_type*
 g:trag#grep_fallback_type      (default: 'trag')
     Use this type for files that are not supported by |g:trag#grep_type| 
@@ -600,28 +392,24 @@ g:trag_get_files               (default: 'split(glob("*"), "\n")')
     If no project files are defined, evaluate this expression as 
     fallback-strategy.
 
-                                                    *g:trag_get_files_java*
-g:trag_get_files_java          (default: 'split(glob("**/*.java"), "\n")')
-
-                                                    *g:trag_get_files_c*
-g:trag_get_files_c             (default: 'split(glob("**/*.[ch]"), "\n")')
-
-                                                    *g:trag_get_files_cpp*
-g:trag_get_files_cpp           (default: 'split(glob("**/*.[ch]"), "\n")')
-
                                                     *g:trag#file_sources*
-g:trag#file_sources            (default: ['vcs', 'project', 'files', 'glob', 'tags', 'filetype', 'buffer'])
+g:trag#file_sources            (default: ['vcs', 'manifest', 'files', 'glob', 'tags', 'filetype', 'cd'])
     A list of sources.
     Possible values:
       vcs ....... Use g:trag#check_vcs
       git ....... Use b:trag_git or g:trag_git
       tags ...... Use files listed in 'tags'
-      files ..... Use b:trag_files or g:trag_files
+      files ..... Use b:trag_files or g:trag_files, a list of filenames
+      filetype .. Use b/g:trag_get_files_{&filetype} or g:trag_get_files 
+                  (an expression that evaluates to the list of files)
       glob ...... Use b:trag_glob or g:trag_glob
-      project ... Use b:trag_project_{'filetype'} or 
-                  g:trag_project_{'filetype'}
+      manifest .. Use b:trag_manifest_{'filetype'} or 
+                  g:trag_manifest_{'filetype'}, the filename of a files 
+                  manifest
       buffer .... Use the current buffer's directory
+      buffers ... Use currently loaded buffers
       cd ........ Use the current working directory (see |getcwd()|)
+      workspace . Use |g:trag#workspaces|
       *FN ....... Call function FN with one arg (a dictionary of options)
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
@@ -633,16 +421,35 @@ g:trag#use_buffer              (default: 1)
     non-saved version in memory will be preferred over the version on 
     disk.
 
+                                                    *g:trag#workspaces*
+g:trag#workspaces              (default: {})
+    A dictionary {NAME: {PROPERTIES}} of "workspaces". A workspace is a 
+    directory whose subdirectories will be scanned.
+                                                        *b:trag_workspaces*
+    The NAME can be used to refer to a workspace from the command-line, 
+    e.g., `:Trag --workspace=foo bar` or from a buffer-local variable 
+    `b:trag_workspaces` (a list of workspaces that should be searched).
+
+    PROPERTIES is a dictionary with the following possible values:
+      include .. A list of names of other workspaces that should be 
+                 included in the search
+      path ..... A path (see |globpath()|)
+      glob ..... A glob pattern
+      accept ... A regular expression (see |:Trag|)
+      reject ... A regular expression (see |:Trag|)
+
+    Example: >
+      let g:trag#workspaces = {'vim': {'path': '~/.vim', 'accept': '\.vim$'}}
+<
+
+                                                    *g:trag#reject_default*
+g:trag#reject_default          (default: '')
+    Default reject |regexp|.
+
                                                     *g:trag#check_vcs*
 g:trag#check_vcs               (default: 1)
     If true, try to detect whether the current file is under an VCS and 
     use that later on.
-
-                                                    *g:trag#debug*
-g:trag#debug                   (default: 0)
-
-                                                    *g:trag#world*
-g:trag#world                   (default: {)
 
                                                     *trag#HasFiletype()*
 trag#HasFiletype(name)
@@ -677,13 +484,13 @@ g:trag_glob                    (default: '')
     2. A glob pattern -- this should be an absolute path and may contain ** 
     (see |glob()| and |wildcards|). Can be buffer local.
 
-                                                    *g:trag_project_ruby*
-g:trag_project_ruby            (default: 'Manifest.txt')
+                                                    *g:trag_manifest_ruby*
+g:trag_manifest_ruby           (default: 'Manifest.txt')
     3. Filetype-specific project files.
 
-                                                    *g:trag_project*
-g:trag_project                 (default: '')
-    4. The name of a file containing the projects file list. This file could be 
+                                                    *g:trag_manifest*
+g:trag_manifest                (default: '')
+    4. The name of a file containing the projects' files manifest. This file could be 
     generated via make. Can be buffer local.
 
                                                     *g:trag_git*
@@ -694,15 +501,9 @@ g:trag_git                     (default: '')
     If the value is "finddir", use |finddir()| to find a .git directory.
     Can be buffer local.
 
-                                                    *trag#GetProjectFiles()*
-trag#GetProjectFiles(manifest)
-
-                                                    *trag#GetGitFiles()*
-trag#GetGitFiles(repos)
-
                                                     *trag#Edit()*
-trag#Edit()
-    Edit a file from the project catalog. See |g:trag_project| and 
+trag#Edit(args)
+    Edit a file from the project's file manifest. See |g:trag_manifest| and 
     |:TRagfile|.
 
                                                     *trag#Grep()*
@@ -737,18 +538,9 @@ trag#GrepWithArgs(args, ?replace=1, ?extra={})
     [bg]:trag_rxf_{kind} exist, these will be taken as format string (see 
     |printf()|) to format REGEXP.
 
-                                                    *trag#ScanWithGrepDefs()*
-trag#ScanWithGrepDefs(grep_def, lines, setqflist)
-
                                                     *trag#QuickList()*
 trag#QuickList(?world={}, ?suspended=0)
     Display the |quickfix| list with |tlib#input#ListW()|.
-
-                                                    *trag#QuickListMaybe()*
-trag#QuickListMaybe(anyway)
-
-                                                    *trag#BrowseList()*
-trag#BrowseList(world_dict, list, ...)
 
                                                     *trag#LocList()*
 trag#LocList(...)
@@ -759,17 +551,21 @@ trag#AgentRefactor(world, selected)
     Invoke an refactor command.
     Currently only one command is supported: rename
 
-                                                    *trag#CWord()*
-trag#CWord()
 
-                                                    *trag#RefactorRename()*
-trag#RefactorRename(world, selected)
+------------------------------------------------------------------------
+                                                    *autoload/trag/external/sift.vim*
+                                                    *g:trag#external#sift#opts*
+g:trag#external#sift#opts      (default: {'grepprg': 'sift', 'args': '--exclude-dirs DIRS --no-color -n -- %s'})
+    "--exclude-dirs DIRS" will be replaced with the entries from 
+    |g:trag#external#sift#ignore_dirs|.
 
-                                                    *trag#IsSupported()*
-trag#IsSupported(supported_kinds, kinds)
 
-                                                    *trag#CComplete()*
-trag#CComplete(ArgLead, CmdLine, CursorPos)
+------------------------------------------------------------------------
+                                                    *autoload/trag/external/vcs.vim*
+                                                    *trag#external#vcs#Run()*
+trag#external#vcs#Run(kinds, rx, files)
+    Currently only git is supported.
+    For other VCSs, I'd recommend to use "ag".
 
 
 

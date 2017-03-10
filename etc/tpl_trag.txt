@@ -53,15 +53,15 @@ of supported filetypes.
 
 NOTE: Some kinds are available only for a subset of known filetypes.
 
-Default maps:
+Default maps (see also |TragInstallMap()|):
 
-    <Leader>r# ... Trag the word under cursor
-    <Leader>r. ... :Trag command-line
-    <Leader>r+ ... Show quickfixlist via |:Tragcw|
-    <Leader>r* ... Edit a file from the files list, i.e. the list that would be 
+    <Leader>rr ... Trag the word under cursor
+    <Leader>rq ... Show |quickfix|list via |:Tragcw|
+    <Leader>rl ... Show |location-list| via |:Traglw|
+    <Leader>rf ... Edit a file from the files list, i.e. the list that would be 
                    used if no "--file_sources" argument were passed to 
                    |:Trag|
-    <Leader>rx ... The same as `:Trag -l -i=x -x=i <cword><cr>`
+    <Leader>r<Leader>x ... The same as `:Trag -l -i=x -x=i <cword><cr>`
                    where x is a alphabetical letter that describes a kind in 
                    |g:trag_kinds| and <cword> is the word under cursor.
                    "-x=i" (exclude commented text) is only added if kind x is 

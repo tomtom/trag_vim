@@ -66,11 +66,119 @@ Default maps:
 
 
 -----------------------------------------------------------------------
+Install~
+
+Edit the vba file and type: >
+
+    :so %
+
+See :help vimball for details. If you have difficulties or use vim 7.0, 
+please make sure, you have the current version of vimball (vimscript 
+#1502) installed.
+
+This script requires tlib (vimscript #1863) to be installed.
+
+
+-----------------------------------------------------------------------
+                                                    *trag-kinds*
+Kinds~
+
+Certain commands take a "kind" as argument. A "kind" in the context of 
+trag means a way how the expression is interpreted and (in the future) 
+how the lines are scanned. The meaning of the letter is specific for a 
+certain filetype. In general, the following list should serve as a 
+common base:
+
+    c ... class definitions
+    d ... function/method definitions
+    f ... function calls
+    i ... ignored lines, comments etc.
+    l ... variable definition
+    m ... module definitions
+    r ... variable assignment (e.g. "= WORD")
+    u ... uses of word (ignore comments)
+    w ... find as word
+    x ... subclasses
+
+    fuzzy ... use a typo-tolerant regexp
+    todo  ... TODO markers etc.
+
+EXPERIMENTAL: Kinds can be joined as comma-separated list (OR) of 
+period-seprated list (CONTAIN). This may be unintuitive but that's the 
+way it is. Order in CONTAIN-patterns matters, i.e. w.i doesn't make too 
+much sense (a word that CONTAINs a comment, which could only be the word 
+itself) but i.w does (a comment that CONTAINs a word, which is quite 
+possible).
+
+The available command-line options are documented in |:Trag|. These 
+command-line options allow users to defined which lines should be matched.
+
+Example:
+    -i=l,r ...... a word either on the left OR right hand side of an 
+                  assignment
+    -x=i ........ match lines that are not comments
+    -i=w -x=i ... word that is NOT contained in a comment
+
+More examples:
+    File contents: >
+        #1 function Foo() {}
+        #2 function FooBar() {}
+        #3 let x = FooBar()
+        #4 let x = Foo()
+<
+    :TRag Foo
+    => Find "Foo": 1-4
+
+    :TRag -i=w Foo
+    => Find the __w__ords "Foo": 1, 4
+
+    :TRag -i=d Foo
+    => Find __d__efinitions of "Foo": 1, 2
+
+    :TRag -i=d.w Foo
+    => Find __d__efinitions of the __w__ord "Foo": 1
+
+    :TRag -i=f Foo
+    => Find (__f__unction) calls of "Foo": 3, 4
+
+    :TRag -i=f.w Foo
+    => Find (__f__unction) calls of the __w__ord "Foo": 4
+
+
+Not every kind is defined for every filetype. Currenty, support for 
+the following filetype(s) is somewhat above average:
+    - ruby
+    - vim
+
+Use |:TRagDefKind| to define new kinds.
+
+See |trag#Grep()| for details of how to use this.
+
+
+-----------------------------------------------------------------------
+Install~
+
+To install the vimball, edit the vba file and type: >
+
+    :so %
+
+See :help vimball for details.
+
+To install from github, please use
+    1. git + a plugin loader like enable_vim, pathogen, vim-unbundle etc.
+    2. a plugin manager like VAM, Vundle, NeoBundle, vim-plug etc.
+
+The tlib_vim plugin is required:
+https://github.com/tomtom/tlib_vim
+
+Also available via git: http://github.com/tomtom/trag_vim
+
+
 
 
 Dependencies:
-  tlib :: http://github.com/tomtom/tlib_vim
-      > git clone git://github.com/tomtom/tlib_vim.git
+  tlib (>= 1.16) :: http://github.com/tomtom/tlib_vim
+
 License: GPLv3 or later
 Install: See http://github.com/tomtom/vimtlib/blob/master/INSTALL.TXT
 See http://github.com/tomtom for related plugins.
