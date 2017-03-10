@@ -3,11 +3,11 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2017-03-09.
-" @Revision:    749
+" @Last Change: 2017-03-10.
+" @Revision:    755
 " GetLatestVimScripts: 2033 1 trag.vim
 
-if &cp || exists("g:loaded_trag")
+if &cp || exists('g:loaded_trag')
     finish
 endif
 let g:loaded_trag = 200
@@ -140,29 +140,31 @@ command! -bar -nargs=* Tragfiles call trag#Edit([<f-args>])
 
 " Install the following maps:
 "
-"   <trag_map_leader># ........ Search word under cursor
-"   <trag_map_leader>? ........ Search in the filetype workspace (see 
+"   <trag_map_leader>r ........ Search word under cursor
+"   <trag_map_leader>w ........ Search in the filetype workspace (see 
 "                               |:Trag|)
-"   <trag_map_leader>. ........ Command line
-"   <trag_map_leader>+ ........ Re-Open the previous list
+"   <trag_map_leader><space> .. Command line
+"   <trag_map_leader>q ........ Re-Open the previous quickfix list
+"   <trag_map_leader>l ........ Re-Open the previous location list
+"   <trag_map_leader>f ........ Open a list of files
 "
 " The following maps might be defined only after the first invocation:
 "
-"   <trag_map_leader><KIND> ... Search word under cursor of KIND
+"   <trag_map_leader><Leader><KIND> ... Search word under cursor of KIND
 "                               See |g:trag_kinds|
 "
 " E.g. <trag_map_leader>d searches for the definition of the word under 
 " cursor.
 function! TragInstallMap(leader) "{{{3
     " TLogVAR a:leader
-    exec 'noremap' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
-    exec 'noremap' a:leader .'? :Trag --workspace=? -l -i=w <c-r>=trag#CWord()<cr><cr>'
-    exec 'noremap' a:leader .'. :Trag '
-    exec 'noremap' a:leader .'+ :Tragcw<cr>'
-    exec 'noremap' a:leader .'~ :Traglw<cr>'
-    exec 'noremap' a:leader .'* :Tragfiles<cr>'
+    exec 'noremap' a:leader .'r :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
+    exec 'noremap' a:leader .'w :Trag --workspace=? -l -i=w <c-r>=trag#CWord()<cr><cr>'
+    exec 'noremap' a:leader .'<space> :Trag '
+    exec 'noremap' a:leader .'q :Tragcw<cr>'
+    exec 'noremap' a:leader .'l :Traglw<cr>'
+    exec 'noremap' a:leader .'f :Tragfiles<cr>'
     for kind in keys(g:trag_kinds)
-        call TragInstallKindMap(leader, kind)
+        call TragInstallKindMap(a:leader, kind)
     endfor
 endf
 
@@ -172,8 +174,8 @@ function! TragInstallKindMap(leader, kind) "{{{3
     if len(a:kind) == 1
         let kind = a:kind
         let excl = index(g:trag_kinds_ignored_comments, kind) == -1 ? '' : '-x=i'
-        exec 'nnoremap' a:leader . a:kind ':Trag -l -i='. kind excl '<c-r>=trag#CWord()<cr><cr>'
-        exec 'vnoremap' a:leader . a:kind 'y<esc>:Trag -l -i='. kind excl '<c-r>"<cr>'
+        exec 'nnoremap' a:leader .'<leader>'. a:kind ':Trag -l -i='. kind excl '<c-r>=trag#CWord()<cr><cr>'
+        exec 'vnoremap' a:leader .'<leader>'. a:kind 'y<esc>:Trag -l -i='. kind excl '<c-r>"<cr>'
     endif
 endf
 
