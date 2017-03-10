@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-29.
-" @Last Change: 2015-11-16.
-" @Revision:    738
+" @Last Change: 2017-03-09.
+" @Revision:    749
 " GetLatestVimScripts: 2033 1 trag.vim
 
 if &cp || exists("g:loaded_trag")
@@ -77,7 +77,8 @@ command! -bar -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 "   -i=KINDS, --include=KINDS ... Include KINDS (default: .)
 "   -x=KINDS, --exclude=KINDS ... Exclude KINDS
 "   -A=REGEXP, --accept=REGEXP .. Include files matching REGEXP
-"   -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP
+"   -R=REGEXP, --reject=REGEXP .. Exclude files matching REGEXP (see 
+"                                 also |g:trag#reject_default|)
 "   --filetype=FILETYPE ......... Assume 'filetype' is FILETYPE
 "   -l, --literal ............... RX is a literal text, not a |regexp|
 "   --grep_type=GREP_TYPE ....... See |g:trag#grep_type|
@@ -91,6 +92,12 @@ command! -bar -nargs=+ TRagDefFiletype call trag#DefFiletype([<f-args>])
 "                                 result (default: :Tragcw; use "none" 
 "                                 in order not to display the results 
 "                                 list)
+"   --workspace=NAMES ........... A comma-separated list of workspaces 
+"                                 (see |g:trag#workspaces|) that should 
+"                                 be scanned.
+"                                 `*` is an alias for all workspaces.
+"                                 `?` is an alias for the buffer's 
+"                                 'filetype'.
 "
 " Positional arguments:
 "   REGEXP ...................... A |regexp| or text (see --literal)
@@ -134,7 +141,10 @@ command! -bar -nargs=* Tragfiles call trag#Edit([<f-args>])
 " Install the following maps:
 "
 "   <trag_map_leader># ........ Search word under cursor
-"   <trag_map_leader>. ........ :Trag * <Input>
+"   <trag_map_leader>? ........ Search in the filetype workspace (see 
+"                               |:Trag|)
+"   <trag_map_leader>. ........ Command line
+"   <trag_map_leader>+ ........ Re-Open the previous list
 "
 " The following maps might be defined only after the first invocation:
 "
@@ -145,10 +155,12 @@ command! -bar -nargs=* Tragfiles call trag#Edit([<f-args>])
 " cursor.
 function! TragInstallMap(leader) "{{{3
     " TLogVAR a:leader
+    exec 'noremap' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
+    exec 'noremap' a:leader .'? :Trag --workspace=? -l -i=w <c-r>=trag#CWord()<cr><cr>'
     exec 'noremap' a:leader .'. :Trag '
     exec 'noremap' a:leader .'+ :Tragcw<cr>'
+    exec 'noremap' a:leader .'~ :Traglw<cr>'
     exec 'noremap' a:leader .'* :Tragfiles<cr>'
-    exec 'noremap <silent>' a:leader .'# :Trag -l -i=w <c-r>=trag#CWord()<cr><cr>'
     for kind in keys(g:trag_kinds)
         call TragInstallKindMap(leader, kind)
     endfor
