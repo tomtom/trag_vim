@@ -1,14 +1,14 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2017-03-09.
-" @Revision:    1989
+" @Last Change: 2017-03-15.
+" @Revision:    1992
 
 
-if !exists('g:loaded_tlib') || g:loaded_tlib < 116
+if !exists('g:loaded_tlib') || g:loaded_tlib < 123
     runtime plugin/02tlib.vim
-    if !exists('g:loaded_tlib') || g:loaded_tlib < 116
-        echoerr 'tlib >= 1.16 is required'
+    if !exists('g:loaded_tlib') || g:loaded_tlib < 123
+        echoerr 'tlib >= 1.23 is required'
         finish
     endif
 endif
@@ -425,15 +425,15 @@ function! s:SetFiles(...) "{{{3
                 let files = []
                 let globs = call(fn, [opts])
                 let idx = 0
-                " call tlib#progressbar#Init(len(globs), 'Trag: Glob %s', 20)
+                let sl_glob = tlib#progressbar#Init(len(globs), 'Trag: Glob %s', 20)
                 try
                     for glob in globs
                         let idx += 1
-                        " call tlib#progressbar#Display(idx, glob, 1)
+                        call tlib#progressbar#Display(idx, glob, 1)
                         call extend(files, tlib#file#Glob(glob))
                     endfor
                 finally
-                    " call tlib#progressbar#Restore()
+                    call tlib#progressbar#Restore(sl_glob)
                 endtry
             endif
             if !empty(files)
@@ -671,7 +671,7 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
         call setqflist([])
     endif
     let scratch = {}
-    call tlib#progressbar#Init(len(files), 'Trag: Grep %s', 20)
+    let statusline = tlib#progressbar#Init(len(files), 'Trag: Grep %s', 20)
     try
         let qfl_top = len(getqflist())
         Tlibtrace 'trag', qfl_top
@@ -753,7 +753,7 @@ function! s:Grep(kindspos, kindsneg, rx, replace, files, filetype, opts) abort
         endif
         return {'items': qfl2[qfl_top : -1], 'grepdef': grepdef}
     finally
-        call tlib#progressbar#Restore()
+        call tlib#progressbar#Restore(statusline)
         if !empty(scratch)
             call tlib#scratch#CloseScratch(scratch)
             let &lazyredraw = lazyredraw
@@ -807,7 +807,7 @@ function! s:GrepWith_vimgrep(grepdef, grep_opts) "{{{3
     let fidx  = 0
     for grep_def in a:grepdef.Get_grep_defs()
         let fidx += 1
-        call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
+        " call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
         let qfll = len(getqflist())
         silent! exec 'noautocmd vimgrepadd' '/'. escape(grep_def.rxpos, '/') .'/j' tlib#arg#Ex(grep_def.ff)
         Tlibtrace 'trag', len(getqflist())
