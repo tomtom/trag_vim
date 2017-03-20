@@ -410,7 +410,7 @@ g:trag#file_sources            (default: ['vcs', 'manifest', 'files', 'glob', 't
       buffers ... Use currently loaded buffers
       cd ........ Use the current working directory (see |getcwd()|)
       workspace . Use |g:trag#workspaces|
-      *FN ....... Call function FN with one arg (a dictionary of options)
+      *FN ....... Call function FN with one arg (a dictionary of options) abort
                                                         *b:trag_file_sources*
     b:trag_file_sources overrides this global variable.
 
