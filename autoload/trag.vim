@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2017-03-20.
-" @Revision:    1998
+" @Last Change: 2017-04-10.
+" @Revision:    1999
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 123
@@ -425,15 +425,15 @@ function! s:SetFiles(...) abort "{{{3
                 let files = []
                 let globs = call(fn, [opts])
                 let idx = 0
-                let sl_glob = tlib#progressbar#Init(len(globs), 'Trag: Glob %s', 20)
+                " let sl_glob = tlib#progressbar#Init(len(globs), 'Trag: Glob %s', 20)
                 try
                     for glob in globs
                         let idx += 1
-                        call tlib#progressbar#Display(idx, glob, 1)
+                        " call tlib#progressbar#Display(idx, glob, 1)
                         call extend(files, tlib#file#Glob(glob))
                     endfor
                 finally
-                    call tlib#progressbar#Restore(sl_glob)
+                    " call tlib#progressbar#Restore(sl_glob)
                 endtry
             endif
             if !empty(files)
