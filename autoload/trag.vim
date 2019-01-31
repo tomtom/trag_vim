@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2017-04-10.
-" @Revision:    1999
+" @Last Change: 2018-09-07.
+" @Revision:    2001
 
 
 if !exists('g:loaded_tlib') || g:loaded_tlib < 123
@@ -770,12 +770,12 @@ function! s:GrepWith_trag(grepdef, grep_opts) abort "{{{3
         call tlib#progressbar#Display(fidx, ' '. pathshorten(grep_def.f))
         let bnum = bufnr(grep_def.ff)
         if g:trag#use_buffer && bnum != -1 && bufloaded(bnum)
-            Tlibtrace 'trag', bnum, a:filename, bufname(bnum)
+            Tlibtrace 'trag', bnum, grep_def.f, bufname(bnum)
             let lines = getbufline(bnum, 1, '$')
         else
             let lines = readfile(grep_def.ff)
         endif
-        Tlibtrace 'trag', grep_def.rxpos, grep_def.rxneg
+        Tlibtrace 'trag', grep_def.rxpos, grep_def.rxneg, len(lines)
         call trag#ScanWithGrepDefs(grep_def, lines, 1)
     endfor
     return 1

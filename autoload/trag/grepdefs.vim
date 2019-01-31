@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     https://github.com/tomtom
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-07
-" @Revision:    51
+" @Last Change: 2018-09-07
+" @Revision:    52
 
 
 let s:prototype = {}
@@ -107,7 +107,7 @@ endf
 function! trag#grepdefs#GetGrepDef(filename, kindspos, kindsneg, rx, filetype) "{{{3
     " let ff = a:filename
     let ff = fnamemodify(a:filename, ':p')
-    " Tlibtrace 'trag', a:filename, ff, filereadable(ff)
+    Tlibtrace 'trag', a:filename, ff, filereadable(ff)
     " TLogVAR a:filename, ff, filereadable(ff)
     if filereadable(ff)
         " TLogVAR ff, a:kindspos, a:kindsneg, a:rx
